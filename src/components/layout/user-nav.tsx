@@ -17,12 +17,12 @@ import { placeholderImages } from "@/lib/placeholder-images";
 import { LogOut, User, Shield, Loader2 } from "lucide-react";
 
 export function UserNav() {
-  const { user, setRole, isLoading } = useAuth();
+  const { user, logout, isLoading } = useAuth();
   const router = useRouter();
   const avatarImage = placeholderImages.find(img => img.id === (user?.role === 'admin' ? 'avatar-1' : 'avatar-2'));
 
   const handleLogout = () => {
-    setRole(null);
+    logout();
     router.push("/login");
     router.refresh();
   };

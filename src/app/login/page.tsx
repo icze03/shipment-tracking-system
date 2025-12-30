@@ -21,7 +21,7 @@ export default function LoginPage() {
           <CardHeader className="text-center">
             <CardTitle className="text-2xl font-headline">Welcome Back</CardTitle>
             <CardDescription>
-              Select a role to sign in to your dashboard.
+              Enter your credentials to sign in to your dashboard.
             </CardDescription>
           </CardHeader>
           <CardContent>
