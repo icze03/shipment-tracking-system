@@ -1,0 +1,182 @@
+{
+  "entities": {
+    "User": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "User",
+      "type": "object",
+      "description": "Represents a user of the TruckTrack application.",
+      "properties": {
+        "uid": {
+          "type": "string",
+          "description": "Unique identifier for the User entity."
+        },
+        "role": {
+          "type": "string",
+          "description": "The role of the user (driver or admin)."
+        },
+        "name": {
+          "type": "string",
+          "description": "The name of the user."
+        },
+        "status": {
+          "type": "string",
+          "description": "The current status of the user (e.g., active, inactive)."
+        }
+      },
+      "required": [
+        "uid",
+        "role",
+        "name"
+      ]
+    },
+    "Shipment": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Shipment",
+      "type": "object",
+      "description": "Represents a shipment in the TruckTrack application.",
+      "properties": {
+        "shipmentId": {
+          "type": "string",
+          "description": "Unique identifier for the Shipment entity."
+        },
+        "orderCode": {
+          "type": "string",
+          "description": "Unique order code for the shipment, used for customer tracking."
+        },
+        "assignedDriverId": {
+          "type": "string",
+          "description": "Reference to User (Driver). The ID of the driver assigned to this shipment. (Relationship: User 1:N Shipment)"
+        },
+        "createdAt": {
+          "type": "string",
+          "description": "Timestamp indicating when the shipment was created.",
+          "format": "date-time"
+        },
+        "currentStatus": {
+          "type": "string",
+          "description": "The current status of the shipment."
+        },
+        "statusTimestamps": {
+          "type": "string",
+          "description": "JSON string representing an object where keys are status types (e.g., 'arrived_warehouse') and values are timestamps.",
+          "format": "json"
+        },
+        "isCompleted": {
+          "type": "boolean",
+          "description": "Indicates whether the shipment is completed."
+        }
+      },
+      "required": [
+        "shipmentId",
+        "orderCode",
+        "createdAt",
+        "currentStatus",
+        "isCompleted"
+      ]
+    },
+    "StatusLog": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "StatusLog",
+      "type": "object",
+      "description": "Represents a log entry for a shipment status change.",
+      "properties": {
+        "statusLogId": {
+          "type": "string",
+          "description": "Unique identifier for the StatusLog entity."
+        },
+        "shipmentId": {
+          "type": "string",
+          "description": "Reference to Shipment. The ID of the shipment this log entry belongs to. (Relationship: Shipment 1:N StatusLog)"
+        },
+        "statusType": {
+          "type": "string",
+          "description": "The type of status change (e.g., 'arrived_warehouse')."
+        },
+        "timestamp": {
+          "type": "string",
+          "description": "Timestamp of when the status change occurred.",
+          "format": "date-time"
+        },
+        "recordedBy": {
+          "type": "string",
+          "description": "The ID of the user (driver or admin) who recorded the status change.  Reference to User. (Relationship: User 1:N StatusLog)"
+        },
+        "source": {
+          "type": "string",
+          "description": "The source of the status change (driver or admin)."
+        }
+      },
+      "required": [
+        "statusLogId",
+        "shipmentId",
+        "statusType",
+        "timestamp",
+        "recordedBy",
+        "source"
+      ]
+    }
+  },
+  "auth": {
+    "providers": [
+      "password",
+      "anonymous"
+    ]
+  },
+  "firestore": {
+    "structure": [
+      {
+        "path": "/users/{userId}",
+        "definition": {
+          "entityName": "User",
+          "schema": {
+            "$ref": "#/backend/entities/User"
+          },
+          "description": "Stores user information. Uses path-based ownership for private user data.",
+          "params": [
+            {
+              "name": "userId",
+              "description": "The unique identifier for the user."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/shipments/{shipmentId}",
+        "definition": {
+          "entityName": "Shipment",
+          "schema": {
+            "$ref": "#/backend/entities/Shipment"
+          },
+          "description": "Stores shipment information.  Includes `assignedDriverId` for driver assignment and `orderCode` for customer lookup.",
+          "params": [
+            {
+              "name": "shipmentId",
+              "description": "The unique identifier for the shipment."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/shipments/{shipmentId}/statusLogs/{statusLogId}",
+        "definition": {
+          "entityName": "StatusLog",
+          "schema": {
+            "$ref": "#/backend/entities/StatusLog"
+          },
+          "description": "Stores status log entries for shipments.  Subcollection of shipments for easy retrieval of status history.",
+          "params": [
+            {
+              "name": "shipmentId",
+              "description": "The unique identifier for the shipment."
+            },
+            {
+              "name": "statusLogId",
+              "description": "The unique identifier for the status log entry."
+            }
+          ]
+        }
+      }
+    ],
+    "reasoning": "The Firestore data structure is designed to support the TruckTrack application's requirements for driver trip reporting, admin monitoring, and customer tracking.  The structure emphasizes authorization independence, clarity, and secure `list` operations.  It leverages path-based ownership for user-specific data and membership maps (though not directly used in this iteration, the structure supports future collaboration). Denormalization is implemented to avoid `get()` calls in security rules and enable atomic operations.\n\nUsers are stored in `/users/{userId}`. Shipments are stored in `/shipments/{shipmentId}` and include the `assignedDriverId` to link them to a driver. Crucially, the `shipments` collection denormalizes driver assignment. Status logs are stored in `/shipments/{shipmentId}/statusLogs/{statusLogId}`. This approach supports Authorization Independence; security rules can validate the `assignedDriverId` against the authenticated user's ID without needing a `get()` call to the `users` collection.  Also admins have full access, and customers will have read only access to the shipments collection where they will lookup data using the order code.\n\nThe chosen structure facilitates the core QAP (Rules are Not Filters) by allowing secure listing of shipments and statusLogs based on role (admin) or driver assignment (driver). The segregation of data into distinct collections based on entity type (users, shipments, statusLogs) simplifies security rule definition and enforcement.\n\nTimestamps (`createdAt`, `statusTimestamps`, `timestamp`) are stored as strings to be exported to Excel, though Firestore supports native timestamps.\n\n"
+  }
+}

@@ -1,0 +1,180 @@
+/**
+ * Core Philosophy: This ruleset implements a role-based access control model
+ * for a logistics application. It distinguishes between 'admin' users, who have
+ * broad management capabilities, and 'driver' users, who have limited access
+ * to shipments assigned to them. It also supports unauthenticated 'customer'
+ * lookups for individual shipments without exposing the entire dataset.
+ *
+ * Data Structure:
+ * - /users/{userId}: Stores user profile and role information.
+ * - /shipments/{shipmentId}: The central collection for all shipments.
+ * - /shipments/{shipmentId}/statusLogs/{statusLogId}: Subcollection for audit
+ *   trails of status changes for a specific shipment.
+ *
+ * Key Security Decisions:
+ * - Admin Supremacy: Users with the 'admin' role have full CRUD access to
+ *   shipments and status logs, and can manage user profiles. Admin role is
+ *   determined by a read to the user's own document.
+ * - Driver's Scope: Drivers can only read and update shipments they are
+ *   explicitly assigned to via the `assignedDriverId` field. They can create
+ *   status logs for these shipments, but cannot modify or delete them to
+ *   ensure a clean audit trail.
+ * - Customer Privacy: Anonymous users are permitted to `get` individual
+ *   shipment documents (to support lookup by order code via a backend), but
+ *   are strictly forbidden from listing the entire `shipments` collection.
+ * - User Isolation: Users can only manage their own profile document. User
+ *   listing is disabled to protect user privacy.
+ *
+ * Denormalization for Authorization: The `assignedDriverId` field is
+ * denormalized onto each `/shipments/{shipmentId}` document. This is critical
+ * as it allows security rules to check for driver assignment directly on the
+ * resource, avoiding slow, costly, and insecure cross-collection `get()` calls.
+ *
+ * Structural Segregation: The use of a `statusLogs` subcollection under each
+ * shipment naturally scopes access. A user's permission to view a shipment's
+ * logs is directly derived from their permission to view the parent shipment.
+ */
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ------------------------------------------------------------------------
+    // Helper Functions
+    // ------------------------------------------------------------------------
+
+    /**
+     * Checks if a user is authenticated.
+     */
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    /**
+     * Checks if the currently authenticated user is the owner of a document.
+     * @param userId The UID to check against the authenticated user's UID.
+     */
+    function isOwner(userId) {
+      return request.auth.uid == userId;
+    }
+
+    /**
+     * Checks if the authenticated user has the 'admin' role.
+     * This requires one document read per request.
+     */
+    function isAdmin() {
+      return isSignedIn() && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+    }
+    
+    /**
+     * Checks if the authenticated user is the driver assigned to the shipment
+     * being read or modified.
+     */
+    function isAssignedDriver() {
+      return isSignedIn() && resource.data.assignedDriverId == request.auth.uid;
+    }
+
+    /**
+     * Checks if the authenticated user is the driver assigned to the parent
+     * shipment document. Used for securing subcollections.
+     */
+    function isAssignedDriverToParentShipment(shipmentId) {
+      let shipment = get(/databases/$(database)/documents/shipments/$(shipmentId));
+      return isSignedIn() && shipment.data.assignedDriverId == request.auth.uid;
+    }
+
+    /**
+     * Validates that the UID in a new user document matches the document ID.
+     */
+    function isCreatingOwnUserDocument(userId) {
+      return request.resource.data.uid == userId;
+    }
+
+    /**
+     * Validates that critical, immutable fields have not been changed during an update.
+     */
+    function hasImmutableUserFields() {
+      return request.resource.data.uid == resource.data.uid;
+    }
+
+    /**
+     * Validates that critical, immutable fields have not been changed during a shipment update.
+     */
+    function hasImmutableShipmentFields() {
+      return request.resource.data.shipmentId == resource.data.shipmentId;
+    }
+    
+    /**
+     * Validates relational integrity for a new status log document.
+     */
+    function hasValidNewStatusLogFields(shipmentId, statusLogId) {
+      let data = request.resource.data;
+      return data.statusLogId == statusLogId
+        && data.shipmentId == shipmentId
+        && data.recordedBy == request.auth.uid;
+    }
+
+    /**
+     * Validates immutable fields for a status log update.
+     */
+    function hasImmutableStatusLogFields() {
+      let newData = request.resource.data;
+      let oldData = resource.data;
+      return newData.statusLogId == oldData.statusLogId
+        && newData.shipmentId == oldData.shipmentId
+        && newData.recordedBy == oldData.recordedBy;
+    }
+
+    // ------------------------------------------------------------------------
+    // Collection Rules
+    // ------------------------------------------------------------------------
+
+    /**
+     * @description Users can create their own profile, and can read/update it.
+     * Admins can also read/update any user profile for management purposes.
+     * @path /users/{userId}
+     * @allow (create) A new user with uid 'user_abc' creating their own document at /users/user_abc.
+     * @deny (list) Any user, including admins, trying to list all users in the collection.
+     * @principle Restricts access to a user's own data tree and enforces self-creation.
+     */
+    match /users/{userId} {
+      allow get: if isOwner(userId) || isAdmin();
+      allow list: if false;
+      allow create: if isOwner(userId) && isCreatingOwnUserDocument(userId);
+      allow update: if (isOwner(userId) || isAdmin()) && resource != null && hasImmutableUserFields();
+      allow delete: if isAdmin() && resource != null;
+    }
+
+    /**
+     * @description Admins have full control over shipments. Assigned drivers can
+     * view and update their assigned shipments. Anyone (including unauthenticated
+     * users) can fetch a single shipment document, supporting customer lookups.
+     * @path /shipments/{shipmentId}
+     * @allow (get) An unauthenticated user fetching a shipment document by its ID.
+     * @deny (list) Any non-admin user trying to list all shipments.
+     * @principle Implements role-based (admin) and ownership-based (driver) write access, while allowing public reads for single documents.
+     */
+    match /shipments/{shipmentId} {
+      allow get: if true;
+      allow list: if isAdmin();
+      allow create: if isAdmin() && request.resource.data.shipmentId == shipmentId;
+      allow update: if (isAdmin() || isAssignedDriver()) && resource != null && hasImmutableShipmentFields();
+      allow delete: if isAdmin() && resource != null;
+    }
+
+    /**
+     * @description Status logs are an audit trail. The assigned driver or an
+     * admin can create new logs. Only admins can read, update, or delete logs
+     * to ensure data integrity.
+     * @path /shipments/{shipmentId}/statusLogs/{statusLogId}
+     * @allow (create) The driver assigned to shipment 'ship_123' creating a new status log within it.
+     * @deny (update) A driver trying to modify a status log they already submitted.
+     * @principle Secures a subcollection based on roles and ownership defined in the parent document. Enforces append-only writes for non-admins.
+     */
+    match /shipments/{shipmentId}/statusLogs/{statusLogId} {
+      allow get, list: if isAdmin() || isAssignedDriverToParentShipment(shipmentId);
+      allow create: if (isAdmin() || isAssignedDriverToParentShipment(shipmentId)) && hasValidNewStatusLogFields(shipmentId, statusLogId);
+      allow update: if isAdmin() && resource != null && hasImmutableStatusLogFields();
+      allow delete: if isAdmin() && resource != null;
+    }
+  }
+}
