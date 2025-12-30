@@ -13,7 +13,7 @@ export interface Driver {
     email: string;
     phone: string;
     licenseNumber: string;
-    status: "active" | "inactive" | "on-leave";
+    status: "active" | "inactive" | "on-leave" | "pending";
     passwordHash: string;
 }
 

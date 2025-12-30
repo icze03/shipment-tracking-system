@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/sidebar";
 import { Logo } from "@/components/logo";
 import { UserNav } from "@/components/layout/user-nav";
-import { LayoutDashboard, Truck, Users, FileDown } from "lucide-react";
+import { LayoutDashboard, Truck, Users, FileDown, UserCheck } from "lucide-react";
 
 export default function AdminLayout({
   children,
@@ -42,6 +42,14 @@ export default function AdminLayout({
                   <Link href="/admin/shipments">
                     <Truck />
                     <span>Shipments</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+               <SidebarMenuItem>
+                <SidebarMenuButton asChild tooltip="Approvals">
+                  <Link href="/admin/approvals">
+                    <UserCheck />
+                    <span>Approvals</span>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>

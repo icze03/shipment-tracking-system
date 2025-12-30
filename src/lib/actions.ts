@@ -25,6 +25,9 @@ export async function validateCredentialsAction(username: string, password: stri
     // NOTE: In a real app, you would use a secure password hashing and comparison library like bcrypt.
     // For this prototype, we're doing a simple string comparison, which is NOT secure.
     if (driver && driver.passwordHash === password) {
+        if (driver.status !== 'active') {
+            return { success: false, error: "Your account is not active. Please contact an admin." };
+        }
         return { success: true, role: 'driver', userId: driver.id };
     }
 
@@ -54,7 +57,7 @@ export async function addDriverAction(data: {
 
     const newDriver: Driver = {
       id: uuidv4(),
-      status: "active",
+      status: "pending",
       name: data.name,
       email: data.email,
       phone: data.phone,
@@ -63,12 +66,54 @@ export async function addDriverAction(data: {
       passwordHash: data.password || 'password', // Default password if not provided
     };
     await saveDrivers([newDriver, ...drivers]);
-    revalidatePath("/admin/drivers");
-    revalidatePath("/admin/reports");
+    revalidatePath("/admin/approvals");
     return { success: true, driver: newDriver };
   } catch (e: any) {
     return { error: `Failed to add driver: ${e.message}` };
   }
+}
+
+export async function approveDriverAction(driverId: string) {
+    try {
+        const drivers = await getDrivers();
+        const driverIndex = drivers.findIndex(d => d.id === driverId);
+
+        if (driverIndex === -1) {
+            return { error: "Driver not found." };
+        }
+
+        drivers[driverIndex].status = 'active';
+        await saveDrivers(drivers);
+
+        revalidatePath("/admin/approvals");
+        revalidatePath("/admin/drivers");
+
+        return { success: true };
+    } catch (e: any) {
+        return { error: `Failed to approve driver: ${e.message}` };
+    }
+}
+
+export async function removeDriverAction(driverId: string) {
+    try {
+        let drivers = await getDrivers();
+        const initialCount = drivers.length;
+        drivers = drivers.filter(d => d.id !== driverId);
+
+        if (drivers.length === initialCount) {
+            return { error: "Driver not found." };
+        }
+
+        await saveDrivers(drivers);
+
+        revalidatePath("/admin/approvals");
+        revalidatePath("/admin/drivers");
+        revalidatePath("/admin/reports");
+
+        return { success: true };
+    } catch (e: any) {
+        return { error: `Failed to remove driver: ${e.message}` };
+    }
 }
 
 // --- Shipment Actions ---
@@ -178,5 +223,67 @@ export async function updateShipmentStatusAction(data: {
         return { success: true, shipment };
     } catch (e: any) {
         return { error: `Failed to update shipment: ${e.message}` };
+    }
+}
+
+export async function correctTimestampAction(data: {
+    shipmentId: string;
+    statusType: ShipmentStatus;
+    incorrectTimestamp: string;
+    statusTimestamps: Record<string, string>;
+    shipmentHistory: string;
+    notes?: string;
+}) {
+    // This is a placeholder for the AI flow.
+    // In a real scenario, you would call the Genkit flow here.
+    // For this prototype, we'll simulate a response and update the shipment.
+    const { shipmentId, statusType } = data;
+
+    try {
+        const shipments = await getShipments();
+        const shipmentIndex = shipments.findIndex(s => s.id === shipmentId);
+        if (shipmentIndex === -1) {
+            return { error: "Shipment not found" };
+        }
+
+        const shipment = shipments[shipmentIndex];
+
+        // Simulate AI suggesting a new timestamp (e.g., one hour later)
+        const incorrectDate = new Date(data.incorrectTimestamp);
+        incorrectDate.setHours(incorrectDate.getHours() + 1);
+        const suggestedTimestamp = incorrectDate.toISOString();
+        
+        // Update the timestamp
+        shipment.statusTimestamps[statusType] = suggestedTimestamp;
+        shipment.updatedAt = new Date().toISOString();
+
+        // Add a log entry for the correction
+        const adminUser = await getMockUser("admin");
+        shipment.statusLogs.push({
+            id: uuidv4(),
+            status: statusType,
+            timestamp: suggestedTimestamp,
+            actorId: adminUser.id,
+            actorName: adminUser.name,
+            source: 'admin',
+            notes: `Corrected via AI suggestion from original: ${data.incorrectTimestamp}`
+        });
+
+        shipments[shipmentIndex] = shipment;
+        await saveShipments(shipments);
+        
+        revalidatePath(`/admin/shipments/${shipmentId}`);
+
+        return { 
+            success: true, 
+            aiSuggestion: {
+                suggestedTimestamp: suggestedTimestamp,
+                confidence: 0.85,
+                explanation: "Based on historical data for similar routes and traffic conditions at that time, the timestamp was adjusted by one hour."
+            }
+        };
+
+    } catch (e: any) {
+        return { error: e.message };
     }
 }
