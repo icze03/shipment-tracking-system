@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import type { Driver } from "@/lib/types";
 import { Badge } from "@/components/ui/badge";
+import { ClientOnly } from "@/components/client-only";
 
 export const columns: ColumnDef<Driver>[] = [
   {
@@ -63,25 +64,27 @@ export const columns: ColumnDef<Driver>[] = [
 
       return (
         <div className="text-right pr-4">
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="h-8 w-8 p-0">
-                <span className="sr-only">Open menu</span>
-                <MoreHorizontal className="h-4 w-4" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuLabel>Actions</DropdownMenuLabel>
-              <DropdownMenuItem
-                onClick={() => navigator.clipboard.writeText(driver.email)}
-              >
-                Copy email
-              </DropdownMenuItem>
-              <DropdownMenuItem disabled>
-                Edit Driver
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          <ClientOnly>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" className="h-8 w-8 p-0">
+                  <span className="sr-only">Open menu</span>
+                  <MoreHorizontal className="h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                <DropdownMenuItem
+                  onClick={() => navigator.clipboard.writeText(driver.email)}
+                >
+                  Copy email
+                </DropdownMenuItem>
+                <DropdownMenuItem disabled>
+                  Edit Driver
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </ClientOnly>
         </div>
       );
     },

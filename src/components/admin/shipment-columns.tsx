@@ -16,6 +16,7 @@ import { StatusProgress } from "@/components/shipment/status-progress";
 import { Badge } from "@/components/ui/badge";
 import { STATUS_DETAILS } from "@/lib/constants";
 import { ClientFormattedDate } from "@/components/client-formatted-date";
+import { ClientOnly } from "@/components/client-only";
 
 export const columns: ColumnDef<Shipment>[] = [
   {
@@ -89,27 +90,29 @@ export const columns: ColumnDef<Shipment>[] = [
 
       return (
         <div className="text-right pr-4">
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="h-8 w-8 p-0">
-                <span className="sr-only">Open menu</span>
-                <MoreHorizontal className="h-4 w-4" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuLabel>Actions</DropdownMenuLabel>
-              <DropdownMenuItem asChild>
-                <Link href={`/admin/shipments/${shipment.id}`}>
-                  View Details
-                </Link>
-              </DropdownMenuItem>
-              <DropdownMenuItem asChild>
-                <Link href={`/track?orderCode=${shipment.orderCode}`}>
-                  View Public Page
-                </Link>
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          <ClientOnly>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" className="h-8 w-8 p-0">
+                  <span className="sr-only">Open menu</span>
+                  <MoreHorizontal className="h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                <DropdownMenuItem asChild>
+                  <Link href={`/admin/shipments/${shipment.id}`}>
+                    View Details
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link href={`/track?orderCode=${shipment.orderCode}`}>
+                    View Public Page
+                  </Link>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </ClientOnly>
         </div>
       );
     },
