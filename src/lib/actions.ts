@@ -34,6 +34,10 @@ export async function validateCredentialsAction(username: string, password: stri
 
 // --- Driver Actions ---
 
+export async function getDriversAction() {
+    return getDrivers();
+}
+
 export async function addDriverAction(data: {
   name: string;
   email: string;
@@ -60,6 +64,7 @@ export async function addDriverAction(data: {
     };
     await saveDrivers([newDriver, ...drivers]);
     revalidatePath("/admin/drivers");
+    revalidatePath("/admin/reports");
     return { success: true, driver: newDriver };
   } catch (e: any) {
     return { error: `Failed to add driver: ${e.message}` };
@@ -67,6 +72,9 @@ export async function addDriverAction(data: {
 }
 
 // --- Shipment Actions ---
+export async function getShipmentsAction() {
+    return getShipments();
+}
 
 export async function createShipmentAction(data: {
   origin: string;
@@ -106,6 +114,7 @@ export async function createShipmentAction(data: {
 
     revalidatePath("/admin/dashboard");
     revalidatePath("/admin/shipments");
+    revalidatePath("/admin/reports");
 
     return { success: true, shipment: newShipment };
   } catch (e: any) {
@@ -164,6 +173,7 @@ export async function updateShipmentStatusAction(data: {
         revalidatePath(`/admin/shipments`);
         revalidatePath(`/admin/shipments/${shipmentId}`);
         revalidatePath(`/track?orderCode=${shipment.orderCode}`, 'layout');
+        revalidatePath("/admin/reports");
 
         return { success: true, shipment };
     } catch (e: any) {

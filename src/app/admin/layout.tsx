@@ -14,7 +14,7 @@ import {
 import { Logo } from "@/components/logo";
 import { UserNav } from "@/components/layout/user-nav";
 import { ThemeToggle } from "@/components/theme-toggle";
-import { LayoutDashboard, Truck, Users } from "lucide-react";
+import { LayoutDashboard, Truck, Users, FileDown } from "lucide-react";
 
 export default function AdminLayout({
   children,
@@ -51,6 +51,14 @@ export default function AdminLayout({
                   <Link href="/admin/drivers">
                     <Users />
                     <span>Drivers</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild tooltip="Reports">
+                  <Link href="/admin/reports">
+                    <FileDown />
+                    <span>Reports</span>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
