@@ -1,5 +1,4 @@
 import { Logo } from "@/components/logo";
-import { ThemeToggle } from "@/components/theme-toggle";
 import { UserNav } from "@/components/layout/user-nav";
 
 export default function DriverLayout({
@@ -13,7 +12,6 @@ export default function DriverLayout({
         <div className="container flex h-16 items-center justify-between">
           <Logo />
           <div className="flex items-center space-x-2">
-            <ThemeToggle />
             <UserNav />
           </div>
         </div>

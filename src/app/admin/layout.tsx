@@ -13,7 +13,6 @@ import {
 } from "@/components/ui/sidebar";
 import { Logo } from "@/components/logo";
 import { UserNav } from "@/components/layout/user-nav";
-import { ThemeToggle } from "@/components/theme-toggle";
 import { LayoutDashboard, Truck, Users, FileDown } from "lucide-react";
 
 export default function AdminLayout({
@@ -75,7 +74,6 @@ export default function AdminLayout({
                     
                     <div className="flex flex-1 items-center justify-end space-x-4">
                         <nav className="flex items-center space-x-2">
-                            <ThemeToggle />
                             <UserNav />
                         </nav>
                     </div>
