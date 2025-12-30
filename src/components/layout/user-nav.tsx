@@ -14,19 +14,23 @@ import {
 import { useAuth } from "@/hooks/use-auth";
 import { useRouter } from "next/navigation";
 import { placeholderImages } from "@/lib/placeholder-images";
-import { CreditCard, LogOut, User, Shield } from "lucide-react";
+import { LogOut, User, Shield, Loader2 } from "lucide-react";
 
 export function UserNav() {
-  const { user, logout } = useAuth();
+  const { user, logout, isLoading } = useAuth();
   const router = useRouter();
   const avatarImage = placeholderImages.find(img => img.id === (user?.role === 'admin' ? 'avatar-1' : 'avatar-2'));
 
 
-  const handleLogout = () => {
-    logout();
+  const handleLogout = async () => {
+    await logout();
     router.push("/login");
   };
 
+  if (isLoading) {
+    return <Loader2 className="h-6 w-6 animate-spin" />;
+  }
+  
   if (!user) {
     return null;
   }

@@ -16,6 +16,14 @@ import { formatDate } from "@/lib/utils";
 import { StatusProgress } from "@/components/shipment/status-progress";
 import { Badge } from "@/components/ui/badge";
 import { STATUS_DETAILS } from "@/lib/constants";
+import { Timestamp } from "firebase/firestore";
+
+function formatFirebaseTimestamp(timestamp: any) {
+    if (timestamp && typeof timestamp.toDate === 'function') {
+        return formatDate(timestamp.toDate());
+    }
+    return formatDate(timestamp);
+}
 
 export const columns: ColumnDef<Shipment>[] = [
   {
@@ -74,7 +82,8 @@ export const columns: ColumnDef<Shipment>[] = [
         );
       },
     cell: ({ row }) => {
-      return <div className="text-right">{formatDate(row.getValue("updatedAt"))}</div>;
+        const updatedAt = row.getValue("updatedAt");
+      return <div className="text-right">{formatFirebaseTimestamp(updatedAt)}</div>;
     },
   },
   {

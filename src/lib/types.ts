@@ -1,3 +1,5 @@
+import { Timestamp } from "firebase/firestore";
+
 export type UserRole = "admin" | "driver";
 
 export interface UserProfile {
@@ -33,8 +35,8 @@ export interface Shipment {
   orderCode: string;
   assignedDriverId: string;
   assignedDriverName: string;
-  createdAt: string;
-  updatedAt: string;
+  createdAt: Timestamp | string;
+  updatedAt: Timestamp | string;
   currentStatus: ShipmentStatus;
   statusTimestamps: Partial<Record<ShipmentStatus, string>>;
   statusLogs: StatusLog[];
