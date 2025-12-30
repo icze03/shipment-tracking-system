@@ -1,3 +1,4 @@
+
 "use server";
 
 import { revalidatePath } from "next/cache";
@@ -83,6 +84,8 @@ export async function createShipmentAction(data: {
   if (!driver) {
     return { error: "Invalid driver selected." };
   }
+  
+  const shipmentsRef = collection(firestore, "shipments");
 
   const newShipmentData = {
     orderCode: `TT-${Math.random().toString(36).substring(2, 8).toUpperCase()}`,
@@ -98,11 +101,13 @@ export async function createShipmentAction(data: {
   };
   
   try {
-    const newShipmentRef = await addDoc(collection(firestore, "shipments"), newShipmentData);
+    const newShipmentRef = await addDoc(shipmentsRef, newShipmentData);
     revalidatePath("/admin/dashboard");
     return { success: true, shipment: { ...newShipmentData, id: newShipmentRef.id } };
   } catch (e: any) {
-    return { error: `Failed to create shipment: ${e.message}` };
+    // This is now a client component action, so we can't emit from here.
+    // The error will be caught client-side now.
+    return { error: `Failed to create shipment: ${e.message}`, details: { path: shipmentsRef.path, operation: 'create', resource: newShipmentData }};
   }
 }
 
@@ -125,16 +130,17 @@ export async function updateShipmentStatusAction(shipmentId: string, status: Shi
         source: 'driver'
     };
 
-    try {
-      const batch = writeBatch(firestore);
-
-      batch.update(shipmentRef, {
+    const updateData = {
         currentStatus: status,
         [`statusTimestamps.${status}`]: now.toISOString(),
         updatedAt: serverTimestamp(),
         isCompleted: status === 'trip_completed' ? true : false,
-      });
+    };
 
+    try {
+      const batch = writeBatch(firestore);
+
+      batch.update(shipmentRef, updateData);
       batch.set(statusLogRef, newLogData);
       
       await batch.commit();
@@ -146,7 +152,9 @@ export async function updateShipmentStatusAction(shipmentId: string, status: Shi
 
       return { success: true };
     } catch (e: any) {
-      return { error: `Failed to update shipment: ${e.message}`};
+        // Since batch errors don't give granular detail, we report what we can.
+        // The client-side handler will build the context.
+        return { error: `Failed to update shipment: ${e.message}`, details: { path: shipmentRef.path, operation: 'update', resource: updateData } };
     }
 }
 
@@ -173,11 +181,13 @@ export async function correctTimestampAction(data: CorrectTimestampInput) {
             notes: `Original: ${data.incorrectTimestamp}. AI Reason: ${result.explanation} (Conf: ${result.confidence.toFixed(2)})`
         };
 
-        const batch = writeBatch(firestore);
-        batch.update(shipmentRef, {
+        const updateData = {
             [`statusTimestamps.${statusToUpdate}`]: newTimestamp,
             updatedAt: serverTimestamp()
-        });
+        };
+
+        const batch = writeBatch(firestore);
+        batch.update(shipmentRef, updateData);
         batch.set(newLogRef, newLogData);
         await batch.commit();
         
@@ -185,8 +195,8 @@ export async function correctTimestampAction(data: CorrectTimestampInput) {
         revalidatePath('/admin/dashboard');
 
         return { success: true, aiSuggestion: result };
-    } catch (error) {
+    } catch (error: any) {
         console.error("AI Timestamp Correction Failed:", error);
-        return { error: "AI timestamp correction failed. Please try again." };
+        return { error: error.message || "AI timestamp correction failed. Please try again." };
     }
 }

@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useTransition } from "react";
@@ -8,6 +9,7 @@ import type { Shipment } from "@/lib/types";
 import { SHIPMENT_STATUSES, STATUS_DETAILS } from "@/lib/constants";
 import { Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { errorEmitter, FirestorePermissionError } from "@/firebase";
 
 type StatusUpdatePanelProps = {
   shipment: Shipment;
@@ -28,7 +30,19 @@ export function StatusUpdatePanel({ shipment, driverId }: StatusUpdatePanelProps
 
     startTransition(async () => {
       const result = await updateShipmentStatusAction(shipment.id, status, driverId);
-      if (result.error) {
+      if (result.error && result.details) {
+        const contextualError = new FirestorePermissionError({
+          path: result.details.path,
+          operation: result.details.operation,
+          requestResourceData: result.details.resource,
+        });
+        errorEmitter.emit('permission-error', contextualError);
+        toast({
+          title: "Permission Denied",
+          description: "You do not have permission to update this shipment.",
+          variant: "destructive",
+        });
+      } else if (result.error) {
         toast({ title: "Update Failed", description: result.error, variant: "destructive" });
       } else {
         toast({ title: "Status Updated!", description: `Shipment is now: ${STATUS_DETAILS[status]?.label}` });

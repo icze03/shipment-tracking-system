@@ -1,3 +1,4 @@
+
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -29,6 +30,7 @@ import type { UserProfile } from "@/lib/types";
 import { createShipmentAction } from "@/lib/actions";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2 } from "lucide-react";
+import { errorEmitter, FirestorePermissionError } from "@/firebase";
 
 const formSchema = z.object({
   origin: z.string().min(2, {
@@ -61,7 +63,19 @@ export function CreateShipmentForm({ drivers }: CreateShipmentFormProps) {
   function onSubmit(values: z.infer<typeof formSchema>) {
     startTransition(async () => {
       const result = await createShipmentAction(values);
-      if (result.error) {
+      if (result.error && result.details) {
+        const contextualError = new FirestorePermissionError({
+          path: result.details.path,
+          operation: result.details.operation,
+          requestResourceData: result.details.resource,
+        });
+        errorEmitter.emit('permission-error', contextualError);
+        toast({
+          title: "Permission Denied",
+          description: "You do not have permission to create a shipment.",
+          variant: "destructive",
+        });
+      } else if (result.error) {
         toast({
           title: "Error creating shipment",
           description: result.error,
