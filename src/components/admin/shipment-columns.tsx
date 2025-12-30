@@ -12,10 +12,10 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import type { Shipment } from "@/lib/types";
-import { formatDate } from "@/lib/utils";
 import { StatusProgress } from "@/components/shipment/status-progress";
 import { Badge } from "@/components/ui/badge";
 import { STATUS_DETAILS } from "@/lib/constants";
+import { ClientFormattedDate } from "@/components/client-formatted-date";
 
 export const columns: ColumnDef<Shipment>[] = [
   {
@@ -78,7 +78,8 @@ export const columns: ColumnDef<Shipment>[] = [
         );
       },
     cell: ({ row }) => {
-      return <div className="text-right pr-4">{formatDate(row.getValue("updatedAt"))}</div>;
+      const date = row.getValue("updatedAt") as string;
+      return <div className="text-right pr-4"><ClientFormattedDate date={date} /></div>;
     },
   },
   {
