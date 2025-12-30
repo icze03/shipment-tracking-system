@@ -77,7 +77,7 @@ export default function AdminLayout({
                 <div className="container flex h-16 items-center space-x-4 sm:justify-between sm:space-x-0">
                     <div className="flex gap-2 items-center">
                         <SidebarTrigger className="md:hidden"/>
-                        <h1 className="text-xl font-bold tracking-tight hidden md:block">Admin Dashboard</h1>
+                        <h1 className="text-lg font-bold tracking-tight hidden md:block">Admin Dashboard</h1>
                     </div>
                     
                     <div className="flex flex-1 items-center justify-end space-x-4">
