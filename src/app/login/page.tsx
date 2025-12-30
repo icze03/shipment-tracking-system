@@ -28,14 +28,24 @@ export default function LoginPage() {
             <LoginForm />
           </CardContent>
         </Card>
-         <p className="mt-4 text-center text-sm text-muted-foreground">
-          Want to track a shipment?{" "}
-          <Button variant="link" asChild className="p-0 h-auto">
-            <Link href="/track">
-              Track here
-            </Link>
-          </Button>
-        </p>
+         <div className="mt-4 text-center text-sm text-muted-foreground">
+            <p>
+                Want to track a shipment?{" "}
+                <Button variant="link" asChild className="p-0 h-auto">
+                    <Link href="/track">
+                    Track here
+                    </Link>
+                </Button>
+            </p>
+            <p>
+                New driver?{" "}
+                <Button variant="link" asChild className="p-0 h-auto">
+                    <Link href="/signup">
+                    Sign up here
+                    </Link>
+                </Button>
+            </p>
+        </div>
       </div>
     </div>
   );

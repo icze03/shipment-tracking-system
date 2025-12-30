@@ -14,6 +14,7 @@ export interface Driver {
     phone: string;
     licenseNumber: string;
     status: "active" | "inactive" | "on-leave";
+    passwordHash: string;
 }
 
 export type ShipmentStatus =

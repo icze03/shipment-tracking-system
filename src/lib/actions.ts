@@ -13,6 +13,24 @@ export async function getMockUserAction(role: UserRole): Promise<UserProfile> {
     return getMockUser(role);
 }
 
+export async function validateCredentialsAction(username: string, password: string): Promise<{ success: boolean; role?: UserRole; userId?: string; error?: string; }> {
+    if (username.toLowerCase() === 'astraea millares' && password === 'astraea1234') {
+        const adminUser = await getMockUser('admin');
+        return { success: true, role: 'admin', userId: adminUser.id };
+    }
+
+    const drivers = await getDrivers();
+    const driver = drivers.find(d => d.email.toLowerCase() === username.toLowerCase());
+
+    // NOTE: In a real app, you would use a secure password hashing and comparison library like bcrypt.
+    // For this prototype, we're doing a simple string comparison, which is NOT secure.
+    if (driver && driver.passwordHash === password) {
+        return { success: true, role: 'driver', userId: driver.id };
+    }
+
+    return { success: false, error: "Invalid username or password." };
+}
+
 
 // --- Driver Actions ---
 
@@ -21,13 +39,24 @@ export async function addDriverAction(data: {
   email: string;
   phone: string;
   licenseNumber: string;
+  password?: string;
 }) {
   try {
     const drivers = await getDrivers();
+    
+    if (drivers.some(d => d.email.toLowerCase() === data.email.toLowerCase())) {
+        return { error: 'A driver with this email already exists.' };
+    }
+
     const newDriver: Driver = {
       id: uuidv4(),
       status: "active",
-      ...data,
+      name: data.name,
+      email: data.email,
+      phone: data.phone,
+      licenseNumber: data.licenseNumber,
+      // In a real app, hash the password securely. Storing plain text is insecure.
+      passwordHash: data.password || 'password', // Default password if not provided
     };
     await saveDrivers([newDriver, ...drivers]);
     revalidatePath("/admin/drivers");

@@ -9,12 +9,18 @@ import {
   useCallback,
 } from "react";
 import type { UserProfile, UserRole } from "@/lib/types";
-import { getMockUserAction } from "@/lib/actions";
+import { getMockUserAction, validateCredentialsAction } from "@/lib/actions";
+
+type LoginResult = {
+    success: boolean;
+    role?: UserRole;
+    error?: string;
+}
 
 interface AuthContextType {
   user: UserProfile | null;
   role: UserRole | null;
-  login: (username: string, password: string) => Promise<boolean>;
+  login: (username: string, password: string) => Promise<LoginResult>;
   logout: () => void;
   isLoading: boolean;
 }
@@ -28,8 +34,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     const storedRole = sessionStorage.getItem("swifttrack_role") as UserRole | null;
-    if (storedRole) {
-      setRole(storedRole);
+    const storedUserId = sessionStorage.getItem("swifttrack_userId") as string | null;
+    if (storedRole && storedUserId) {
+        setRole(storedRole);
     }
     setIsLoading(false);
   }, []);
@@ -49,24 +56,30 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     fetchUser();
   }, [role]);
 
-  const login = useCallback(async (username, password) => {
+  const login = useCallback(async (username, password): Promise<LoginResult> => {
     setIsLoading(true);
-    // Hardcoded credentials as requested
-    if (username === "astraea millares" && password === "astraea1234") {
-      const adminRole = "admin";
-      setRole(adminRole);
-      sessionStorage.setItem("swifttrack_role", adminRole);
-      setIsLoading(false);
-      return true;
+    try {
+        const result = await validateCredentialsAction(username, password);
+        if (result.success) {
+            setRole(result.role!);
+            sessionStorage.setItem("swifttrack_role", result.role!);
+            sessionStorage.setItem("swifttrack_userId", result.userId!);
+            return { success: true, role: result.role };
+        } else {
+            return { success: false, error: result.error };
+        }
+    } catch (error) {
+        return { success: false, error: "An unexpected error occurred." };
+    } finally {
+        setIsLoading(false);
     }
-    setIsLoading(false);
-    return false;
   }, []);
 
   const logout = useCallback(() => {
     setRole(null);
     setUser(null);
     sessionStorage.removeItem("swifttrack_role");
+    sessionStorage.removeItem("swifttrack_userId");
   }, []);
 
   return (

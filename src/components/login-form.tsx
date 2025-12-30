@@ -19,7 +19,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Loader2 } from "lucide-react";
 
 const formSchema = z.object({
-  username: z.string().min(1, { message: "Username is required." }),
+  username: z.string().min(1, { message: "Username or email is required." }),
   password: z.string().min(1, { message: "Password is required." }),
 });
 
@@ -37,18 +37,20 @@ export function LoginForm() {
   });
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    const success = await login(values.username, values.password);
-    if (success) {
+    const result = await login(values.username, values.password);
+    
+    if (result.success) {
       toast({
         title: "Login Successful",
         description: "Redirecting to your dashboard...",
       });
-      router.push("/admin/dashboard");
+      const destination = result.role === 'admin' ? '/admin/dashboard' : '/driver/dashboard';
+      router.push(destination);
       router.refresh();
     } else {
       toast({
         title: "Login Failed",
-        description: "Invalid username or password.",
+        description: result.error || "Invalid username or password.",
         variant: "destructive",
       });
     }
@@ -62,9 +64,9 @@ export function LoginForm() {
           name="username"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Username</FormLabel>
+              <FormLabel>Username or Email</FormLabel>
               <FormControl>
-                <Input placeholder="astraea millares" {...field} />
+                <Input placeholder="astraea millares or driver@example.com" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
