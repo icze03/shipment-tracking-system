@@ -1,3 +1,40 @@
 {
-  "placeholderImages": []
+  "placeholderImages": [
+    {
+      "id": "hero-image",
+      "description": "A modern truck on the highway, representing logistics and transport.",
+      "imageUrl": "https://images.unsplash.com/photo-1709735133497-bbead76953a9?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw2fHx0cnVjayUyMGhpZ2h3YXl8ZW58MHx8fHwxNzY3MTE2MjE2fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "truck highway"
+    },
+    {
+      "id": "feature-driver",
+      "description": "A truck driver using a smartphone in their cabin.",
+      "imageUrl": "https://images.unsplash.com/photo-1727391058101-155467e33bea?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxkcml2ZXIlMjBwaG9uZXxlbnwwfHx8fDE3NjcxMTcwNjF8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "driver phone"
+    },
+    {
+      "id": "feature-admin",
+      "description": "A logistics admin looking at a dashboard on a large screen.",
+      "imageUrl": "https://images.unsplash.com/photo-1686061594183-8c864f508b00?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxMHx8ZGFzaGJvYXJkJTIwYW5hbHl0aWNzfGVufDB8fHx8MTc2NzA5MTQ0OHww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "dashboard analytics"
+    },
+    {
+      "id": "feature-customer",
+      "description": "A person tracking a package on their laptop.",
+      "imageUrl": "https://images.unsplash.com/photo-1759999362893-cdf9d3278d4d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxjdXN0b21lciUyMHRyYWNraW5nfGVufDB8fHx8MTc2NzExNzA2MXww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "customer tracking"
+    },
+    {
+      "id": "avatar-1",
+      "description": "Avatar for a user",
+      "imageUrl": "https://images.unsplash.com/photo-1521119989659-a83eee488004?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHxwZXJzb24lMjBwb3J0cmFpdHxlbnwwfHx8fDE3NjcwNzkxNjR8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "person portrait"
+    },
+    {
+      "id": "avatar-2",
+      "description": "Avatar for another user",
+      "imageUrl": "https://images.unsplash.com/photo-1609505848912-b7c3b8b4beda?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw2fHx3b21hbiUyMHBvcnRyYWl0fGVufDB8fHx8MTc2NzA2MTU5Nnww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "woman portrait"
+    }
+  ]
 }
