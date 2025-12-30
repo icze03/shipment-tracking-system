@@ -63,7 +63,7 @@ export function ReportGenerator() {
       ];
       
       const csvContent = convertToCSV(shipments, headers);
-      downloadCSV(csvContent, `swifttrack_shipments_${new Date().toISOString()}.csv`);
+      downloadCSV(csvContent, `greenlane_shipments_${new Date().toISOString()}.csv`);
       toast({ title: "Shipment report generated successfully!" });
     });
   };
@@ -80,7 +80,7 @@ export function ReportGenerator() {
       const headers = ['id', 'name', 'email', 'phone', 'licenseNumber', 'status'];
       
       const csvContent = convertToCSV(drivers, headers);
-      downloadCSV(csvContent, `swifttrack_drivers_${new Date().toISOString()}.csv`);
+      downloadCSV(csvContent, `greenlane_drivers_${new Date().toISOString()}.csv`);
       toast({ title: "Driver report generated successfully!" });
     });
   };

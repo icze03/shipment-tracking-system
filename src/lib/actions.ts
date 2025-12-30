@@ -140,7 +140,7 @@ export async function createShipmentAction(data: {
     
     const newShipment: Shipment = {
       id: uuidv4(),
-      orderCode: `SWT-${Math.random().toString(36).substring(2, 8).toUpperCase()}`,
+      orderCode: `GLT-${Math.random().toString(36).substring(2, 8).toUpperCase()}`,
       assignedDriverId: data.driverId,
       assignedDriverName: driver.name,
       createdAt: new Date().toISOString(),

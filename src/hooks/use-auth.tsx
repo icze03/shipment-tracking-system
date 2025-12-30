@@ -33,8 +33,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const storedRole = sessionStorage.getItem("swifttrack_role") as UserRole | null;
-    const storedUserId = sessionStorage.getItem("swifttrack_userId") as string | null;
+    const storedRole = sessionStorage.getItem("greenlane_role") as UserRole | null;
+    const storedUserId = sessionStorage.getItem("greenlane_userId") as string | null;
     if (storedRole && storedUserId) {
         setRole(storedRole);
     }
@@ -62,8 +62,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         const result = await validateCredentialsAction(username, password);
         if (result.success) {
             setRole(result.role!);
-            sessionStorage.setItem("swifttrack_role", result.role!);
-            sessionStorage.setItem("swifttrack_userId", result.userId!);
+            sessionStorage.setItem("greenlane_role", result.role!);
+            sessionStorage.setItem("greenlane_userId", result.userId!);
             return { success: true, role: result.role };
         } else {
             return { success: false, error: result.error };
@@ -78,8 +78,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const logout = useCallback(() => {
     setRole(null);
     setUser(null);
-    sessionStorage.removeItem("swifttrack_role");
-    sessionStorage.removeItem("swifttrack_userId");
+    sessionStorage.removeItem("greenlane_role");
+    sessionStorage.removeItem("greenlane_userId");
   }, []);
 
   return (

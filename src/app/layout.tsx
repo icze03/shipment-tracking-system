@@ -12,7 +12,7 @@ const fontSans = FontSans({
 });
 
 export const metadata: Metadata = {
-  title: "SwiftTrack Logistics",
+  title: "Greenlane Transporters",
   description:
     "Streamlined shipment management and real-time tracking for modern logistics.",
 };

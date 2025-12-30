@@ -51,7 +51,7 @@ export default function Home() {
               <div className="flex flex-col justify-center space-y-4">
                 <div className="space-y-2">
                   <h1 className="text-3xl font-bold tracking-tighter sm:text-5xl xl:text-6xl/none font-headline">
-                    Modernize Your Logistics with SwiftTrack
+                    Modernize Your Logistics with Greenlane Transporters
                   </h1>
                   <p className="max-w-[600px] text-muted-foreground md:text-xl">
                     Streamlined shipment management and real-time tracking. Our
@@ -98,7 +98,7 @@ export default function Home() {
                   A Workflow for Everyone
                 </h2>
                 <p className="max-w-[900px] text-muted-foreground md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
-                  SwiftTrack is designed to meet the specific needs of every
+                  Greenlane Transporters is designed to meet the specific needs of every
                   user in your logistics chain.
                 </p>
               </div>
@@ -135,7 +135,7 @@ export default function Home() {
       </main>
       <footer className="flex items-center justify-center py-6 w-full shrink-0 border-t">
         <p className="text-xs text-muted-foreground">
-          &copy; 2024 SwiftTrack Logistics. All rights reserved.
+          &copy; 2024 Greenlane Transporters. All rights reserved.
         </p>
       </footer>
     </div>

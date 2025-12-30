@@ -23,7 +23,7 @@ export function TrackShipmentForm({ currentOrderCode }: { currentOrderCode?: str
         type="text"
         value={orderCode}
         onChange={(e) => setOrderCode(e.target.value)}
-        placeholder="Enter your order code (e.g., TT-A4B6C8)"
+        placeholder="Enter your order code (e.g., GLT-A4B6C8)"
         className="flex-grow"
         aria-label="Order Code"
       />

@@ -10,7 +10,7 @@ export async function getMockUser(role: UserRole): Promise<UserProfile> {
     return {
       id: "admin01",
       name: "Admin User",
-      email: "admin@swifttrack.com",
+      email: "admin@greenlane.com",
       role: "admin",
     };
   } else {
@@ -23,7 +23,7 @@ export async function getMockUser(role: UserRole): Promise<UserProfile> {
         return {
             id: 'driver-fallback',
             name: 'Default Driver',
-            email: 'driver@swifttrack.com',
+            email: 'driver@greenlane.com',
             role: 'driver'
         }
     }
