@@ -1,6 +1,5 @@
 "use client";
 
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -13,13 +12,11 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useAuth } from "@/hooks/use-auth.tsx";
 import { useRouter } from "next/navigation";
-import { placeholderImages } from "@/lib/placeholder-images";
-import { LogOut, User, Shield, Loader2 } from "lucide-react";
+import { LogOut, User, Shield, Loader2, ChevronDown } from "lucide-react";
 
 export function UserNav() {
   const { user, logout, isLoading } = useAuth();
   const router = useRouter();
-  const avatarImage = placeholderImages.find(img => img.id === (user?.role === 'admin' ? 'avatar-1' : 'avatar-2'));
 
   const handleLogout = () => {
     logout();
@@ -30,7 +27,7 @@ export function UserNav() {
   if (isLoading) {
     return <Loader2 className="h-6 w-6 animate-spin" />;
   }
-  
+
   if (!user) {
     return null;
   }
@@ -38,11 +35,10 @@ export function UserNav() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" className="relative h-8 w-8 rounded-full">
-          <Avatar className="h-9 w-9">
-            {avatarImage && <AvatarImage src={avatarImage.imageUrl} alt={user.name} />}
-            <AvatarFallback>{user.name.charAt(0)}</AvatarFallback>
-          </Avatar>
+        <Button variant="outline">
+          {user.role === "admin" ? <Shield className="mr-2 h-4 w-4" /> : <User className="mr-2 h-4 w-4" />}
+          <span>{user.role.charAt(0).toUpperCase() + user.role.slice(1)}</span>
+          <ChevronDown className="ml-2 h-4 w-4" />
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-56" align="end" forceMount>
