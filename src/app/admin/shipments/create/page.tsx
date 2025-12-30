@@ -1,5 +1,5 @@
 import { CreateShipmentForm } from "@/components/admin/create-shipment-form";
-import { getDrivers } from "@/lib/actions";
+import { getDrivers } from "@/lib/data/drivers";
 
 export default async function CreateShipmentPage() {
   const drivers = await getDrivers();

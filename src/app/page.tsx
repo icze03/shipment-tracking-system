@@ -29,7 +29,7 @@ export default function Home() {
       icon: <LayoutDashboard className="h-8 w-8 text-primary" />,
       title: "For Admins: Real-Time Control",
       description:
-        "A powerful dashboard to monitor all shipments in real-time. Create shipments, manage drivers, and even correct timestamps with AI assistance.",
+        "A powerful dashboard to monitor all shipments in real-time. Create shipments, manage drivers, and oversee your entire operation.",
       image: adminFeatureImage
     },
     {
@@ -51,17 +51,16 @@ export default function Home() {
               <div className="flex flex-col justify-center space-y-4">
                 <div className="space-y-2">
                   <h1 className="text-3xl font-bold tracking-tighter sm:text-5xl xl:text-6xl/none font-headline">
-                    Modernize Your Logistics with TruckTrack
+                    Modernize Your Logistics with SwiftTrack
                   </h1>
                   <p className="max-w-[600px] text-muted-foreground md:text-xl">
-                    Eliminate manual reporting, reduce errors, and gain
-                    real-time visibility into your operations. Our
+                    Streamlined shipment management and real-time tracking. Our
                     one-tap system is built for drivers, powerful for admins,
                     and transparent for customers.
                   </p>
                 </div>
                 <div className="flex flex-col gap-2 min-[400px]:flex-row">
-                  <Button asChild size="lg" className="bg-accent hover:bg-accent/90 text-accent-foreground">
+                  <Button asChild size="lg">
                     <Link href="/login">
                       Get Started
                       <ArrowRight className="ml-2 h-4 w-4" />
@@ -99,7 +98,7 @@ export default function Home() {
                   A Workflow for Everyone
                 </h2>
                 <p className="max-w-[900px] text-muted-foreground md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
-                  TruckTrack is designed to meet the specific needs of every
+                  SwiftTrack is designed to meet the specific needs of every
                   user in your logistics chain.
                 </p>
               </div>
@@ -136,7 +135,7 @@ export default function Home() {
       </main>
       <footer className="flex items-center justify-center py-6 w-full shrink-0 border-t">
         <p className="text-xs text-muted-foreground">
-          &copy; 2024 TruckTrack. All rights reserved.
+          &copy; 2024 SwiftTrack Logistics. All rights reserved.
         </p>
       </footer>
     </div>

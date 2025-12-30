@@ -1,0 +1,108 @@
+[
+  {
+    "id": "ship001",
+    "orderCode": "SWT-A4B6C8",
+    "description": "2 Pallets of Electronics",
+    "notes": "Fragile items, handle with care. Delivery window is 9 AM - 12 PM.",
+    "assignedDriverId": "driver01",
+    "assignedDriverName": "John Doe",
+    "createdAt": "2024-07-28T08:00:00Z",
+    "updatedAt": "2024-07-28T14:30:00Z",
+    "currentStatus": "departed_warehouse",
+    "statusTimestamps": {
+      "pending": "2024-07-28T08:00:00Z",
+      "arrived_at_warehouse": "2024-07-28T09:15:00Z",
+      "start_loading": "2024-07-28T09:45:00Z",
+      "end_loading": "2024-07-28T11:00:00Z",
+      "departed_warehouse": "2024-07-28T11:30:00Z"
+    },
+    "isCompleted": false,
+    "origin": "Warehouse A, Los Angeles",
+    "destination": "Distribution Center, Phoenix",
+    "statusLogs": [
+      {
+        "id": "log001",
+        "status": "arrived_at_warehouse",
+        "timestamp": "2024-07-28T09:15:00Z",
+        "actorId": "driver01",
+        "actorName": "John Doe",
+        "source": "driver"
+      },
+      {
+        "id": "log002",
+        "status": "start_loading",
+        "timestamp": "2024-07-28T09:45:00Z",
+        "actorId": "driver01",
+        "actorName": "John Doe",
+        "source": "driver"
+      },
+      {
+        "id": "log003",
+        "status": "end_loading",
+        "timestamp": "2024-07-28T11:00:00Z",
+        "actorId": "driver01",
+        "actorName": "John Doe",
+        "source": "driver"
+      },
+      {
+        "id": "log004",
+        "status": "departed_warehouse",
+        "timestamp": "2024-07-28T11:30:00Z",
+        "actorId": "driver01",
+        "actorName": "John Doe",
+        "source": "driver"
+      }
+    ]
+  },
+  {
+    "id": "ship002",
+    "orderCode": "SWT-D9E2F1",
+    "description": "1 Crate of Medical Supplies",
+    "assignedDriverId": "driver02",
+    "assignedDriverName": "Jane Smith",
+    "createdAt": "2024-07-29T10:00:00Z",
+    "updatedAt": "2024-07-29T10:00:00Z",
+    "currentStatus": "pending",
+    "statusTimestamps": {
+        "pending": "2024-07-29T10:00:00Z"
+    },
+    "statusLogs": [],
+    "isCompleted": false,
+    "origin": "Factory, Detroit",
+    "destination": "Retail Hub, Chicago"
+  },
+  {
+    "id": "ship003",
+    "orderCode": "SWT-G7H3I5",
+    "description": "Assorted Furniture Items",
+    "assignedDriverId": "driver01",
+    "assignedDriverName": "John Doe",
+    "createdAt": "2024-07-27T12:00:00Z",
+    "updatedAt": "2024-07-28T18:00:00Z",
+    "currentStatus": "trip_completed",
+    "statusTimestamps": {
+      "pending": "2024-07-27T12:00:00Z",
+      "arrived_at_warehouse": "2024-07-27T13:00:00Z",
+      "start_loading": "2024-07-27T13:30:00Z",
+      "end_loading": "2024-07-27T14:30:00Z",
+      "departed_warehouse": "2024-07-27T15:00:00Z",
+      "arrived_at_destination": "2024-07-28T17:00:00Z",
+      "start_unloading": "2024-07-28T17:15:00Z",
+      "end_unloading": "2024-07-28T17:45:00Z",
+      "trip_completed": "2024-07-28T18:00:00Z"
+    },
+    "isCompleted": true,
+    "origin": "Port of Miami",
+    "destination": "Client Warehouse, Orlando",
+    "statusLogs": [
+      {
+        "id": "log1",
+        "status": "arrived_at_warehouse",
+        "timestamp": "2024-07-27T13:00:00Z",
+        "actorId": "driver01",
+        "actorName": "John Doe",
+        "source": "driver"
+      }
+    ]
+  }
+]

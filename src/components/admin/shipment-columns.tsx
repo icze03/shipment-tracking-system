@@ -16,14 +16,6 @@ import { formatDate } from "@/lib/utils";
 import { StatusProgress } from "@/components/shipment/status-progress";
 import { Badge } from "@/components/ui/badge";
 import { STATUS_DETAILS } from "@/lib/constants";
-import { Timestamp } from "firebase/firestore";
-
-function formatFirebaseTimestamp(timestamp: any) {
-    if (timestamp && typeof timestamp.toDate === 'function') {
-        return formatDate(timestamp.toDate());
-    }
-    return formatDate(timestamp);
-}
 
 export const columns: ColumnDef<Shipment>[] = [
   {
@@ -39,11 +31,15 @@ export const columns: ColumnDef<Shipment>[] = [
         </Button>
       );
     },
-    cell: ({ row }) => <div className="font-medium">{row.getValue("orderCode")}</div>,
+    cell: ({ row }) => <div className="font-medium pl-4">{row.getValue("orderCode")}</div>,
   },
   {
     accessorKey: "assignedDriverName",
     header: "Driver",
+  },
+    {
+    accessorKey: "destination",
+    header: "Destination",
   },
   {
     accessorKey: "currentStatus",
@@ -82,8 +78,7 @@ export const columns: ColumnDef<Shipment>[] = [
         );
       },
     cell: ({ row }) => {
-        const updatedAt = row.getValue("updatedAt");
-      return <div className="text-right">{formatFirebaseTimestamp(updatedAt)}</div>;
+      return <div className="text-right pr-4">{formatDate(row.getValue("updatedAt"))}</div>;
     },
   },
   {
@@ -92,7 +87,7 @@ export const columns: ColumnDef<Shipment>[] = [
       const shipment = row.original;
 
       return (
-        <div className="text-right">
+        <div className="text-right pr-4">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" className="h-8 w-8 p-0">

@@ -12,7 +12,6 @@ import {
   type SortingState,
   type ColumnFiltersState,
 } from "@tanstack/react-table";
-import { useRouter } from "next/navigation";
 
 import {
   Table,
@@ -30,11 +29,10 @@ interface DataTableProps<TData, TValue> {
   data: TData[];
 }
 
-export function ShipmentDataTable<TData extends {id: string}, TValue>({
+export function DriverDataTable<TData, TValue>({
   columns,
   data,
 }: DataTableProps<TData, TValue>) {
-  const router = useRouter();
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
 
@@ -57,12 +55,12 @@ export function ShipmentDataTable<TData extends {id: string}, TValue>({
     <div className="rounded-md border bg-card">
       <div className="p-4">
         <Input
-          placeholder="Filter by order code..."
+          placeholder="Filter by name..."
           value={
-            (table.getColumn("orderCode")?.getFilterValue() as string) ?? ""
+            (table.getColumn("name")?.getFilterValue() as string) ?? ""
           }
           onChange={(event) =>
-            table.getColumn("orderCode")?.setFilterValue(event.target.value)
+            table.getColumn("name")?.setFilterValue(event.target.value)
           }
           className="max-w-sm"
         />
@@ -92,8 +90,6 @@ export function ShipmentDataTable<TData extends {id: string}, TValue>({
               <TableRow
                 key={row.id}
                 data-state={row.getIsSelected() && "selected"}
-                onClick={() => router.push(`/admin/shipments/${row.original.id}`)}
-                className="cursor-pointer"
               >
                 {row.getVisibleCells().map((cell) => (
                   <TableCell key={cell.id}>
@@ -105,7 +101,7 @@ export function ShipmentDataTable<TData extends {id: string}, TValue>({
           ) : (
             <TableRow>
               <TableCell colSpan={columns.length} className="h-24 text-center">
-                No results.
+                No drivers found.
               </TableCell>
             </TableRow>
           )}

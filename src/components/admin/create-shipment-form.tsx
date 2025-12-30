@@ -1,4 +1,3 @@
-
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -25,12 +24,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent } from "@/components/ui/card";
-import type { UserProfile } from "@/lib/types";
+import type { Driver } from "@/lib/types";
 import { createShipmentAction } from "@/lib/actions";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2 } from "lucide-react";
-import { errorEmitter, FirestorePermissionError } from "@/firebase";
 
 const formSchema = z.object({
   origin: z.string().min(2, {
@@ -39,11 +38,15 @@ const formSchema = z.object({
   destination: z.string().min(2, {
     message: "Destination must be at least 2 characters.",
   }),
+  description: z.string().min(10, {
+    message: "Description must be at least 10 characters.",
+  }),
   driverId: z.string().nonempty({ message: "Please select a driver." }),
+  notes: z.string().optional(),
 });
 
 type CreateShipmentFormProps = {
-  drivers: UserProfile[];
+  drivers: Driver[];
 };
 
 export function CreateShipmentForm({ drivers }: CreateShipmentFormProps) {
@@ -56,26 +59,16 @@ export function CreateShipmentForm({ drivers }: CreateShipmentFormProps) {
     defaultValues: {
       origin: "",
       destination: "",
+      description: "",
       driverId: "",
+      notes: "",
     },
   });
 
   function onSubmit(values: z.infer<typeof formSchema>) {
     startTransition(async () => {
       const result = await createShipmentAction(values);
-      if (result.error && result.details) {
-        const contextualError = new FirestorePermissionError({
-          path: result.details.path,
-          operation: result.details.operation,
-          requestResourceData: result.details.resource,
-        });
-        errorEmitter.emit('permission-error', contextualError);
-        toast({
-          title: "Permission Denied",
-          description: "You do not have permission to create a shipment.",
-          variant: "destructive",
-        });
-      } else if (result.error) {
+      if (result.error) {
         toast({
           title: "Error creating shipment",
           description: result.error,
@@ -86,7 +79,7 @@ export function CreateShipmentForm({ drivers }: CreateShipmentFormProps) {
           title: "Shipment Created!",
           description: `Order ${result.shipment?.orderCode} has been created and assigned.`,
         });
-        router.push("/admin/dashboard");
+        router.push("/admin/shipments");
       }
     });
   }
@@ -98,36 +91,48 @@ export function CreateShipmentForm({ drivers }: CreateShipmentFormProps) {
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
             <FormField
               control={form.control}
-              name="origin"
+              name="description"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Origin</FormLabel>
+                  <FormLabel>Description</FormLabel>
                   <FormControl>
-                    <Input placeholder="e.g., Warehouse A, Los Angeles" {...field} />
+                    <Input placeholder="e.g., 2 Pallets of Electronics" {...field} />
                   </FormControl>
                   <FormDescription>
-                    The starting point of the shipment.
+                    A brief description of the shipment contents.
                   </FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
             />
-            <FormField
-              control={form.control}
-              name="destination"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Destination</FormLabel>
-                  <FormControl>
-                    <Input placeholder="e.g., Distribution Center, Phoenix" {...field} />
-                  </FormControl>
-                  <FormDescription>
-                    The final destination of the shipment.
-                  </FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              <FormField
+                control={form.control}
+                name="origin"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Origin</FormLabel>
+                    <FormControl>
+                      <Input placeholder="e.g., Los Angeles, CA" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="destination"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Destination</FormLabel>
+                    <FormControl>
+                      <Input placeholder="e.g., Phoenix, AZ" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
             <FormField
               control={form.control}
               name="driverId"
@@ -142,7 +147,7 @@ export function CreateShipmentForm({ drivers }: CreateShipmentFormProps) {
                     </FormControl>
                     <SelectContent>
                       {drivers.map((driver) => (
-                        <SelectItem key={driver.uid} value={driver.uid}>
+                        <SelectItem key={driver.id} value={driver.id}>
                           {driver.name}
                         </SelectItem>
                       ))}
@@ -150,6 +155,25 @@ export function CreateShipmentForm({ drivers }: CreateShipmentFormProps) {
                   </Select>
                   <FormDescription>
                     Choose the driver responsible for this shipment.
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+             <FormField
+              control={form.control}
+              name="notes"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Special Notes</FormLabel>
+                  <FormControl>
+                    <Textarea
+                      placeholder="e.g., Fragile items, handle with care. Delivery window is 9 AM - 12 PM."
+                      {...field}
+                    />
+                  </FormControl>
+                   <FormDescription>
+                    Any special instructions or notes for this shipment.
                   </FormDescription>
                   <FormMessage />
                 </FormItem>

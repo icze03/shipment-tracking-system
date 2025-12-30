@@ -1,29 +1,31 @@
-import { getDriverShipment, getDrivers } from "@/lib/actions";
+import { getDriverShipment } from "@/lib/data/shipments";
+import { getDrivers } from "@/lib/data/drivers";
 import { StatusUpdatePanel } from "@/components/driver/status-update-panel";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Truck } from "lucide-react";
+import { getMockUser } from "@/lib/auth";
 
 export default async function DriverDashboardPage() {
   // In a real app, you'd get the logged-in driver's ID from auth state.
-  // We are simulating this by just grabbing the first available driver for the demo.
-  // The useAuth hook will handle the actual user context on the client.
-  const drivers = await getDrivers();
-  const driver = drivers[0];
+  // We are simulating this by getting the mock user from our auth system.
+  const driver = await getMockUser("driver");
+  
   if (!driver) {
+    // This case should ideally not happen with the mock system
     return (
         <div className="container mx-auto flex h-[calc(100vh-8rem)] items-center justify-center">
             <Alert className="max-w-md">
             <Truck className="h-4 w-4" />
-            <AlertTitle>No Drivers Available</AlertTitle>
+            <AlertTitle>Error</AlertTitle>
             <AlertDescription>
-                There are no drivers in the system to assign a shipment to.
+                Could not identify the logged-in driver.
             </AlertDescription>
             </Alert>
         </div>
     );
   }
 
-  const shipment = await getDriverShipment(driver.uid);
+  const shipment = await getDriverShipment(driver.id);
 
   if (!shipment) {
     return (
@@ -39,5 +41,5 @@ export default async function DriverDashboardPage() {
     );
   }
 
-  return <StatusUpdatePanel shipment={shipment} driverId={driver.uid} />;
+  return <StatusUpdatePanel shipment={shipment} driverId={driver.id} />;
 }

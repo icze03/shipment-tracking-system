@@ -1,17 +1,20 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import { Inter } from "next/font/google";
+import { Inter as FontSans } from "next/font/google";
 import { Toaster } from "@/components/ui/toaster";
 import { Providers } from "@/components/providers";
 import { AuthSwitcher } from "@/components/auth-switcher";
-import { FirebaseClientProvider } from "@/firebase";
+import { cn } from "@/lib/utils";
 
-const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
+const fontSans = FontSans({
+  subsets: ["latin"],
+  variable: "--font-sans",
+});
 
 export const metadata: Metadata = {
-  title: "TruckTrack - Modern Logistics Monitoring",
+  title: "SwiftTrack Logistics",
   description:
-    "Replacing manual reporting with an automated timestamp system for trucking logistics.",
+    "Streamlined shipment management and real-time tracking for modern logistics.",
 };
 
 export default function RootLayout({
@@ -21,22 +24,17 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" />
-        <link
-          href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
-          rel="stylesheet"
-        />
-      </head>
-      <body className={`font-body bg-background text-foreground antialiased ${inter.variable}`}>
-        <FirebaseClientProvider>
-          <Providers>
-            {children}
-            <Toaster />
-            <AuthSwitcher />
-          </Providers>
-        </FirebaseClientProvider>
+      <body
+        className={cn(
+          "min-h-screen bg-background font-sans antialiased",
+          fontSans.variable
+        )}
+      >
+        <Providers>
+          {children}
+          <Toaster />
+          <AuthSwitcher />
+        </Providers>
       </body>
     </html>
   );

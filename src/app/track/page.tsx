@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import { getShipmentByOrderCode } from "@/lib/actions";
+import { getShipmentByOrderCode } from "@/lib/data/shipments";
 import { PublicHeader } from "@/components/layout/public-header";
 import { TrackShipmentForm } from "@/components/track-shipment-form";
 import { ShipmentStatusTimeline } from "@/components/shipment-status-timeline";

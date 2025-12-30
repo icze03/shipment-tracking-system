@@ -11,20 +11,20 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useAuth } from "@/hooks/use-auth";
+import { useAuth } from "@/hooks/use-auth.tsx";
 import { useRouter } from "next/navigation";
 import { placeholderImages } from "@/lib/placeholder-images";
 import { LogOut, User, Shield, Loader2 } from "lucide-react";
 
 export function UserNav() {
-  const { user, logout, isLoading } = useAuth();
+  const { user, setRole, isLoading } = useAuth();
   const router = useRouter();
   const avatarImage = placeholderImages.find(img => img.id === (user?.role === 'admin' ? 'avatar-1' : 'avatar-2'));
 
-
-  const handleLogout = async () => {
-    await logout();
+  const handleLogout = () => {
+    setRole(null);
     router.push("/login");
+    router.refresh();
   };
 
   if (isLoading) {

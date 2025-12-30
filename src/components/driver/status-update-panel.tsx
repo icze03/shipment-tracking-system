@@ -1,15 +1,13 @@
-
 "use client";
 
 import { useTransition } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { updateShipmentStatusAction } from "@/lib/actions";
-import type { Shipment } from "@/lib/types";
+import type { Shipment, ShipmentStatus } from "@/lib/types";
 import { SHIPMENT_STATUSES, STATUS_DETAILS } from "@/lib/constants";
 import { Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { errorEmitter, FirestorePermissionError } from "@/firebase";
 
 type StatusUpdatePanelProps = {
   shipment: Shipment;
@@ -20,29 +18,21 @@ export function StatusUpdatePanel({ shipment, driverId }: StatusUpdatePanelProps
   const [isPending, startTransition] = useTransition();
   const { toast } = useToast();
 
-  const currentStatusIndex = SHIPMENT_STATUSES.indexOf(shipment.currentStatus);
+  const currentStatusIndex = SHIPMENT_STATUSES.indexOf(shipment.currentStatus as any);
   const nextStatus = shipment.currentStatus === 'pending'
     ? SHIPMENT_STATUSES[0]
     : SHIPMENT_STATUSES[currentStatusIndex + 1];
 
-  const handleStatusUpdate = (status: typeof nextStatus) => {
+  const handleStatusUpdate = (status: ShipmentStatus) => {
     if (!status) return;
 
     startTransition(async () => {
-      const result = await updateShipmentStatusAction(shipment.id, status, driverId);
-      if (result.error && result.details) {
-        const contextualError = new FirestorePermissionError({
-          path: result.details.path,
-          operation: result.details.operation,
-          requestResourceData: result.details.resource,
-        });
-        errorEmitter.emit('permission-error', contextualError);
-        toast({
-          title: "Permission Denied",
-          description: "You do not have permission to update this shipment.",
-          variant: "destructive",
-        });
-      } else if (result.error) {
+      const result = await updateShipmentStatusAction({
+        shipmentId: shipment.id, 
+        status, 
+        driverId
+      });
+      if (result.error) {
         toast({ title: "Update Failed", description: result.error, variant: "destructive" });
       } else {
         toast({ title: "Status Updated!", description: `Shipment is now: ${STATUS_DETAILS[status]?.label}` });
@@ -77,7 +67,7 @@ export function StatusUpdatePanel({ shipment, driverId }: StatusUpdatePanelProps
             <p className="text-sm font-medium">Next Action:</p>
             {nextStatus && nextStatusDetails ? (
               <Button
-                className="w-full h-24 text-2xl bg-accent hover:bg-accent/90 text-accent-foreground flex items-center justify-center gap-4"
+                className="w-full h-24 text-2xl bg-primary hover:bg-primary/90 text-primary-foreground flex items-center justify-center gap-4"
                 onClick={() => handleStatusUpdate(nextStatus)}
                 disabled={isPending}
               >

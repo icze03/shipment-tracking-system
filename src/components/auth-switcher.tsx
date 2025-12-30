@@ -1,25 +1,25 @@
 "use client";
 
-import { useAuth } from "@/hooks/use-auth";
+import { useAuth } from "@/hooks/use-auth.tsx";
 import { Button } from "./ui/button";
 import { useRouter } from "next/navigation";
 import { Shield, User, LogOut } from "lucide-react";
 
 export function AuthSwitcher() {
-  const { login, logout, user } = useAuth();
+  const { setRole, user } = useAuth();
   const router = useRouter();
 
   const handleSwitch = (role: "admin" | "driver" | null) => {
+    setRole(role);
     if (role) {
-      login(role);
       const path = role === "admin" ? "/admin/dashboard" : "/driver/dashboard";
       router.push(path);
     } else {
-      logout();
       router.push("/login");
     }
+    router.refresh();
   };
-
+  
   if (process.env.NODE_ENV === 'production') {
     return null;
   }

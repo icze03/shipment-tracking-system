@@ -2,208 +2,142 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { collection, getDocs, doc, getDoc, addDoc, updateDoc, writeBatch, serverTimestamp, query, where } from "firebase/firestore";
-import { getSdks } from "@/firebase/server";
-import type { Shipment, ShipmentStatus, StatusLog, UserProfile } from "./types";
-import { correctTimestamp as correctTimestampAI, type CorrectTimestampInput } from "@/ai/flows/admin-assisted-timestamp-correction";
+import { v4 as uuidv4 } from "uuid";
+import type { Driver, Shipment, ShipmentStatus, UserProfile, UserRole } from "./types";
+import { getDrivers, saveDrivers, getDriverById } from "./data/drivers";
+import { getShipments, saveShipments, getShipmentById } from "./data/shipments";
+import { getMockUser } from "./auth";
 
-async function getFirestore() {
-  const { firestore } = await getSdks();
-  return firestore;
-}
-
-// --- Data Fetching Actions ---
-
-export async function getShipments(): Promise<Shipment[]> {
-  const firestore = await getFirestore();
-  const shipmentsCol = collection(firestore, "shipments");
-  const snapshot = await getDocs(query(shipmentsCol));
-  if (snapshot.empty) return [];
-  const shipments = await Promise.all(snapshot.docs.map(d => getShipmentById(d.id)));
-  return shipments.filter(s => s !== undefined) as Shipment[];
-}
-
-export async function getShipmentById(id: string): Promise<Shipment | undefined> {
-    const firestore = await getFirestore();
-    const shipmentDoc = doc(firestore, "shipments", id);
-    const snapshot = await getDoc(shipmentDoc);
-    if (!snapshot.exists()) return undefined;
-
-    // Fetch subcollection
-    const statusLogsCol = collection(firestore, `shipments/${id}/statusLogs`);
-    const statusLogsSnapshot = await getDocs(query(statusLogsCol));
-    const statusLogs = statusLogsSnapshot.docs.map(d => ({ ...d.data(), id: d.id } as StatusLog));
-
-    return { ...snapshot.data(), id: snapshot.id, statusLogs } as Shipment;
-}
-
-export async function getShipmentByOrderCode(
-  orderCode: string
-): Promise<Shipment | undefined> {
-    const firestore = await getFirestore();
-    const shipmentsCol = collection(firestore, "shipments");
-    const q = query(shipmentsCol, where("orderCode", "==", orderCode.toUpperCase()));
-    const snapshot = await getDocs(q);
-    if (snapshot.empty) return undefined;
-    
-    const shipmentDoc = snapshot.docs[0];
-    return await getShipmentById(shipmentDoc.id);
-}
-
-export async function getDrivers(): Promise<UserProfile[]> {
-    const firestore = await getFirestore();
-    const usersCol = collection(firestore, "users");
-    const q = query(usersCol, where("role", "==", "driver"));
-    const snapshot = await getDocs(q);
-    if (snapshot.empty) return [];
-    return snapshot.docs.map(d => ({ ...d.data(), id: d.id } as UserProfile));
-}
-
-export async function getDriverShipment(driverId: string): Promise<Shipment | undefined> {
-    const firestore = await getFirestore();
-    const shipmentsCol = collection(firestore, "shipments");
-    const q = query(shipmentsCol, 
-        where("assignedDriverId", "==", driverId), 
-        where("isCompleted", "==", false)
-    );
-    const snapshot = await getDocs(q);
-    if (snapshot.empty) return undefined;
-    const shipmentDoc = snapshot.docs[0];
-    return await getShipmentById(shipmentDoc.id);
+// --- Auth Actions ---
+export async function getMockUserAction(role: UserRole): Promise<UserProfile> {
+    return getMockUser(role);
 }
 
 
-// --- Data Mutation Actions ---
+// --- Driver Actions ---
+
+export async function addDriverAction(data: {
+  name: string;
+  email: string;
+  phone: string;
+  licenseNumber: string;
+}) {
+  try {
+    const drivers = await getDrivers();
+    const newDriver: Driver = {
+      id: uuidv4(),
+      status: "active",
+      ...data,
+    };
+    await saveDrivers([newDriver, ...drivers]);
+    revalidatePath("/admin/drivers");
+    return { success: true, driver: newDriver };
+  } catch (e: any) {
+    return { error: `Failed to add driver: ${e.message}` };
+  }
+}
+
+// --- Shipment Actions ---
 
 export async function createShipmentAction(data: {
   origin: string;
   destination: string;
+  description: string;
   driverId: string;
+  notes?: string;
 }) {
-  const firestore = await getFirestore();
-  const driverDocRef = doc(firestore, "users", data.driverId);
-  const driverDoc = await getDoc(driverDocRef);
-  
-  if (!driverDoc.exists()) {
-    return { error: "Invalid driver selected." };
-  }
-  const driver = driverDoc.data() as UserProfile;
-  
-  const newShipmentRef = doc(collection(firestore, "shipments"));
-  const shipmentId = newShipmentRef.id;
-
-  const newShipmentData = {
-    id: shipmentId, // Add this
-    orderCode: `TT-${Math.random().toString(36).substring(2, 8).toUpperCase()}`,
-    assignedDriverId: data.driverId,
-    assignedDriverName: driver.name,
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-    currentStatus: "pending" as ShipmentStatus,
-    statusTimestamps: {},
-    isCompleted: false,
-    origin: data.origin,
-    destination: data.destination,
-  };
-  
   try {
-    await setDoc(newShipmentRef, newShipmentData);
+    const [shipments, driver] = await Promise.all([
+      getShipments(),
+      getDriverById(data.driverId),
+    ]);
+    
+    if (!driver) {
+      return { error: "Invalid driver selected." };
+    }
+    
+    const newShipment: Shipment = {
+      id: uuidv4(),
+      orderCode: `SWT-${Math.random().toString(36).substring(2, 8).toUpperCase()}`,
+      assignedDriverId: data.driverId,
+      assignedDriverName: driver.name,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      currentStatus: "pending",
+      statusTimestamps: {},
+      statusLogs: [],
+      isCompleted: false,
+      origin: data.origin,
+      destination: data.destination,
+      description: data.description,
+      notes: data.notes,
+    };
+    
+    await saveShipments([newShipment, ...shipments]);
+
     revalidatePath("/admin/dashboard");
-    return { success: true, shipment: newShipmentData };
+    revalidatePath("/admin/shipments");
+
+    return { success: true, shipment: newShipment };
   } catch (e: any) {
-    return { error: `Failed to create shipment: ${e.message}`, details: { path: newShipmentRef.path, operation: 'create', resource: newShipmentData }};
+    return { error: `Failed to create shipment: ${e.message}`};
   }
 }
 
-export async function updateShipmentStatusAction(shipmentId: string, status: ShipmentStatus, driverId: string) {
-    const firestore = await getFirestore();
-    const shipmentRef = doc(firestore, "shipments", shipmentId);
-    
-    const driverDoc = await getDoc(doc(firestore, "users", driverId));
-    const driver = driverDoc.data() as UserProfile;
-    if (!driver) return { error: "Driver not found" };
-
-    const now = new Date();
-    const statusLogRef = doc(collection(firestore, `shipments/${shipmentId}/statusLogs`));
-    
-    const newLogData = {
-        id: statusLogRef.id,
-        status: status,
-        timestamp: now.toISOString(),
-        actorId: driverId,
-        actorName: driver.name,
-        source: 'driver' as const
-    };
-
-    const updateData: any = {
-        currentStatus: status,
-        [`statusTimestamps.${status}`]: now.toISOString(),
-        updatedAt: new Date().toISOString(),
-    };
-    
-    if (status === 'trip_completed') {
-        updateData.isCompleted = true;
-    }
-
+export async function updateShipmentStatusAction(data: {
+    shipmentId: string;
+    status: ShipmentStatus;
+    driverId: string;
+}) {
+    const { shipmentId, status, driverId } = data;
     try {
-      const batch = writeBatch(firestore);
-      batch.update(shipmentRef, updateData);
-      batch.set(statusLogRef, newLogData);
-      await batch.commit();
+        const [shipment, driver, shipments] = await Promise.all([
+            getShipmentById(shipmentId),
+            getMockUser("driver"), // Using mock user as we know this action is by a driver
+            getShipments(),
+        ]);
 
-      revalidatePath('/driver/dashboard');
-      revalidatePath('/admin/dashboard');
-      revalidatePath(`/admin/shipments/${shipmentId}`);
-      revalidatePath(`/track?orderCode=*`, 'layout');
-
-      return { success: true };
-    } catch (e: any) {
-        return { error: `Failed to update shipment: ${e.message}`, details: { path: shipmentRef.path, operation: 'update', resource: updateData } };
-    }
-}
-
-export async function correctTimestampAction(data: CorrectTimestampInput) {
-    const firestore = await getFirestore();
-    try {
-        const result = await correctTimestampAI(data);
+        if (!shipment) return { error: "Shipment not found." };
+        if (!driver) return { error: "Driver not found." };
         
-        const shipmentRef = doc(firestore, "shipments", data.shipmentId);
-        
-        // Use a generic admin identity for logging purposes
-        const admin = { uid: 'admin_system', name: 'Admin Correction' };
+        const now = new Date().toISOString();
 
-        const newTimestamp = result.suggestedTimestamp;
-        const statusToUpdate = data.statusType as ShipmentStatus;
-
-        const newLogRef = doc(collection(firestore, `shipments/${data.shipmentId}/statusLogs`));
-        const newLogData = {
-            id: newLogRef.id,
-            status: statusToUpdate,
-            timestamp: newTimestamp,
-            actorId: admin.uid,
-            actorName: admin.name,
-            source: 'admin' as const,
-            notes: `Original: ${data.incorrectTimestamp}. AI Reason: ${result.explanation} (Conf: ${result.confidence.toFixed(2)})`
+        const newLogEntry = {
+            id: uuidv4(),
+            status: status,
+            timestamp: now,
+            actorId: driver.id,
+            actorName: driver.name,
+            source: 'driver' as const
         };
 
-        const updateData = {
-            [`statusTimestamps.${statusToUpdate}`]: newTimestamp,
-            updatedAt: new Date().toISOString()
-        };
-
-        const batch = writeBatch(firestore);
-        batch.update(shipmentRef, updateData);
-        batch.set(newLogRef, newLogData);
-        await batch.commit();
+        shipment.currentStatus = status;
+        shipment.statusTimestamps[status] = now;
+        shipment.updatedAt = now;
+        shipment.statusLogs.push(newLogEntry);
         
-        revalidatePath(`/admin/shipments/${data.shipmentId}`);
+        if (status === 'trip_completed') {
+            shipment.isCompleted = true;
+        }
+        
+        const shipmentIndex = shipments.findIndex(s => s.id === shipmentId);
+        if (shipmentIndex > -1) {
+            shipments[shipmentIndex] = shipment;
+        } else {
+            // This case should ideally not happen if data is consistent
+            shipments.unshift(shipment);
+        }
+
+        await saveShipments(shipments);
+
+        revalidatePath('/driver/dashboard');
         revalidatePath('/admin/dashboard');
+        revalidatePath(`/admin/shipments`);
+        revalidatePath(`/admin/shipments/${shipmentId}`);
+        revalidatePath(`/track?orderCode=${shipment.orderCode}`, 'layout');
 
-        return { success: true, aiSuggestion: result };
-    } catch (error: any) {
-        console.error("AI Timestamp Correction Failed:", error);
-        return { error: error.message || "AI timestamp correction failed. Please try again." };
+        return { success: true, shipment };
+    } catch (e: any) {
+        return { error: `Failed to update shipment: ${e.message}` };
     }
 }
-
-    

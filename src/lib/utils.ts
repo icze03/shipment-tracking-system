@@ -1,30 +1,17 @@
 import { clsx, type ClassValue } from "clsx"
 import { twMerge } from "tailwind-merge"
-import { Timestamp } from "firebase/firestore";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
-export function formatDate(date: string | Date | undefined | null | Timestamp) {
+export function formatDate(date: string | Date | undefined | null) {
   if (!date) return "N/A";
   
-  let dateObj: Date;
-
-  if (date instanceof Timestamp) {
-    dateObj = date.toDate();
-  } else if (date instanceof Date) {
-    dateObj = date;
-  } else {
-    try {
-      dateObj = new Date(date);
-    } catch (error) {
-      return "Invalid Date";
-    }
-  }
+  const dateObj = new Date(date);
 
   if (isNaN(dateObj.getTime())) {
-    return "Invalid Date";
+    return "Pending";
   }
 
   return dateObj.toLocaleString("en-US", {

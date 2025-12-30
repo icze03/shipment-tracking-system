@@ -1,14 +1,14 @@
-import { getShipmentById } from "@/lib/actions";
+import { getShipmentById } from "@/lib/data/shipments";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, User, Calendar, MapPin, Flag, Edit } from "lucide-react";
+import { ArrowLeft, User, Calendar, MapPin, Flag, FileText } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { formatDate } from "@/lib/utils";
-import { ALL_STATUSES, STATUS_DETAILS } from "@/lib/constants";
+import { STATUS_DETAILS } from "@/lib/constants";
 import type { StatusLog } from "@/lib/types";
-import { TimestampCorrectionModal } from "@/components/admin/timestamp-correction-modal";
+import { ShipmentStatusTimeline } from "@/components/shipment-status-timeline";
 
 type ShipmentDetailPageProps = {
   params: {
@@ -27,9 +27,9 @@ export default async function ShipmentDetailPage({ params }: ShipmentDetailPageP
     <div className="space-y-6">
       <div>
         <Button variant="outline" size="sm" asChild>
-          <Link href="/admin/dashboard">
+          <Link href="/admin/shipments">
             <ArrowLeft className="mr-2 h-4 w-4" />
-            Back to Dashboard
+            Back to Shipments
           </Link>
         </Button>
       </div>
@@ -42,7 +42,7 @@ export default async function ShipmentDetailPage({ params }: ShipmentDetailPageP
                 Shipment {shipment.orderCode}
               </CardTitle>
               <CardDescription>
-                From {shipment.origin} to {shipment.destination}
+                {shipment.description}
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -63,6 +63,15 @@ export default async function ShipmentDetailPage({ params }: ShipmentDetailPageP
                   <Flag className="h-4 w-4 text-muted-foreground" />
                   <span>Destination: {shipment.destination}</span>
                 </div>
+                {shipment.notes && (
+                  <div className="flex items-start gap-2 col-span-2">
+                    <FileText className="h-4 w-4 text-muted-foreground mt-1" />
+                    <div className="flex flex-col">
+                      <span className="font-medium">Notes:</span>
+                      <p className="text-muted-foreground">{shipment.notes}</p>
+                    </div>
+                  </div>
+                )}
               </div>
             </CardContent>
           </Card>
@@ -73,28 +82,7 @@ export default async function ShipmentDetailPage({ params }: ShipmentDetailPageP
               <CardDescription>All recorded status updates for this shipment.</CardDescription>
             </CardHeader>
             <CardContent>
-              <ul className="space-y-4">
-                {ALL_STATUSES.map(status => {
-                  const details = STATUS_DETAILS[status];
-                  const timestamp = shipment.statusTimestamps[status];
-                  if (!details) return null;
-                  
-                  return (
-                    <li key={status} className="flex items-center justify-between">
-                      <div className="flex items-center gap-3">
-                        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-muted text-muted-foreground">
-                            <details.icon className="h-4 w-4"/>
-                        </div>
-                        <span className="font-medium">{details.label}</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <span className="text-muted-foreground text-sm">{formatDate(timestamp)}</span>
-                        {timestamp && <TimestampCorrectionModal shipment={shipment} status={status} />}
-                      </div>
-                    </li>
-                  )
-                })}
-              </ul>
+              <ShipmentStatusTimeline shipment={shipment} />
             </CardContent>
           </Card>
         </div>
@@ -102,7 +90,7 @@ export default async function ShipmentDetailPage({ params }: ShipmentDetailPageP
         <Card className="lg:col-span-1">
           <CardHeader>
             <CardTitle>Audit Log</CardTitle>
-            <CardDescription>History of all changes.</CardDescription>
+            <CardDescription>History of all status changes.</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">

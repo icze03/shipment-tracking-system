@@ -14,8 +14,7 @@ import {
 import { Logo } from "@/components/logo";
 import { UserNav } from "@/components/layout/user-nav";
 import { ThemeToggle } from "@/components/theme-toggle";
-import { LayoutDashboard, Truck, PlusCircle, LogOut, Users } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { LayoutDashboard, Truck, Users } from "lucide-react";
 
 export default function AdminLayout({
   children,
@@ -40,24 +39,16 @@ export default function AdminLayout({
                 </SidebarMenuButton>
               </SidebarMenuItem>
               <SidebarMenuItem>
-                <SidebarMenuButton asChild tooltip="Create Shipment">
-                  <Link href="/admin/shipments/create">
-                    <PlusCircle />
-                    <span>Create Shipment</span>
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-               <SidebarMenuItem>
-                <SidebarMenuButton asChild tooltip="All Shipments">
-                  <Link href="/admin/dashboard">
+                <SidebarMenuButton asChild tooltip="Shipments">
+                  <Link href="/admin/shipments">
                     <Truck />
-                    <span>All Shipments</span>
+                    <span>Shipments</span>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
               <SidebarMenuItem>
-                <SidebarMenuButton asChild tooltip="Drivers" disabled>
-                  <Link href="#">
+                <SidebarMenuButton asChild tooltip="Drivers">
+                  <Link href="/admin/drivers">
                     <Users />
                     <span>Drivers</span>
                   </Link>

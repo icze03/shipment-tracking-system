@@ -1,12 +1,19 @@
-import { Timestamp } from "firebase/firestore";
-
 export type UserRole = "admin" | "driver";
 
 export interface UserProfile {
-  uid: string;
+  id: string;
   name: string;
   email: string;
   role: UserRole;
+}
+
+export interface Driver {
+    id: string;
+    name: string;
+    email: string;
+    phone: string;
+    licenseNumber: string;
+    status: "active" | "inactive" | "on-leave";
 }
 
 export type ShipmentStatus =
@@ -16,8 +23,8 @@ export type ShipmentStatus =
   | "end_loading"
   | "departed_warehouse"
   | "arrived_at_destination"
-  | "delivered"
-  | "returned_to_origin"
+  | "start_unloading"
+  | "end_unloading"
   | "trip_completed";
 
 export type StatusLog = {
@@ -33,10 +40,12 @@ export type StatusLog = {
 export interface Shipment {
   id: string;
   orderCode: string;
+  description: string;
+  notes?: string;
   assignedDriverId: string;
   assignedDriverName: string;
-  createdAt: Timestamp | string;
-  updatedAt: Timestamp | string;
+  createdAt: string;
+  updatedAt: string;
   currentStatus: ShipmentStatus;
   statusTimestamps: Partial<Record<ShipmentStatus, string>>;
   statusLogs: StatusLog[];
