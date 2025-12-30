@@ -18,7 +18,9 @@ export async function getShipments(): Promise<Shipment[]> {
   const firestore = await getFirestore();
   const shipmentsCol = collection(firestore, "shipments");
   const snapshot = await getDocs(query(shipmentsCol));
-  return snapshot.docs.map(d => ({ ...d.data(), id: d.id } as Shipment));
+  if (snapshot.empty) return [];
+  const shipments = await Promise.all(snapshot.docs.map(d => getShipmentById(d.id)));
+  return shipments.filter(s => s !== undefined) as Shipment[];
 }
 
 export async function getShipmentById(id: string): Promise<Shipment | undefined> {
@@ -29,7 +31,7 @@ export async function getShipmentById(id: string): Promise<Shipment | undefined>
 
     // Fetch subcollection
     const statusLogsCol = collection(firestore, `shipments/${id}/statusLogs`);
-    const statusLogsSnapshot = await getDocs(statusLogsCol);
+    const statusLogsSnapshot = await getDocs(query(statusLogsCol));
     const statusLogs = statusLogsSnapshot.docs.map(d => ({ ...d.data(), id: d.id } as StatusLog));
 
     return { ...snapshot.data(), id: snapshot.id, statusLogs } as Shipment;
@@ -53,6 +55,7 @@ export async function getDrivers(): Promise<UserProfile[]> {
     const usersCol = collection(firestore, "users");
     const q = query(usersCol, where("role", "==", "driver"));
     const snapshot = await getDocs(q);
+    if (snapshot.empty) return [];
     return snapshot.docs.map(d => ({ ...d.data(), id: d.id } as UserProfile));
 }
 
@@ -78,22 +81,25 @@ export async function createShipmentAction(data: {
   driverId: string;
 }) {
   const firestore = await getFirestore();
-  const driverDoc = await getDoc(doc(firestore, "users", data.driverId));
-  const driver = driverDoc.data() as UserProfile;
-
-  if (!driver) {
+  const driverDocRef = doc(firestore, "users", data.driverId);
+  const driverDoc = await getDoc(driverDocRef);
+  
+  if (!driverDoc.exists()) {
     return { error: "Invalid driver selected." };
   }
+  const driver = driverDoc.data() as UserProfile;
   
-  const shipmentsRef = collection(firestore, "shipments");
+  const newShipmentRef = doc(collection(firestore, "shipments"));
+  const shipmentId = newShipmentRef.id;
 
   const newShipmentData = {
+    id: shipmentId, // Add this
     orderCode: `TT-${Math.random().toString(36).substring(2, 8).toUpperCase()}`,
     assignedDriverId: data.driverId,
     assignedDriverName: driver.name,
-    createdAt: serverTimestamp(),
-    updatedAt: serverTimestamp(),
-    currentStatus: "pending",
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+    currentStatus: "pending" as ShipmentStatus,
     statusTimestamps: {},
     isCompleted: false,
     origin: data.origin,
@@ -101,13 +107,11 @@ export async function createShipmentAction(data: {
   };
   
   try {
-    const newShipmentRef = await addDoc(shipmentsRef, newShipmentData);
+    await setDoc(newShipmentRef, newShipmentData);
     revalidatePath("/admin/dashboard");
-    return { success: true, shipment: { ...newShipmentData, id: newShipmentRef.id } };
+    return { success: true, shipment: newShipmentData };
   } catch (e: any) {
-    // This is now a client component action, so we can't emit from here.
-    // The error will be caught client-side now.
-    return { error: `Failed to create shipment: ${e.message}`, details: { path: shipmentsRef.path, operation: 'create', resource: newShipmentData }};
+    return { error: `Failed to create shipment: ${e.message}`, details: { path: newShipmentRef.path, operation: 'create', resource: newShipmentData }};
   }
 }
 
@@ -122,27 +126,29 @@ export async function updateShipmentStatusAction(shipmentId: string, status: Shi
     const now = new Date();
     const statusLogRef = doc(collection(firestore, `shipments/${shipmentId}/statusLogs`));
     
-    const newLogData: Omit<StatusLog, 'id'> = {
-        status,
+    const newLogData = {
+        id: statusLogRef.id,
+        status: status,
         timestamp: now.toISOString(),
         actorId: driverId,
         actorName: driver.name,
-        source: 'driver'
+        source: 'driver' as const
     };
 
-    const updateData = {
+    const updateData: any = {
         currentStatus: status,
         [`statusTimestamps.${status}`]: now.toISOString(),
-        updatedAt: serverTimestamp(),
-        isCompleted: status === 'trip_completed' ? true : false,
+        updatedAt: new Date().toISOString(),
     };
+    
+    if (status === 'trip_completed') {
+        updateData.isCompleted = true;
+    }
 
     try {
       const batch = writeBatch(firestore);
-
       batch.update(shipmentRef, updateData);
       batch.set(statusLogRef, newLogData);
-      
       await batch.commit();
 
       revalidatePath('/driver/dashboard');
@@ -152,8 +158,6 @@ export async function updateShipmentStatusAction(shipmentId: string, status: Shi
 
       return { success: true };
     } catch (e: any) {
-        // Since batch errors don't give granular detail, we report what we can.
-        // The client-side handler will build the context.
         return { error: `Failed to update shipment: ${e.message}`, details: { path: shipmentRef.path, operation: 'update', resource: updateData } };
     }
 }
@@ -165,25 +169,26 @@ export async function correctTimestampAction(data: CorrectTimestampInput) {
         
         const shipmentRef = doc(firestore, "shipments", data.shipmentId);
         
-        // Assuming there is always an admin user with a known ID for logging purposes.
-        const admin = { uid: 'admin01', name: 'Admin' };
+        // Use a generic admin identity for logging purposes
+        const admin = { uid: 'admin_system', name: 'Admin Correction' };
 
         const newTimestamp = result.suggestedTimestamp;
         const statusToUpdate = data.statusType as ShipmentStatus;
 
         const newLogRef = doc(collection(firestore, `shipments/${data.shipmentId}/statusLogs`));
-        const newLogData: Omit<StatusLog, 'id'> = {
+        const newLogData = {
+            id: newLogRef.id,
             status: statusToUpdate,
             timestamp: newTimestamp,
             actorId: admin.uid,
             actorName: admin.name,
-            source: 'admin',
+            source: 'admin' as const,
             notes: `Original: ${data.incorrectTimestamp}. AI Reason: ${result.explanation} (Conf: ${result.confidence.toFixed(2)})`
         };
 
         const updateData = {
             [`statusTimestamps.${statusToUpdate}`]: newTimestamp,
-            updatedAt: serverTimestamp()
+            updatedAt: new Date().toISOString()
         };
 
         const batch = writeBatch(firestore);
@@ -200,3 +205,5 @@ export async function correctTimestampAction(data: CorrectTimestampInput) {
         return { error: error.message || "AI timestamp correction failed. Please try again." };
     }
 }
+
+    

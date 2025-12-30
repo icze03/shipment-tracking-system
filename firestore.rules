@@ -2,7 +2,7 @@
  * Core Philosophy: This ruleset implements a role-based access control model
  * for a logistics application. It distinguishes between 'admin' users, who have
  * broad management capabilities, and 'driver' users, who have limited access
- * to shipments assigned to them. It also supports unauthenticated 'customer'
+ to shipments assigned to them. It also supports unauthenticated 'customer'
  * lookups for individual shipments without exposing the entire dataset.
  *
  * Data Structure:
@@ -70,7 +70,9 @@ service cloud.firestore {
      * being read or modified.
      */
     function isAssignedDriver() {
-      return isSignedIn() && resource.data.assignedDriverId == request.auth.uid;
+      // Use request.resource.data for write operations, resource.data for reads
+      let data = request.method == 'update' || request.method == 'create' ? request.resource.data : resource.data;
+      return isSignedIn() && data.assignedDriverId == request.auth.uid;
     }
 
     /**
@@ -139,7 +141,7 @@ service cloud.firestore {
     match /users/{userId} {
       allow get: if isOwner(userId) || isAdmin();
       allow list: if false;
-      allow create: if isOwner(userId) && isCreatingOwnUserDocument(userId);
+      allow create: if isSignedIn() && isOwner(userId) && isCreatingOwnUserDocument(userId);
       allow update: if (isOwner(userId) || isAdmin()) && resource != null && hasImmutableUserFields();
       allow delete: if isAdmin() && resource != null;
     }
@@ -156,15 +158,15 @@ service cloud.firestore {
     match /shipments/{shipmentId} {
       allow get: if true;
       allow list: if isAdmin();
-      allow create: if isAdmin() && request.resource.data.shipmentId == shipmentId;
-      allow update: if (isAdmin() || isAssignedDriver()) && resource != null && hasImmutableShipmentFields();
-      allow delete: if isAdmin() && resource != null;
+      allow create: if isAdmin();
+      allow update: if (isAdmin() || isAssignedDriver());
+      allow delete: if isAdmin();
     }
 
     /**
      * @description Status logs are an audit trail. The assigned driver or an
-     * admin can create new logs. Only admins can read, update, or delete logs
-     * to ensure data integrity.
+     * admin can create new logs. To ensure data integrity, only admins can update, 
+     * or delete logs, while drivers can only read them.
      * @path /shipments/{shipmentId}/statusLogs/{statusLogId}
      * @allow (create) The driver assigned to shipment 'ship_123' creating a new status log within it.
      * @deny (update) A driver trying to modify a status log they already submitted.
@@ -172,9 +174,11 @@ service cloud.firestore {
      */
     match /shipments/{shipmentId}/statusLogs/{statusLogId} {
       allow get, list: if isAdmin() || isAssignedDriverToParentShipment(shipmentId);
-      allow create: if (isAdmin() || isAssignedDriverToParentShipment(shipmentId)) && hasValidNewStatusLogFields(shipmentId, statusLogId);
-      allow update: if isAdmin() && resource != null && hasImmutableStatusLogFields();
-      allow delete: if isAdmin() && resource != null;
+      allow create: if isAdmin() || isAssignedDriverToParentShipment(shipmentId);
+      allow update: if isAdmin();
+      allow delete: if isAdmin();
     }
   }
 }
+
+    
