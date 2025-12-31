@@ -34,8 +34,8 @@ export default async function ShipmentDetailPage({ params }: ShipmentDetailPageP
         </Button>
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-3">
-        <div className="lg:col-span-2 space-y-6">
+      <div className="grid gap-6 md:grid-cols-3">
+        <div className="md:col-span-2 space-y-6">
           <Card>
             <CardHeader>
               <CardTitle className="font-headline text-2xl">
@@ -46,7 +46,7 @@ export default async function ShipmentDetailPage({ params }: ShipmentDetailPageP
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="grid grid-cols-2 gap-4 text-sm">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
                 <div className="flex items-center gap-2">
                   <User className="h-4 w-4 text-muted-foreground" />
                   <span>Driver: {shipment.assignedDriverName}</span>
@@ -64,7 +64,7 @@ export default async function ShipmentDetailPage({ params }: ShipmentDetailPageP
                   <span>Destination: {shipment.destination}</span>
                 </div>
                 {shipment.notes && (
-                  <div className="flex items-start gap-2 col-span-2">
+                  <div className="flex items-start gap-2 col-span-1 sm:col-span-2">
                     <FileText className="h-4 w-4 text-muted-foreground mt-1" />
                     <div className="flex flex-col">
                       <span className="font-medium">Notes:</span>
@@ -87,7 +87,7 @@ export default async function ShipmentDetailPage({ params }: ShipmentDetailPageP
           </Card>
         </div>
 
-        <Card className="lg:col-span-1">
+        <Card className="md:col-span-1">
           <CardHeader>
             <CardTitle>Audit Log</CardTitle>
             <CardDescription>History of all status changes.</CardDescription>
