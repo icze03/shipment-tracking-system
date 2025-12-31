@@ -15,6 +15,7 @@ export function formatDate(date: string | Date | undefined | null) {
   }
 
   return dateObj.toLocaleString("en-US", {
+    timeZone: "Asia/Manila",
     month: "short",
     day: "2-digit",
     year: "numeric",

@@ -5,14 +5,15 @@
     "assignedDriverId": "f246f518-252c-45e8-9d07-bae10c0e3618",
     "assignedDriverName": "john rivera",
     "createdAt": "2025-12-30T18:55:51.645Z",
-    "updatedAt": "2025-12-31T06:08:23.466Z",
-    "currentStatus": "arrived_at_destination",
+    "updatedAt": "2025-12-31T06:32:52.452Z",
+    "currentStatus": "start_unloading",
     "statusTimestamps": {
       "arrived_at_warehouse": "2025-12-30T18:56:25.042Z",
       "start_loading": "2025-12-30T20:08:05.643Z",
       "end_loading": "2025-12-31T03:46:18.084Z",
       "departed_warehouse": "2025-12-31T04:00:48.814Z",
-      "arrived_at_destination": "2025-12-31T06:08:23.466Z"
+      "arrived_at_destination": "2025-12-31T06:08:23.466Z",
+      "start_unloading": "2025-12-31T06:32:52.452Z"
     },
     "statusLogs": [
       {
@@ -51,6 +52,14 @@
         "id": "cfcbf153-20ef-4935-8811-5134bf1865ba",
         "status": "arrived_at_destination",
         "timestamp": "2025-12-31T06:08:23.466Z",
+        "actorId": "f246f518-252c-45e8-9d07-bae10c0e3618",
+        "actorName": "john rivera",
+        "source": "driver"
+      },
+      {
+        "id": "126148ee-cc4d-45ee-9a1c-aa7cc6b72949",
+        "status": "start_unloading",
+        "timestamp": "2025-12-31T06:32:52.452Z",
         "actorId": "f246f518-252c-45e8-9d07-bae10c0e3618",
         "actorName": "john rivera",
         "source": "driver"
