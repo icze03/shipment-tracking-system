@@ -38,7 +38,7 @@ export default async function ShipmentDetailPage({ params }: ShipmentDetailPageP
         <div className="md:col-span-2 space-y-6">
           <Card>
             <CardHeader>
-              <CardTitle className="font-headline text-2xl">
+              <CardTitle className="text-2xl">
                 Shipment {shipment.orderCode}
               </CardTitle>
               <CardDescription>

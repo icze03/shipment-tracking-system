@@ -14,8 +14,8 @@ export function Logo({ className }: { className?: string }) {
       <div className="bg-primary text-primary-foreground p-1.5 rounded-md">
         <Truck className="h-5 w-5" />
       </div>
-      <span className="font-headline hidden sm:inline-block">Greenlane Transporters Incorporated</span>
-      <span className="font-headline sm:hidden">Greenlane</span>
+      <span className="hidden sm:inline-block">Greenlane Transporters Incorporated</span>
+      <span className="sm:hidden">Greenlane</span>
     </Link>
   );
 }

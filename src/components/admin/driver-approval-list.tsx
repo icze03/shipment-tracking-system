@@ -90,7 +90,7 @@ export function DriverApprovalList({ drivers }: DriverApprovalListProps) {
                       onClick={() => handleApprove(driver.id)}
                       disabled={isPending}
                     >
-                      {isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Check className="mr-2 h-4 w-4" />}
+                      {isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Check className="h-4 w-4" />}
                       Approve
                     </Button>
                     <Button
@@ -99,7 +99,7 @@ export function DriverApprovalList({ drivers }: DriverApprovalListProps) {
                       onClick={() => handleRemove(driver.id)}
                       disabled={isPending}
                     >
-                      {isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Trash2 className="mr-2 h-4 w-4" />}
+                      {isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Trash2 className="h-4 w-4" />}
                       Remove
                     </Button>
                   </div>

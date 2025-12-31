@@ -23,7 +23,7 @@ export default function TrackPage({ searchParams }: TrackPageProps) {
         <div className="container mx-auto max-w-2xl py-12 px-4">
           <Card className="w-full">
             <CardHeader>
-              <CardTitle className="text-2xl font-headline flex items-center gap-2">
+              <CardTitle className="text-2xl flex items-center gap-2">
                 <Search className="w-6 h-6 text-primary" />
                 Track Your Shipment
               </CardTitle>
@@ -63,7 +63,7 @@ async function ShipmentDetails({ orderCode }: { orderCode: string }) {
 
   return (
     <div className="mt-8">
-      <h2 className="text-xl font-bold mb-2 font-headline">Status for {shipment.orderCode}</h2>
+      <h2 className="text-xl font-bold mb-2">Status for {shipment.orderCode}</h2>
       <p className="text-muted-foreground mb-6">From <span className="font-medium text-foreground">{shipment.origin}</span> to <span className="font-medium text-foreground">{shipment.destination}</span>.</p>
       <ShipmentStatusTimeline shipment={shipment} />
     </div>

@@ -18,7 +18,6 @@ export default {
       fontFamily: {
         sans: ['var(--font-sans)'],
         mono: ['var(--font-mono)'],
-        heading: ['var(--font-heading)'],
       },
       colors: {
         background: 'hsl(var(--background))',

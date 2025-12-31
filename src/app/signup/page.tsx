@@ -19,7 +19,7 @@ export default function SignupPage() {
         </div>
         <Card>
           <CardHeader className="text-center">
-            <CardTitle className="text-2xl font-headline">
+            <CardTitle className="text-2xl">
               Driver Registration
             </CardTitle>
             <CardDescription>
