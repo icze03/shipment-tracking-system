@@ -253,12 +253,11 @@ export async function correctTimestampAction(data: {
             return { error: "Original log entry to correct not found." };
         }
         
-        const now = getPhilippineTimeISO();
-        const correctedTimestamp = now; // Use the current time for the correction.
+        const correctedTimestamp = getPhilippineTimeISO(); // Use the current time for the correction.
         
         // Update the main timestamp record for the timeline view
         shipment.statusTimestamps[statusType] = correctedTimestamp;
-        shipment.updatedAt = now;
+        shipment.updatedAt = correctedTimestamp;
 
         // Unflag the original log entry
         shipment.statusLogs[logToCorrectIndex].isFlagged = false;
@@ -440,7 +439,7 @@ export async function acknowledgeCancellationAction(shipmentId: string, driverId
         const wasOnTheWay = !!shipment.statusTimestamps.departed_warehouse;
         const note = wasOnTheWay
             ? "Driver confirmed product return after cancellation."
-            : "Driver acknowledged cancellation and will return to logistics.";
+            : "Driver acknowledged cancellation and instructions.";
 
         const ackLog: typeof shipment.statusLogs[0] = {
             id: uuidv4(),
@@ -466,7 +465,24 @@ export async function acknowledgeCancellationAction(shipmentId: string, driverId
     }
 }
     
-
+export async function clearAllShipmentsAction() {
+  try {
+    // This action overwrites the shipments data file with an empty array.
+    await saveShipments([]);
+    
+    // Revalidate all paths that show shipment data to reflect the change.
+    revalidatePath("/admin/dashboard");
+    revalidatePath("/admin/shipments");
+    revalidatePath("/admin/reports");
+    revalidatePath("/driver/dashboard");
+    revalidatePath("/track", 'layout');
+    
+    return { success: true };
+  } catch (e: any) {
+    return { error: `Failed to clear shipments: ${e.message}` };
+  }
+}
     
 
     
+

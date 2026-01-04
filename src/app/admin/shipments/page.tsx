@@ -12,6 +12,7 @@ import { ShipmentDataTable } from "@/components/admin/shipment-data-table";
 import { columns } from "@/components/admin/shipment-columns";
 import Link from "next/link";
 import { useToast } from "@/hooks/use-toast";
+import { ClearShipmentsDialog } from "@/components/admin/clear-shipments-dialog";
 
 // This is now a client component to handle refresh
 export default function AdminShipmentsPage() {
@@ -60,7 +61,8 @@ export default function AdminShipmentsPage() {
             Monitor and manage all ongoing and completed shipments.
           </p>
         </div>
-        <div className="flex-shrink-0">
+        <div className="flex-shrink-0 flex items-center gap-2">
+          <ClearShipmentsDialog onClear={fetchShipments} />
           <Button asChild>
             <Link href="/admin/shipments/create">
               <PlusCircle className="mr-2 h-4 w-4" />
