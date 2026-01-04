@@ -26,6 +26,7 @@ type ClearShipmentsDialogProps = {
 export function ClearShipmentsDialog({ onClear }: ClearShipmentsDialogProps) {
   const { toast } = useToast();
   const [isPending, startTransition] = useTransition();
+  const [open, setOpen] = useState(false);
   const [step, setStep] = useState<"initial" | "confirmDelete">(
     "initial"
   );
@@ -46,14 +47,23 @@ export function ClearShipmentsDialog({ onClear }: ClearShipmentsDialogProps) {
         });
         onClear(); // Re-fetch the data on the parent page
       }
-      setStep("initial");
+      setOpen(false); // Close dialog on completion
+      setStep("initial"); // Reset step
     });
+  };
+
+  const onOpenChange = (isOpen: boolean) => {
+    setOpen(isOpen);
+    if (!isOpen) {
+      // Reset to initial step when dialog is closed
+      setTimeout(() => setStep("initial"), 200);
+    }
   };
 
   return (
     <AlertDialog
-      open={step !== "initial"}
-      onOpenChange={(isOpen) => !isOpen && setStep("initial")}
+      open={open}
+      onOpenChange={onOpenChange}
     >
       <AlertDialogTrigger asChild>
         <Button variant="destructive">
