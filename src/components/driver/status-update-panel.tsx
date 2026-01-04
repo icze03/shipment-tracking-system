@@ -158,7 +158,7 @@ export function StatusUpdatePanel({ shipment, driverId }: StatusUpdatePanelProps
 
   const currentStatusDetails = STATUS_DETAILS[shipment.currentStatus];
   const nextStatusDetails = nextStatus ? STATUS_DETAILS[nextStatus] : null;
-  const statusToConfirmDetails = statusToConfirm ? STATUS_DEFAULTS[statusToConfirm] : null;
+  const statusToConfirmDetails = statusToConfirm ? STATUS_DETAILS[statusToConfirm] : null;
   
   const correctionStatusDetails = correctionModalState.logEntry ? STATUS_DETAILS[correctionModalState.logEntry.status] : null;
 
