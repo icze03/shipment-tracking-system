@@ -6,8 +6,6 @@ import type { Driver, Shipment } from "@/lib/types";
 import { DriverApprovalList } from "@/components/admin/driver-approval-list";
 import { ShipmentCorrectionList } from "@/components/admin/shipment-correction-list";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { getDrivers } from "@/lib/data/drivers";
-import { getShipments } from "@/lib/data/shipments";
 
 // This is the client component part that handles interactivity
 function ApprovalsPageContent({ drivers, shipments }: { drivers: Driver[], shipments: Shipment[] }) {
@@ -43,6 +41,9 @@ function ApprovalsPageContent({ drivers, shipments }: { drivers: Driver[], shipm
 
 // This is the main page component, now a Server Component that fetches data
 export default async function ApprovalsPage() {
+  const { getDrivers } = await import('@/lib/data/drivers');
+  const { getShipments } = await import('@/lib/data/shipments');
+
   // Data is fetched on the server
   const drivers = await getDrivers();
   const shipments = await getShipments();
