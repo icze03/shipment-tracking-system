@@ -251,9 +251,9 @@ export async function correctTimestampAction(data: {
             return { error: "Original log entry to correct not found." };
         }
         
-        const now = new Date().toISOString(); // The time the admin takes the action
+        const now = new Date().toISOString();
+        const correctedTimestamp = now;
 
-        // The AI is only a suggestion engine. We use it to get a proposed timestamp.
         const allOtherShipments = shipments.filter(s => s.id !== shipmentId);
         const aiSuggestion = await aiCorrectTimestamp({
           shipmentId: shipment.id,
@@ -266,36 +266,28 @@ export async function correctTimestampAction(data: {
           })).slice(0, 5), null, 2),
           notes: notes,
         });
-
-        // This is the corrected historical time suggested by the AI
-        const suggestedTimestamp = aiSuggestion.suggestedTimestamp;
         
         // --- Core Correction Logic ---
-        // 1. Update the main statusTimestamps map with the AI-suggested time for the timeline view
-        shipment.statusTimestamps[statusType] = suggestedTimestamp;
-        shipment.updatedAt = now; // Use the *current time* for the update action itself
+        shipment.statusTimestamps[statusType] = aiSuggestion.suggestedTimestamp;
+        shipment.updatedAt = now;
 
-        // 2. Mark the old, incorrect log entry as no longer flagged
         shipment.statusLogs[logToCorrectIndex].isFlagged = false;
 
-        // 3. Add a *new* log entry for the correction itself, using the current time of the admin's action
         const adminUser = await getMockUser("admin");
         const correctionLogEntry = {
             id: uuidv4(),
             status: statusType,
-            timestamp: now, // Use the time the admin performed the action for the audit log
+            timestamp: now,
             actorId: adminUser.id,
             actorName: adminUser.name,
             source: 'admin' as const,
             isCorrection: true,
-            notes: `AI-assisted correction applied. Original time adjusted to ${new Date(suggestedTimestamp).toLocaleString()}. ${notes || ''}`.trim(),
+            notes: `AI-assisted correction applied. Original time adjusted to ${new Date(aiSuggestion.suggestedTimestamp).toLocaleString()}. ${notes || ''}`.trim(),
         };
         shipment.statusLogs.push(correctionLogEntry);
         
-        // 4. Re-sort logs by their own timestamp to maintain chronological order in the audit view
         shipment.statusLogs.sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());
 
-        // 5. Update the currentStatus based on the latest entry in the *historical* timeline
         const latestStatus = Object.entries(shipment.statusTimestamps)
                                   .sort(([, a], [, b]) => new Date(b!).getTime() - new Date(a!).getTime())[0];
         
@@ -370,7 +362,11 @@ export async function requestCorrectionAction(data: {
     }
 }
 
-export async function cancelShipmentAction(shipmentId: string) {
+export async function cancelShipmentAction(
+    shipmentId: string, 
+    cancellationReason?: string, 
+    driverInstructions?: string
+) {
     try {
         const shipments = await getShipments();
         const shipmentIndex = shipments.findIndex(s => s.id === shipmentId);
@@ -391,6 +387,8 @@ export async function cancelShipmentAction(shipmentId: string) {
         shipment.currentStatus = 'cancelled';
         shipment.isCompleted = true; // Treat cancelled as a form of completion
         shipment.updatedAt = now;
+        shipment.cancellationReason = cancellationReason;
+        shipment.driverInstructions = driverInstructions;
 
         const cancelLog: typeof shipment.statusLogs[0] = {
             id: uuidv4(),
@@ -399,6 +397,7 @@ export async function cancelShipmentAction(shipmentId: string) {
             actorId: adminUser.id,
             actorName: adminUser.name,
             source: 'admin',
+            notes: cancellationReason,
         };
 
         shipment.statusLogs.push(cancelLog);

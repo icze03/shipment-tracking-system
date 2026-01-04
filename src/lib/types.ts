@@ -59,4 +59,6 @@ export interface Shipment {
   isCompleted: boolean;
   destination: string;
   origin: string;
+  cancellationReason?: string;
+  driverInstructions?: string;
 }

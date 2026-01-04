@@ -24,6 +24,8 @@ import { TimestampCorrectionModal } from "@/components/admin/timestamp-correctio
 import { ClientFormattedDate } from "../client-formatted-date";
 import { useToast } from "@/hooks/use-toast";
 import { cancelShipmentAction } from "@/lib/actions";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
 
 type ShipmentDetailClientProps = {
   shipment: Shipment;
@@ -32,10 +34,16 @@ type ShipmentDetailClientProps = {
 export function ShipmentDetailClient({ shipment }: ShipmentDetailClientProps) {
   const { toast } = useToast();
   const [isCancelPending, startCancelTransition] = useTransition();
+  const [cancellationReason, setCancellationReason] = useState("");
+  const [driverInstructions, setDriverInstructions] = useState("");
 
   const handleCancelShipment = () => {
+    if (!cancellationReason) {
+        toast({ title: "Reason Required", description: "Please provide a reason for cancellation.", variant: "destructive" });
+        return;
+    }
     startCancelTransition(async () => {
-      const result = await cancelShipmentAction(shipment.id);
+      const result = await cancelShipmentAction(shipment.id, cancellationReason, driverInstructions);
       if (result.error) {
         toast({ title: "Error", description: result.error, variant: "destructive" });
       } else {
@@ -117,7 +125,7 @@ export function ShipmentDetailClient({ shipment }: ShipmentDetailClientProps) {
           <AlertDialog>
             <AlertDialogTrigger asChild>
               <Button variant="destructive" disabled={!canCancel}>
-                <XCircle className="mr-2" />
+                <XCircle className="mr-2 h-4 w-4" />
                 Cancel Shipment
               </Button>
             </AlertDialogTrigger>
@@ -125,11 +133,30 @@ export function ShipmentDetailClient({ shipment }: ShipmentDetailClientProps) {
               <AlertDialogHeader>
                 <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
                 <AlertDialogDescription>
-                  This action cannot be undone. This will permanently cancel the
-                  shipment with order code{" "}
-                  <span className="font-bold">{shipment.orderCode}</span>.
+                  This action will permanently cancel the shipment with order code{" "}
+                  <span className="font-bold">{shipment.orderCode}</span>. This cannot be undone.
                 </AlertDialogDescription>
               </AlertDialogHeader>
+              <div className="space-y-4 py-4">
+                <div className="space-y-2">
+                  <Label htmlFor="cancellation-reason">Reason for Cancellation</Label>
+                  <Textarea
+                    id="cancellation-reason"
+                    placeholder="e.g., Customer request, vehicle issue, etc."
+                    value={cancellationReason}
+                    onChange={(e) => setCancellationReason(e.target.value)}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="driver-instructions">Instructions for Driver (Optional)</Label>
+                  <Textarea
+                    id="driver-instructions"
+                    placeholder="e.g., Return to warehouse, proceed to nearest depot."
+                    value={driverInstructions}
+                    onChange={(e) => setDriverInstructions(e.target.value)}
+                  />
+                </div>
+              </div>
               <AlertDialogFooter>
                 <AlertDialogCancel>Close</AlertDialogCancel>
                 <AlertDialogAction onClick={handleCancelShipment} disabled={isCancelPending}>

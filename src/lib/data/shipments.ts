@@ -34,9 +34,18 @@ export async function getShipmentByOrderCode(orderCode: string): Promise<Shipmen
     return shipments.find(s => s.orderCode.toLowerCase() === orderCode.toLowerCase());
 }
 
-export async function getDriverShipment(driverId: string): Promise<Shipment | undefined> {
+export async function getDriverShipment(driverId: string, includeCancelled: boolean = false): Promise<Shipment | undefined> {
     const shipments = await readData();
-    return shipments.find(s => s.assignedDriverId === driverId && !s.isCompleted);
+    // Sort by creation date descending to get the most recent one first.
+    const sortedShipments = shipments.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+
+    if (includeCancelled) {
+        // Find the most recent shipment that is either active or was just cancelled.
+        return sortedShipments.find(s => s.assignedDriverId === driverId && (!s.isCompleted || s.currentStatus === 'cancelled'));
+    }
+    
+    // Original logic: find the most recent active shipment.
+    return sortedShipments.find(s => s.assignedDriverId === driverId && !s.isCompleted);
 }
 
 export async function saveShipments(shipments: Shipment[]): Promise<void> {
