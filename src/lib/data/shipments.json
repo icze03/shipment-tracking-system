@@ -5,7 +5,7 @@
     "assignedDriverId": "f246f518-252c-45e8-9d07-bae10c0e3618",
     "assignedDriverName": "john rivera",
     "createdAt": "2026-01-04T06:29:59.032Z",
-    "updatedAt": "2026-01-04T17:41:41.931Z",
+    "updatedAt": "2026-01-04T18:01:14.603Z",
     "currentStatus": "start_loading",
     "statusTimestamps": {
       "arrived_at_warehouse": "2026-01-04T17:36:56.788Z",
@@ -27,7 +27,8 @@
         "actorId": "f246f518-252c-45e8-9d07-bae10c0e3618",
         "actorName": "john rivera",
         "source": "driver",
-        "isFlagged": false
+        "isFlagged": true,
+        "correctionReason": "I confirm too early I wish to request a correction please thank you!"
       }
     ],
     "isCompleted": false,

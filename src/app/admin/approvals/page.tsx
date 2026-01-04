@@ -2,14 +2,15 @@
 "use client"; // To read search params
 
 import { useSearchParams } from 'next/navigation'
-import { getDrivers } from "@/lib/data/drivers";
+import type { Driver, Shipment } from "@/lib/types";
 import { DriverApprovalList } from "@/components/admin/driver-approval-list";
-import { getShipments } from "@/lib/data/shipments";
 import { ShipmentCorrectionList } from "@/components/admin/shipment-correction-list";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { getDrivers } from "@/lib/data/drivers";
+import { getShipments } from "@/lib/data/shipments";
 
-// This is a client component to handle the async data fetching
-function ApprovalsPageContent({ drivers, shipments }: { drivers: Awaited<ReturnType<typeof getDrivers>>, shipments: Awaited<ReturnType<typeof getShipments>> }) {
+// This is the client component part that handles interactivity
+function ApprovalsPageContent({ drivers, shipments }: { drivers: Driver[], shipments: Shipment[] }) {
   const searchParams = useSearchParams();
   const defaultTab = searchParams.get('tab') === 'corrections' ? 'corrections' : 'drivers';
 
@@ -40,10 +41,12 @@ function ApprovalsPageContent({ drivers, shipments }: { drivers: Awaited<ReturnT
   );
 }
 
-
+// This is the main page component, now a Server Component that fetches data
 export default async function ApprovalsPage() {
+  // Data is fetched on the server
   const drivers = await getDrivers();
   const shipments = await getShipments();
   
+  // The data is passed as props to the client component
   return <ApprovalsPageContent drivers={drivers} shipments={shipments} />;
 }
