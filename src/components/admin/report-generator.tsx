@@ -59,7 +59,8 @@ export function ReportGenerator() {
         'id', 'orderCode', 'assignedDriverId', 'assignedDriverName', 
         'createdAt', 'updatedAt', 'currentStatus', 'isCompleted', 
         'origin', 'destination', 'description', 'notes', 
-        'statusTimestamps', 'statusLogs'
+        'statusTimestamps', 'statusLogs', 'cancellationReason', 
+        'driverInstructions', 'cancellationAcknowledged'
       ];
       
       const csvContent = convertToCSV(shipments, headers);
