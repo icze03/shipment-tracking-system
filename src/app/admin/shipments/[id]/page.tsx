@@ -2,13 +2,14 @@ import { getShipmentById } from "@/lib/data/shipments";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, User, Calendar, MapPin, Flag, FileText } from "lucide-react";
+import { ArrowLeft, User, Calendar, MapPin, Flag, FileText, AlertTriangle } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { formatDate } from "@/lib/utils";
 import { STATUS_DETAILS } from "@/lib/constants";
 import type { StatusLog } from "@/lib/types";
 import { ShipmentStatusTimeline } from "@/components/shipment-status-timeline";
+import { Badge } from "@/components/ui/badge";
 
 type ShipmentDetailPageProps = {
   params: {
@@ -97,16 +98,25 @@ export default async function ShipmentDetailPage({ params }: ShipmentDetailPageP
               {shipment.statusLogs.length > 0 ? (
                 shipment.statusLogs.slice().reverse().map((log: StatusLog) => (
                   <div key={log.id} className="text-sm">
-                    <p className="font-medium">
-                      {STATUS_DETAILS[log.status]?.label || log.status}
-                    </p>
+                    <div className="flex items-center justify-between">
+                       <p className="font-medium">
+                        {STATUS_DETAILS[log.status]?.label || log.status}
+                      </p>
+                      {log.source === 'driver-correction-request' && (
+                        <Badge variant="destructive" className="text-xs">
+                            <AlertTriangle className="mr-1 h-3 w-3" />
+                            Correction
+                        </Badge>
+                      )}
+                    </div>
                     <p className="text-muted-foreground">
-                      by {log.actorName} ({log.source})
+                      by {log.actorName} ({log.source === 'driver-correction-request' ? 'Driver Request' : log.source})
                     </p>
                     <p className="text-xs text-muted-foreground">
                       {formatDate(log.timestamp)}
                     </p>
                     {log.notes && <p className="mt-1 text-xs text-muted-foreground border-l-2 pl-2">{log.notes}</p>}
+                    {log.correctionReason && <p className="mt-1 text-xs text-amber-600 border-l-2 border-amber-500 pl-2">Reason: {log.correctionReason}</p>}
                     <Separator className="mt-4" />
                   </div>
                 ))

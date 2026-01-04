@@ -14,7 +14,7 @@ export async function getMockUserAction(role: UserRole): Promise<UserProfile> {
 }
 
 export async function validateCredentialsAction(username: string, password: string): Promise<{ success: boolean; role?: UserRole; userId?: string; error?: string; }> {
-    if (username.toLowerCase() === 'astraea millares' && password === 'astraea1234') {
+    if (username.toLowerCase() === 'admin' && password === 'password') {
         const adminUser = await getMockUser('admin');
         return { success: true, role: 'admin', userId: adminUser.id };
     }
@@ -285,5 +285,55 @@ export async function correctTimestampAction(data: {
 
     } catch (e: any) {
         return { error: e.message };
+    }
+}
+
+export async function requestCorrectionAction(data: {
+    shipmentId: string;
+    driverId: string;
+    statusToCorrect: ShipmentStatus;
+    reason: string;
+    originalTimestamp: string;
+}) {
+    const { shipmentId, driverId, statusToCorrect, reason, originalTimestamp } = data;
+    try {
+        const [driver, shipments] = await Promise.all([
+            getDriverById(driverId),
+            getShipments(),
+        ]);
+
+        if (!driver) return { error: "Driver not found." };
+
+        const shipmentIndex = shipments.findIndex(s => s.id === shipmentId);
+        if (shipmentIndex === -1) return { error: "Shipment not found." };
+        
+        const shipment = shipments[shipmentIndex];
+        const now = new Date().toISOString();
+
+        const newLogEntry = {
+            id: uuidv4(),
+            status: statusToCorrect,
+            timestamp: originalTimestamp, // The timestamp of the event being corrected
+            actorId: driver.id,
+            actorName: driver.name,
+            source: "driver-correction-request" as const,
+            notes: `Correction requested at: ${now}`,
+            correctionReason: reason,
+        };
+
+        shipment.statusLogs.push(newLogEntry);
+        shipment.updatedAt = now;
+        
+        shipments[shipmentIndex] = shipment;
+        await saveShipments(shipments);
+
+        // Revalidate paths to ensure data is fresh across the app
+        revalidatePath('/driver/dashboard');
+        revalidatePath(`/admin/shipments/${shipmentId}`);
+        revalidatePath(`/track?orderCode=${shipment.orderCode}`, 'layout');
+
+        return { success: true };
+    } catch (e: any) {
+        return { error: `Failed to submit correction request: ${e.message}` };
     }
 }

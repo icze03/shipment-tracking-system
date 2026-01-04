@@ -28,14 +28,17 @@ export type ShipmentStatus =
   | "end_unloading"
   | "trip_completed";
 
+export type StatusLogSource = "driver" | "admin" | "driver-correction-request";
+
 export type StatusLog = {
   id: string;
   status: ShipmentStatus;
   timestamp: string;
   actorId: string;
   actorName: string;
-  source: "driver" | "admin";
+  source: StatusLogSource;
   notes?: string;
+  correctionReason?: string;
 };
 
 export interface Shipment {

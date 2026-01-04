@@ -19,10 +19,22 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { updateShipmentStatusAction } from "@/lib/actions";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+  DialogClose,
+} from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { requestCorrectionAction, updateShipmentStatusAction } from "@/lib/actions";
 import type { Shipment, ShipmentStatus } from "@/lib/types";
 import { SHIPMENT_STATUSES, STATUS_DETAILS } from "@/lib/constants";
-import { Loader2 } from "lucide-react";
+import { Loader2, AlertTriangle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 type StatusUpdatePanelProps = {
@@ -31,8 +43,11 @@ type StatusUpdatePanelProps = {
 };
 
 export function StatusUpdatePanel({ shipment, driverId }: StatusUpdatePanelProps) {
-  const [isPending, startTransition] = useTransition();
+  const [isUpdatePending, startUpdateTransition] = useTransition();
+  const [isCorrectionPending, startCorrectionTransition] = useTransition();
   const [statusToConfirm, setStatusToConfirm] = useState<ShipmentStatus | null>(null);
+  const [isCorrectionModalOpen, setCorrectionModalOpen] = useState(false);
+  const [correctionReason, setCorrectionReason] = useState("");
   const { toast } = useToast();
 
   const currentStatusIndex = SHIPMENT_STATUSES.indexOf(
@@ -46,7 +61,7 @@ export function StatusUpdatePanel({ shipment, driverId }: StatusUpdatePanelProps
   const handleStatusUpdate = () => {
     if (!statusToConfirm) return;
 
-    startTransition(async () => {
+    startUpdateTransition(async () => {
       const result = await updateShipmentStatusAction({
         shipmentId: shipment.id,
         status: statusToConfirm,
@@ -67,10 +82,41 @@ export function StatusUpdatePanel({ shipment, driverId }: StatusUpdatePanelProps
       setStatusToConfirm(null); // Close the modal
     });
   };
+  
+  const handleCorrectionSubmit = () => {
+    if (!correctionReason.trim()) {
+      toast({
+        title: "Reason Required",
+        description: "Please provide a reason for the correction.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    startCorrectionTransition(async () => {
+        const result = await requestCorrectionAction({
+            shipmentId: shipment.id,
+            driverId,
+            statusToCorrect: shipment.currentStatus,
+            reason: correctionReason,
+            originalTimestamp: shipment.statusTimestamps[shipment.currentStatus] || shipment.updatedAt,
+        });
+
+        if (result.error) {
+            toast({ title: "Correction Failed", description: result.error, variant: "destructive" });
+        } else {
+            toast({ title: "Correction Request Submitted", description: "An admin will review your request shortly." });
+            setCorrectionReason("");
+            setCorrectionModalOpen(false);
+        }
+    });
+  };
 
   const currentStatusDetails = STATUS_DETAILS[shipment.currentStatus];
   const nextStatusDetails = nextStatus ? STATUS_DETAILS[nextStatus] : null;
   const statusToConfirmDetails = statusToConfirm ? STATUS_DETAILS[statusToConfirm] : null;
+
+  const canRequestCorrection = shipment.currentStatus !== 'pending' && !shipment.isCompleted;
 
   return (
     <>
@@ -86,7 +132,45 @@ export function StatusUpdatePanel({ shipment, driverId }: StatusUpdatePanelProps
           </CardHeader>
           <CardContent className="space-y-6">
             <div>
-              <p className="text-sm text-muted-foreground">Current Status</p>
+                <div className="flex justify-between items-center">
+                    <p className="text-sm text-muted-foreground">Current Status</p>
+                    {canRequestCorrection && (
+                        <Dialog open={isCorrectionModalOpen} onOpenChange={setCorrectionModalOpen}>
+                            <DialogTrigger asChild>
+                                <Button variant="link" size="sm" className="text-xs h-auto p-0">
+                                    <AlertTriangle className="mr-1 h-3 w-3" />
+                                    Request Correction
+                                </Button>
+                            </DialogTrigger>
+                            <DialogContent>
+                                <DialogHeader>
+                                    <DialogTitle>Request Status Correction</DialogTitle>
+                                    <DialogDescription>
+                                        Requesting a correction for status: <strong>{currentStatusDetails?.label}</strong>. Please provide a reason for the administrator.
+                                    </DialogDescription>
+                                </DialogHeader>
+                                <div className="py-4">
+                                    <Label htmlFor="correction-reason" className="sr-only">Reason for correction</Label>
+                                    <Textarea 
+                                        id="correction-reason"
+                                        placeholder="e.g., I accidentally confirmed 'End Loading' too early."
+                                        value={correctionReason}
+                                        onChange={(e) => setCorrectionReason(e.target.value)}
+                                    />
+                                </div>
+                                <DialogFooter>
+                                    <DialogClose asChild>
+                                        <Button type="button" variant="outline" disabled={isCorrectionPending}>Cancel</Button>
+                                    </DialogClose>
+                                    <Button type="button" onClick={handleCorrectionSubmit} disabled={isCorrectionPending}>
+                                        {isCorrectionPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                                        Submit Request
+                                    </Button>
+                                </DialogFooter>
+                            </DialogContent>
+                        </Dialog>
+                    )}
+                </div>
               <div className="flex items-center gap-2 text-lg font-semibold">
                 {currentStatusDetails && (
                   <currentStatusDetails.icon className="h-5 w-5" />
@@ -103,9 +187,9 @@ export function StatusUpdatePanel({ shipment, driverId }: StatusUpdatePanelProps
                 <Button
                   className="w-full h-24 text-2xl bg-primary hover:bg-primary/90 text-primary-foreground flex items-center justify-center gap-4"
                   onClick={() => setStatusToConfirm(nextStatus)}
-                  disabled={isPending}
+                  disabled={isUpdatePending}
                 >
-                  {isPending && statusToConfirm !== nextStatus ? (
+                  {isUpdatePending && statusToConfirm !== nextStatus ? (
                     <Loader2 className="h-12 w-12 animate-spin" />
                   ) : (
                     <>
@@ -138,9 +222,9 @@ export function StatusUpdatePanel({ shipment, driverId }: StatusUpdatePanelProps
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel disabled={isPending}>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={handleStatusUpdate} disabled={isPending}>
-              {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+            <AlertDialogCancel disabled={isUpdatePending}>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={handleStatusUpdate} disabled={isUpdatePending}>
+              {isUpdatePending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               Confirm
             </AlertDialogAction>
           </AlertDialogFooter>
