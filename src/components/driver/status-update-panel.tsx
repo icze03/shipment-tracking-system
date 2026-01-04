@@ -120,13 +120,18 @@ export function StatusUpdatePanel({ shipment, driverId }: StatusUpdatePanelProps
 
   const canRequestCorrection = useMemo(() => {
     if (shipment.currentStatus === 'pending' || shipment.isCompleted) return false;
-    // Find the log entry for the current status by this driver
-    const currentStatusLog = shipment.statusLogs.find(
-      log => log.status === shipment.currentStatus && log.actorId === driverId && !log.isCorrection
-    );
-    // Can request correction if the log exists and is not already flagged
-    return !!currentStatusLog && !currentStatusLog.isFlagged;
-  }, [shipment.currentStatus, shipment.isCompleted, shipment.statusLogs, driverId]);
+    
+    // Find the latest log entry for this shipment
+    const latestLog = shipment.statusLogs.slice().sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())[0];
+    
+    if (!latestLog) return false;
+
+    // Check if the latest log matches the current status, was made by this driver, is not a correction itself, and is not already flagged.
+    return latestLog.status === shipment.currentStatus && 
+           latestLog.actorId === driverId && 
+           !latestLog.isCorrection && 
+           !latestLog.isFlagged;
+}, [shipment, driverId]);
 
 
   return (
