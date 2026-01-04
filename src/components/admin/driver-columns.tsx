@@ -17,6 +17,7 @@ import { ClientOnly } from "@/components/client-only";
 import { useTransition } from "react";
 import { removeDriverAction } from "@/lib/actions";
 import { useToast } from "@/hooks/use-toast";
+import Link from "next/link";
 
 function ActionsCell({ driver }: { driver: Driver }) {
   const [isPending, startTransition] = useTransition();
@@ -52,8 +53,10 @@ function ActionsCell({ driver }: { driver: Driver }) {
             >
               Copy email
             </DropdownMenuItem>
-            <DropdownMenuItem disabled>
-              Edit Driver
+            <DropdownMenuItem asChild>
+              <Link href={`/admin/drivers/edit/${driver.id}`}>
+                Edit Driver
+              </Link>
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem

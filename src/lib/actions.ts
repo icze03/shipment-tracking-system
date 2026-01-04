@@ -4,7 +4,7 @@
 import { revalidatePath } from "next/cache";
 import { v4 as uuidv4 } from "uuid";
 import type { Driver, Shipment, ShipmentStatus, UserProfile, UserRole } from "./types";
-import { getDrivers, saveDrivers, getDriverById } from "./data/drivers";
+import { getDrivers, saveDrivers, getDriverById, updateDriver } from "./data/drivers";
 import { getShipments, saveShipments, getShipmentById } from "./data/shipments";
 import { getMockUser } from "./auth";
 import { correctTimestamp as aiCorrectTimestamp } from "@/ai/flows/admin-assisted-timestamp-correction";
@@ -74,6 +74,26 @@ export async function addDriverAction(data: {
   } catch (e: any) {
     return { error: `Failed to add driver: ${e.message}` };
   }
+}
+
+export async function updateDriverAction(driverId: string, data: {
+    name: string;
+    email: string;
+    phone: string;
+    licenseNumber: string;
+    password?: string;
+}) {
+    try {
+        const updatedDriver = await updateDriver(driverId, data);
+        if (!updatedDriver) {
+            return { error: 'Driver not found or failed to update.' };
+        }
+        revalidatePath("/admin/drivers");
+        revalidatePath(`/admin/drivers/edit/${driverId}`);
+        return { success: true, driver: updatedDriver };
+    } catch (e: any) {
+        return { error: `Failed to update driver: ${e.message}` };
+    }
 }
 
 export async function approveDriverAction(driverId: string) {
@@ -485,4 +505,5 @@ export async function clearAllShipmentsAction() {
     
 
     
+
 

@@ -32,3 +32,25 @@ export async function getDriverById(id: string): Promise<Driver | undefined> {
 export async function saveDrivers(drivers: Driver[]): Promise<void> {
     await writeData(drivers);
 }
+
+export async function updateDriver(id: string, data: Partial<Omit<Driver, 'id' | 'passwordHash'> & { password?: string }>): Promise<Driver | undefined> {
+    const drivers = await readData();
+    const driverIndex = drivers.findIndex(driver => driver.id === id);
+
+    if (driverIndex === -1) {
+        return undefined;
+    }
+
+    const currentDriver = drivers[driverIndex];
+
+    const updatedDriver: Driver = {
+        ...currentDriver,
+        ...data,
+        // Only update password if a new one is provided and is not an empty string
+        passwordHash: data.password ? data.password : currentDriver.passwordHash,
+    };
+    
+    drivers[driverIndex] = updatedDriver;
+    await writeData(drivers);
+    return updatedDriver;
+}
