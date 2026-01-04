@@ -10,6 +10,7 @@ import {
   Timer,
   Container,
   Anchor,
+  XCircle,
 } from "lucide-react";
 
 export const SHIPMENT_STATUSES: ShipmentStatus[] = [
@@ -41,4 +42,5 @@ export const STATUS_DETAILS: Record<
   start_unloading: { label: "Start Unloading", icon: Container },
   end_unloading: { label: "Finish Unloading", icon: MapPin },
   trip_completed: { label: "Trip Completed", icon: CheckCircle2 },
+  cancelled: { label: "Cancelled", icon: XCircle },
 };

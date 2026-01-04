@@ -7,7 +7,7 @@ import type { Driver, Shipment, ShipmentStatus, UserProfile, UserRole } from "./
 import { getDrivers, saveDrivers, getDriverById } from "./data/drivers";
 import { getShipments, saveShipments, getShipmentById } from "./data/shipments";
 import { getMockUser } from "./auth";
-import { correctTimestamp } from "@/ai/flows/admin-assisted-timestamp-correction";
+import { correctTimestamp as aiCorrectTimestamp } from "@/ai/flows/admin-assisted-timestamp-correction";
 
 // --- Auth Actions ---
 export async function getMockUserAction(role: UserRole): Promise<UserProfile> {
@@ -250,10 +250,12 @@ export async function correctTimestampAction(data: {
         if (logToCorrectIndex === -1) {
             return { error: "Original log entry to correct not found." };
         }
-        const now = new Date().toISOString();
-        const allOtherShipments = shipments.filter(s => s.id !== shipmentId);
         
-        const aiSuggestion = await correctTimestamp({
+        const now = new Date().toISOString(); // The time the admin takes the action
+
+        // The AI is only a suggestion engine. We use it to get a proposed timestamp.
+        const allOtherShipments = shipments.filter(s => s.id !== shipmentId);
+        const aiSuggestion = await aiCorrectTimestamp({
           shipmentId: shipment.id,
           statusType: statusType,
           incorrectTimestamp: shipment.statusLogs[logToCorrectIndex].timestamp,
@@ -265,12 +267,13 @@ export async function correctTimestampAction(data: {
           notes: notes,
         });
 
+        // This is the corrected historical time suggested by the AI
         const suggestedTimestamp = aiSuggestion.suggestedTimestamp;
         
         // --- Core Correction Logic ---
         // 1. Update the main statusTimestamps map with the AI-suggested time for the timeline view
         shipment.statusTimestamps[statusType] = suggestedTimestamp;
-        shipment.updatedAt = now; // Use the current time for the update action
+        shipment.updatedAt = now; // Use the *current time* for the update action itself
 
         // 2. Mark the old, incorrect log entry as no longer flagged
         shipment.statusLogs[logToCorrectIndex].isFlagged = false;
@@ -280,7 +283,7 @@ export async function correctTimestampAction(data: {
         const correctionLogEntry = {
             id: uuidv4(),
             status: statusType,
-            timestamp: now,
+            timestamp: now, // Use the time the admin performed the action for the audit log
             actorId: adminUser.id,
             actorName: adminUser.name,
             source: 'admin' as const,
@@ -289,9 +292,7 @@ export async function correctTimestampAction(data: {
         };
         shipment.statusLogs.push(correctionLogEntry);
         
-        // 4. (Optional but good practice) Re-sort logs by timestamp to maintain chronological order
-        // This is tricky because the admin action time (now) might be different from the corrected historical time (suggestedTimestamp)
-        // We sort the LOGS by their own timestamp.
+        // 4. Re-sort logs by their own timestamp to maintain chronological order in the audit view
         shipment.statusLogs.sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());
 
         // 5. Update the currentStatus based on the latest entry in the *historical* timeline
@@ -369,4 +370,51 @@ export async function requestCorrectionAction(data: {
     }
 }
 
+export async function cancelShipmentAction(shipmentId: string) {
+    try {
+        const shipments = await getShipments();
+        const shipmentIndex = shipments.findIndex(s => s.id === shipmentId);
+
+        if (shipmentIndex === -1) {
+            return { error: "Shipment not found." };
+        }
+
+        const shipment = shipments[shipmentIndex];
+
+        if (shipment.isCompleted || shipment.currentStatus === 'cancelled') {
+            return { error: "Shipment is already completed or cancelled." };
+        }
+
+        const now = new Date().toISOString();
+        const adminUser = await getMockUser("admin");
+
+        shipment.currentStatus = 'cancelled';
+        shipment.isCompleted = true; // Treat cancelled as a form of completion
+        shipment.updatedAt = now;
+
+        const cancelLog: typeof shipment.statusLogs[0] = {
+            id: uuidv4(),
+            status: 'cancelled',
+            timestamp: now,
+            actorId: adminUser.id,
+            actorName: adminUser.name,
+            source: 'admin',
+        };
+
+        shipment.statusLogs.push(cancelLog);
+        shipments[shipmentIndex] = shipment;
+
+        await saveShipments(shipments);
+
+        revalidatePath('/admin/dashboard');
+        revalidatePath('/admin/shipments');
+        revalidatePath(`/admin/shipments/${shipmentId}`);
+        revalidatePath(`/track?orderCode=${shipment.orderCode}`, 'layout');
+        revalidatePath("/driver/dashboard");
+
+        return { success: true };
+    } catch (e: any) {
+        return { error: `Failed to cancel shipment: ${e.message}` };
+    }
+}
     

@@ -26,7 +26,8 @@ export type ShipmentStatus =
   | "arrived_at_destination"
   | "start_unloading"
   | "end_unloading"
-  | "trip_completed";
+  | "trip_completed"
+  | "cancelled";
 
 export type StatusLogSource = "driver" | "admin" | "driver-correction-request";
 

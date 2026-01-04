@@ -7,6 +7,9 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { ShipmentStatusTimeline } from "@/components/shipment-status-timeline";
 import { ShipmentDetailClient } from "@/components/admin/shipment-detail-client";
 import { ClientFormattedDate } from "@/components/client-formatted-date";
+import { Badge } from "@/components/ui/badge";
+import { cn } from "@/lib/utils";
+import { STATUS_DETAILS } from "@/lib/constants";
 
 type ShipmentDetailPageProps = {
   params: {
@@ -20,6 +23,8 @@ export default async function ShipmentDetailPage({ params }: ShipmentDetailPageP
   if (!shipment) {
     notFound();
   }
+
+  const isCancelled = shipment.currentStatus === 'cancelled';
 
   return (
     <div className="space-y-6">
@@ -36,9 +41,14 @@ export default async function ShipmentDetailPage({ params }: ShipmentDetailPageP
         <div className="md:col-span-2 space-y-6">
           <Card>
             <CardHeader>
-              <CardTitle className="text-2xl">
-                Shipment {shipment.orderCode}
-              </CardTitle>
+              <div className="flex items-center justify-between">
+                <CardTitle className="text-2xl">
+                  Shipment {shipment.orderCode}
+                </CardTitle>
+                {isCancelled && (
+                  <Badge variant="destructive" className="text-base">Cancelled</Badge>
+                )}
+              </div>
               <CardDescription>
                 {shipment.description}
               </CardDescription>
