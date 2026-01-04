@@ -10,6 +10,7 @@ import {
   CardHeader,
   CardTitle,
   CardDescription,
+  CardFooter
 } from "@/components/ui/card";
 import {
   AlertDialog,
@@ -28,17 +29,23 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
   DialogClose,
 } from "@/components/ui/dialog";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { requestCorrectionAction, updateShipmentStatusAction } from "@/lib/actions";
-import type { Shipment, ShipmentStatus } from "@/lib/types";
+import type { Shipment, ShipmentStatus, StatusLog } from "@/lib/types";
 import { SHIPMENT_STATUSES, STATUS_DETAILS } from "@/lib/constants";
-import { Loader2, AlertTriangle } from "lucide-react";
+import { Loader2, AlertTriangle, History } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { ClientOnly } from "@/components/client-only";
+import { ClientFormattedDate } from "../client-formatted-date";
 
 type StatusUpdatePanelProps = {
   shipment: Shipment;
@@ -48,9 +55,15 @@ type StatusUpdatePanelProps = {
 export function StatusUpdatePanel({ shipment, driverId }: StatusUpdatePanelProps) {
   const [isUpdatePending, startUpdateTransition] = useTransition();
   const [isCorrectionPending, startCorrectionTransition] = useTransition();
+  
   const [statusToConfirm, setStatusToConfirm] = useState<ShipmentStatus | null>(null);
-  const [isCorrectionModalOpen, setCorrectionModalOpen] = useState(false);
-  const [correctionReason, setCorrectionReason] = useState("");
+  
+  const [correctionModalState, setCorrectionModalState] = useState<{
+    isOpen: boolean;
+    logEntry: StatusLog | null;
+    reason: string;
+  }>({ isOpen: false, logEntry: null, reason: "" });
+
   const { toast } = useToast();
 
   const currentStatusIndex = SHIPMENT_STATUSES.indexOf(
@@ -87,7 +100,8 @@ export function StatusUpdatePanel({ shipment, driverId }: StatusUpdatePanelProps
   };
   
   const handleCorrectionSubmit = () => {
-    if (!correctionReason.trim()) {
+    if (!correctionModalState.logEntry) return;
+    if (!correctionModalState.reason.trim()) {
       toast({
         title: "Reason Required",
         description: "Please provide a reason for the correction.",
@@ -100,39 +114,40 @@ export function StatusUpdatePanel({ shipment, driverId }: StatusUpdatePanelProps
         const result = await requestCorrectionAction({
             shipmentId: shipment.id,
             driverId,
-            statusToCorrect: shipment.currentStatus,
-            reason: correctionReason,
+            statusToCorrect: correctionModalState.logEntry!.status,
+            reason: correctionModalState.reason,
         });
 
         if (result.error) {
             toast({ title: "Correction Failed", description: result.error, variant: "destructive" });
         } else {
             toast({ title: "Correction Request Submitted", description: "An admin will review your request shortly." });
-            setCorrectionReason("");
-            setCorrectionModalOpen(false);
+            setCorrectionModalState({ isOpen: false, logEntry: null, reason: "" });
         }
     });
   };
 
+  const openCorrectionModal = (log: StatusLog) => {
+    setCorrectionModalState({ isOpen: true, logEntry: log, reason: "" });
+  };
+  
+  const closeCorrectionModal = () => {
+    if (isCorrectionPending) return;
+    setCorrectionModalState({ isOpen: false, logEntry: null, reason: "" });
+  }
+
+  const driverLogs = useMemo(() => {
+    return shipment.statusLogs
+      .filter(log => log.actorId === driverId && !log.isCorrection)
+      .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
+  }, [shipment.statusLogs, driverId]);
+
+
   const currentStatusDetails = STATUS_DETAILS[shipment.currentStatus];
   const nextStatusDetails = nextStatus ? STATUS_DETAILS[nextStatus] : null;
   const statusToConfirmDetails = statusToConfirm ? STATUS_DETAILS[statusToConfirm] : null;
-
-  const canRequestCorrection = useMemo(() => {
-    if (shipment.currentStatus === 'pending' || shipment.isCompleted) return false;
-    
-    // Find the latest log entry for this shipment
-    const latestLog = shipment.statusLogs.slice().sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())[0];
-    
-    if (!latestLog) return false;
-
-    // Check if the latest log matches the current status, was made by this driver, is not a correction itself, and is not already flagged.
-    return latestLog.status === shipment.currentStatus && 
-           latestLog.actorId === driverId && 
-           !latestLog.isCorrection && 
-           !latestLog.isFlagged;
-}, [shipment, driverId]);
-
+  
+  const correctionStatusDetails = correctionModalState.logEntry ? STATUS_DETAILS[correctionModalState.logEntry.status] : null;
 
   return (
     <>
@@ -148,47 +163,7 @@ export function StatusUpdatePanel({ shipment, driverId }: StatusUpdatePanelProps
           </CardHeader>
           <CardContent className="space-y-6">
             <div>
-                <div className="flex justify-between items-center">
-                    <p className="text-sm text-muted-foreground">Current Status</p>
-                    <ClientOnly>
-                      {canRequestCorrection && (
-                          <Dialog open={isCorrectionModalOpen} onOpenChange={setCorrectionModalOpen}>
-                              <DialogTrigger asChild>
-                                  <Button variant="link" size="sm" className="text-xs h-auto p-0">
-                                      <AlertTriangle className="mr-1 h-3 w-3" />
-                                      Made a mistake? Request Correction
-                                  </Button>
-                              </DialogTrigger>
-                              <DialogContent>
-                                  <DialogHeader>
-                                      <DialogTitle>Request Status Correction</DialogTitle>
-                                      <DialogDescription>
-                                          Requesting a correction for status: <strong>{currentStatusDetails?.label}</strong>. Please provide a reason for the administrator.
-                                      </DialogDescription>
-                                  </DialogHeader>
-                                  <div className="py-4">
-                                      <Label htmlFor="correction-reason" className="sr-only">Reason for correction</Label>
-                                      <Textarea 
-                                          id="correction-reason"
-                                          placeholder="e.g., I accidentally confirmed 'End Loading' too early."
-                                          value={correctionReason}
-                                          onChange={(e) => setCorrectionReason(e.target.value)}
-                                      />
-                                  </div>
-                                  <DialogFooter>
-                                      <DialogClose asChild>
-                                          <Button type="button" variant="outline" disabled={isCorrectionPending}>Cancel</Button>
-                                      </DialogClose>
-                                      <Button type="button" onClick={handleCorrectionSubmit} disabled={isCorrectionPending}>
-                                          {isCorrectionPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                                          Submit Request
-                                      </Button>
-                                  </DialogFooter>
-                              </DialogContent>
-                          </Dialog>
-                      )}
-                    </ClientOnly>
-                </div>
+              <p className="text-sm text-muted-foreground">Current Status</p>
               <div className="flex items-center gap-2 text-lg font-semibold">
                 {currentStatusDetails && (
                   <currentStatusDetails.icon className="h-5 w-5" />
@@ -224,6 +199,51 @@ export function StatusUpdatePanel({ shipment, driverId }: StatusUpdatePanelProps
               )}
             </div>
           </CardContent>
+
+          {driverLogs.length > 0 && (
+            <ClientOnly>
+                <CardFooter>
+                    <Accordion type="single" collapsible className="w-full">
+                    <AccordionItem value="item-1">
+                        <AccordionTrigger>
+                        <span className="flex items-center gap-2 text-sm">
+                            <History className="h-4 w-4" />
+                            My Status History
+                        </span>
+                        </AccordionTrigger>
+                        <AccordionContent>
+                            <ul className="space-y-4 pt-2">
+                                {driverLogs.map(log => (
+                                <li key={log.id} className="text-sm">
+                                    <div className="flex justify-between items-center">
+                                        <div>
+                                            <p className="font-medium">{STATUS_DETAILS[log.status]?.label}</p>
+                                            <p className="text-xs text-muted-foreground"><ClientFormattedDate date={log.timestamp} /></p>
+                                        </div>
+                                        {log.isFlagged ? (
+                                            <span className="text-xs text-destructive font-medium">Correction Pending</span>
+                                        ) : (
+                                            <Button 
+                                                variant="link" 
+                                                size="sm" 
+                                                className="text-xs h-auto p-0"
+                                                onClick={() => openCorrectionModal(log)}
+                                            >
+                                                <AlertTriangle className="mr-1 h-3 w-3" />
+                                                Request Correction
+                                            </Button>
+                                        )}
+                                    </div>
+                                </li>
+                                ))}
+                            </ul>
+                        </AccordionContent>
+                    </AccordionItem>
+                    </Accordion>
+                </CardFooter>
+            </ClientOnly>
+          )}
+
         </Card>
       </div>
 
@@ -248,6 +268,42 @@ export function StatusUpdatePanel({ shipment, driverId }: StatusUpdatePanelProps
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      <Dialog open={correctionModalState.isOpen} onOpenChange={closeCorrectionModal}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Request Status Correction</DialogTitle>
+            <DialogDescription>
+              Requesting a correction for status:{" "}
+              <strong>{correctionStatusDetails?.label}</strong> logged at{" "}
+              <ClientFormattedDate date={correctionModalState.logEntry?.timestamp} />. Please provide a reason for the administrator.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="py-4">
+            <Label htmlFor="correction-reason" className="sr-only">
+              Reason for correction
+            </Label>
+            <Textarea
+              id="correction-reason"
+              placeholder="e.g., I accidentally confirmed 'End Loading' too early."
+              value={correctionModalState.reason}
+              onChange={(e) => setCorrectionModalState(prev => ({...prev, reason: e.target.value }))}
+            />
+          </div>
+          <DialogFooter>
+            <DialogClose asChild>
+              <Button type="button" variant="outline" disabled={isCorrectionPending}>
+                Cancel
+              </Button>
+            </DialogClose>
+            <Button type="button" onClick={handleCorrectionSubmit} disabled={isCorrectionPending}>
+              {isCorrectionPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              Submit Request
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </>
   );
 }
+
