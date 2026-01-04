@@ -158,7 +158,7 @@ export function StatusUpdatePanel({ shipment, driverId }: StatusUpdatePanelProps
 
   const currentStatusDetails = STATUS_DETAILS[shipment.currentStatus];
   const nextStatusDetails = nextStatus ? STATUS_DETAILS[nextStatus] : null;
-  const statusToConfirmDetails = statusToConfirm ? STATUS_DETAILS[statusToConfirm] : null;
+  const statusToConfirmDetails = statusToConfirm ? STATUS_DEFAULTS[statusToConfirm] : null;
   
   const correctionStatusDetails = correctionModalState.logEntry ? STATUS_DETAILS[correctionModalState.logEntry.status] : null;
 
@@ -218,8 +218,7 @@ export function StatusUpdatePanel({ shipment, driverId }: StatusUpdatePanelProps
 
   return (
     <>
-      <div className="flex h-full min-h-[calc(100vh-4rem)] w-full items-center justify-center p-4">
-        <Card className="w-full max-w-md shadow-2xl">
+      <Card className="w-full max-w-md shadow-2xl">
           <CardHeader>
             <CardTitle className="text-xl">
               Shipment: {shipment.orderCode}
@@ -312,7 +311,6 @@ export function StatusUpdatePanel({ shipment, driverId }: StatusUpdatePanelProps
           )}
 
         </Card>
-      </div>
 
       <AlertDialog
         open={!!statusToConfirm}

@@ -1,8 +1,9 @@
-import { getDriverShipment } from "@/lib/data/shipments";
+import { getDriverShipments } from "@/lib/data/shipments";
 import { StatusUpdatePanel } from "@/components/driver/status-update-panel";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Truck, XCircle } from "lucide-react";
+import { Truck } from "lucide-react";
 import { getMockUser } from "@/lib/auth";
+import { DriverShipmentCard } from "@/components/driver/driver-shipment-card";
 
 export default async function DriverDashboardPage() {
   const driver = await getMockUser("driver");
@@ -21,10 +22,17 @@ export default async function DriverDashboardPage() {
     );
   }
 
-  // Fetch all shipments assigned to the driver, including completed/cancelled ones.
-  const shipment = await getDriverShipment(driver.id, true);
+  const allAssignedShipments = await getDriverShipments(driver.id);
+  const activeShipment = allAssignedShipments[0];
+  const queuedShipments = allAssignedShipments.slice(1);
 
-  if (!shipment || (shipment.isCompleted && shipment.currentStatus !== 'cancelled')) {
+  if (!activeShipment) {
+    // Check for a recently cancelled shipment to show the acknowledgement message
+    const lastShipment = await getDriverShipments(driver.id);
+    if (lastShipment.length > 0 && lastShipment[0].currentStatus === 'cancelled' && !lastShipment[0].cancellationAcknowledged) {
+        return <StatusUpdatePanel shipment={lastShipment[0]} driverId={driver.id} />;
+    }
+
     return (
       <div className="container mx-auto flex h-[calc(100vh-8rem)] items-center justify-center">
         <Alert className="max-w-md">
@@ -38,7 +46,29 @@ export default async function DriverDashboardPage() {
     );
   }
 
-  // If the shipment is cancelled, or active, show the update panel.
-  // The panel will decide what UI to show based on the shipment's state.
-  return <StatusUpdatePanel shipment={shipment} driverId={driver.id} />;
+  // If there is an active shipment, show the main update panel for it.
+  // And list the queued shipments below.
+  return (
+    <div className="container mx-auto max-w-md py-8 space-y-8">
+        <div>
+            <h1 className="text-2xl font-bold tracking-tight font-headline">Current Task</h1>
+            <p className="text-muted-foreground">This is your highest priority shipment.</p>
+        </div>
+        <StatusUpdatePanel shipment={activeShipment} driverId={driver.id} />
+
+        {queuedShipments.length > 0 && (
+            <div className="space-y-4">
+                <div>
+                    <h2 className="text-xl font-bold tracking-tight font-headline">Shipment Queue</h2>
+                    <p className="text-muted-foreground">These are your next assigned shipments.</p>
+                </div>
+                <div className="space-y-4">
+                    {queuedShipments.map((shipment) => (
+                        <DriverShipmentCard key={shipment.id} shipment={shipment} />
+                    ))}
+                </div>
+            </div>
+        )}
+    </div>
+  );
 }
