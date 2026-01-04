@@ -1,4 +1,5 @@
 
+
 "use client";
 
 import { useTransition, useState, useMemo } from "react";
@@ -37,6 +38,7 @@ import type { Shipment, ShipmentStatus } from "@/lib/types";
 import { SHIPMENT_STATUSES, STATUS_DETAILS } from "@/lib/constants";
 import { Loader2, AlertTriangle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { ClientOnly } from "@/components/client-only";
 
 type StatusUpdatePanelProps = {
   shipment: Shipment;
@@ -143,42 +145,44 @@ export function StatusUpdatePanel({ shipment, driverId }: StatusUpdatePanelProps
             <div>
                 <div className="flex justify-between items-center">
                     <p className="text-sm text-muted-foreground">Current Status</p>
-                    {canRequestCorrection && (
-                        <Dialog open={isCorrectionModalOpen} onOpenChange={setCorrectionModalOpen}>
-                            <DialogTrigger asChild>
-                                <Button variant="link" size="sm" className="text-xs h-auto p-0">
-                                    <AlertTriangle className="mr-1 h-3 w-3" />
-                                    Made a mistake? Request Correction
-                                </Button>
-                            </DialogTrigger>
-                            <DialogContent>
-                                <DialogHeader>
-                                    <DialogTitle>Request Status Correction</DialogTitle>
-                                    <DialogDescription>
-                                        Requesting a correction for status: <strong>{currentStatusDetails?.label}</strong>. Please provide a reason for the administrator.
-                                    </DialogDescription>
-                                </DialogHeader>
-                                <div className="py-4">
-                                    <Label htmlFor="correction-reason" className="sr-only">Reason for correction</Label>
-                                    <Textarea 
-                                        id="correction-reason"
-                                        placeholder="e.g., I accidentally confirmed 'End Loading' too early."
-                                        value={correctionReason}
-                                        onChange={(e) => setCorrectionReason(e.target.value)}
-                                    />
-                                </div>
-                                <DialogFooter>
-                                    <DialogClose asChild>
-                                        <Button type="button" variant="outline" disabled={isCorrectionPending}>Cancel</Button>
-                                    </DialogClose>
-                                    <Button type="button" onClick={handleCorrectionSubmit} disabled={isCorrectionPending}>
-                                        {isCorrectionPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                                        Submit Request
-                                    </Button>
-                                </DialogFooter>
-                            </DialogContent>
-                        </Dialog>
-                    )}
+                    <ClientOnly>
+                      {canRequestCorrection && (
+                          <Dialog open={isCorrectionModalOpen} onOpenChange={setCorrectionModalOpen}>
+                              <DialogTrigger asChild>
+                                  <Button variant="link" size="sm" className="text-xs h-auto p-0">
+                                      <AlertTriangle className="mr-1 h-3 w-3" />
+                                      Made a mistake? Request Correction
+                                  </Button>
+                              </DialogTrigger>
+                              <DialogContent>
+                                  <DialogHeader>
+                                      <DialogTitle>Request Status Correction</DialogTitle>
+                                      <DialogDescription>
+                                          Requesting a correction for status: <strong>{currentStatusDetails?.label}</strong>. Please provide a reason for the administrator.
+                                      </DialogDescription>
+                                  </DialogHeader>
+                                  <div className="py-4">
+                                      <Label htmlFor="correction-reason" className="sr-only">Reason for correction</Label>
+                                      <Textarea 
+                                          id="correction-reason"
+                                          placeholder="e.g., I accidentally confirmed 'End Loading' too early."
+                                          value={correctionReason}
+                                          onChange={(e) => setCorrectionReason(e.target.value)}
+                                      />
+                                  </div>
+                                  <DialogFooter>
+                                      <DialogClose asChild>
+                                          <Button type="button" variant="outline" disabled={isCorrectionPending}>Cancel</Button>
+                                      </DialogClose>
+                                      <Button type="button" onClick={handleCorrectionSubmit} disabled={isCorrectionPending}>
+                                          {isCorrectionPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                                          Submit Request
+                                      </Button>
+                                  </DialogFooter>
+                              </DialogContent>
+                          </Dialog>
+                      )}
+                    </ClientOnly>
                 </div>
               <div className="flex items-center gap-2 text-lg font-semibold">
                 {currentStatusDetails && (
