@@ -8,6 +8,7 @@ import { getDrivers, saveDrivers, getDriverById } from "./data/drivers";
 import { getShipments, saveShipments, getShipmentById } from "./data/shipments";
 import { getMockUser } from "./auth";
 import { correctTimestamp as aiCorrectTimestamp } from "@/ai/flows/admin-assisted-timestamp-correction";
+import { getPhilippineTimeISO } from "./utils";
 
 // --- Auth Actions ---
 export async function getMockUserAction(role: UserRole): Promise<UserProfile> {
@@ -140,13 +141,14 @@ export async function createShipmentAction(data: {
       return { error: "Invalid driver selected." };
     }
     
+    const now = getPhilippineTimeISO();
     const newShipment: Shipment = {
       id: uuidv4(),
       orderCode: `GLT-${Math.random().toString(36).substring(2, 8).toUpperCase()}`,
       assignedDriverId: data.driverId,
       assignedDriverName: driver.name,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
+      createdAt: now,
+      updatedAt: now,
       currentStatus: "pending",
       statusTimestamps: {},
       statusLogs: [],
@@ -154,7 +156,7 @@ export async function createShipmentAction(data: {
       origin: data.origin,
       destination: data.destination,
       description: data.description,
-notes: data.notes,
+      notes: data.notes,
     };
     
     await saveShipments([newShipment, ...shipments]);
@@ -186,7 +188,7 @@ export async function updateShipmentStatusAction(data: {
         if (!shipment) return { error: "Shipment not found." };
         if (!driver) return { error: "Driver not found." };
         
-        const now = new Date().toISOString();
+        const now = getPhilippineTimeISO();
 
         const newLogEntry = {
             id: uuidv4(),
@@ -251,7 +253,7 @@ export async function correctTimestampAction(data: {
             return { error: "Original log entry to correct not found." };
         }
         
-        const now = new Date().toISOString();
+        const now = getPhilippineTimeISO();
         const correctedTimestamp = now; // Use the current time for the correction.
         
         // Update the main timestamp record for the timeline view
@@ -341,7 +343,7 @@ export async function requestCorrectionAction(data: {
         shipment.statusLogs[originalIndex].isFlagged = true;
         shipment.statusLogs[originalIndex].correctionReason = reason;
 
-        shipment.updatedAt = new Date().toISOString();
+        shipment.updatedAt = getPhilippineTimeISO();
         
         shipments[shipmentIndex] = shipment;
         await saveShipments(shipments);
@@ -377,7 +379,7 @@ export async function cancelShipmentAction(
             return { error: "Shipment is already completed or cancelled." };
         }
 
-        const now = new Date().toISOString();
+        const now = getPhilippineTimeISO();
         const adminUser = await getMockUser("admin");
 
         shipment.currentStatus = 'cancelled';
@@ -430,7 +432,7 @@ export async function acknowledgeCancellationAction(shipmentId: string, driverId
             return { error: "Shipment is not cancelled." };
         }
 
-        const now = new Date().toISOString();
+        const now = getPhilippineTimeISO();
 
         shipment.cancellationAcknowledged = true;
         shipment.updatedAt = now;
