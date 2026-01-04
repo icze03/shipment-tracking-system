@@ -1,5 +1,8 @@
+
 "use client";
 
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 import type { Shipment } from "@/lib/types";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Truck, Package, CheckCircle, Clock } from "lucide-react";
@@ -11,6 +14,16 @@ type DashboardClientContentProps = {
 };
 
 export function DashboardClientContent({ shipments }: DashboardClientContentProps) {
+    const router = useRouter();
+
+    useEffect(() => {
+        const interval = setInterval(() => {
+            router.refresh();
+        }, 5000); // 5 seconds
+
+        return () => clearInterval(interval);
+    }, [router]);
+
     const statusCounts = shipments.reduce(
         (acc, shipment) => {
           if (shipment.isCompleted) {

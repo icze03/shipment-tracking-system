@@ -1,6 +1,8 @@
+
 "use client";
 
-import { useSearchParams } from 'next/navigation'
+import { useSearchParams, useRouter } from 'next/navigation'
+import { useEffect } from 'react';
 import type { Driver, Shipment } from "@/lib/types";
 import { DriverApprovalList } from "@/components/admin/driver-approval-list";
 import { ShipmentCorrectionList } from "@/components/admin/shipment-correction-list";
@@ -8,7 +10,16 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 export function ApprovalsPageClient({ drivers, shipments }: { drivers: Driver[], shipments: Shipment[] }) {
   const searchParams = useSearchParams();
+  const router = useRouter();
   const defaultTab = searchParams.get('tab') === 'corrections' ? 'corrections' : 'drivers';
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+        router.refresh();
+    }, 5000); // 5 seconds
+
+    return () => clearInterval(interval);
+  }, [router]);
 
   const pendingDrivers = drivers.filter(d => d.status === 'pending');
   const shipmentsWithFlags = shipments.filter(s => s.statusLogs.some(log => log.isFlagged));

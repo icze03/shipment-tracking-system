@@ -1,3 +1,4 @@
+
 import 'server-only'
 import { promises as fs } from 'fs';
 import path from 'path';
@@ -36,12 +37,17 @@ export async function getShipmentByOrderCode(orderCode: string): Promise<Shipmen
 
 export async function getDriverShipments(driverId: string): Promise<Shipment[]> {
     const shipments = await readData();
-    // Filter for active shipments assigned to the driver
-    const activeShipments = shipments.filter(
-        s => s.assignedDriverId === driverId && !s.isCompleted
-    );
-    // Sort by creation date, oldest first
-    return activeShipments.sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
+    const allDriverShipments = shipments.filter(s => s.assignedDriverId === driverId);
+
+    const activeShipments = allDriverShipments
+        .filter(s => !s.isCompleted || (s.currentStatus === 'cancelled' && !s.cancellationAcknowledged))
+        .sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
+
+    if (activeShipments.some(s => s.currentStatus === 'cancelled' && !s.cancellationAcknowledged)) {
+        return activeShipments.filter(s => s.currentStatus === 'cancelled' && !s.cancellationAcknowledged);
+    }
+    
+    return activeShipments;
 }
 
 

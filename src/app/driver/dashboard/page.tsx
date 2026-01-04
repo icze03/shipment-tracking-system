@@ -1,13 +1,53 @@
+
+"use client";
+
+import { useEffect, useState, useCallback } from "react";
+import { useRouter } from "next/navigation";
 import { getDriverShipments } from "@/lib/data/shipments";
 import { StatusUpdatePanel } from "@/components/driver/status-update-panel";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Truck } from "lucide-react";
 import { getMockUser } from "@/lib/auth";
 import { DriverShipmentCard } from "@/components/driver/driver-shipment-card";
+import type { UserProfile, Shipment } from "@/lib/types";
 
-export default async function DriverDashboardPage() {
-  const driver = await getMockUser("driver");
-  
+export default function DriverDashboardPage() {
+  const router = useRouter();
+  const [driver, setDriver] = useState<UserProfile | null>(null);
+  const [allAssignedShipments, setAllAssignedShipments] = useState<Shipment[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  const fetchDriverAndShipments = useCallback(async () => {
+    const driverUser = await getMockUser("driver");
+    setDriver(driverUser);
+    if (driverUser) {
+      const shipments = await getDriverShipments(driverUser.id);
+      setAllAssignedShipments(shipments);
+    }
+    setIsLoading(false);
+  }, []);
+
+  useEffect(() => {
+    fetchDriverAndShipments();
+  }, [fetchDriverAndShipments]);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      fetchDriverAndShipments();
+      router.refresh();
+    }, 5000); // 5 seconds
+
+    return () => clearInterval(interval);
+  }, [router, fetchDriverAndShipments]);
+
+  if (isLoading) {
+    return (
+      <div className="container mx-auto flex h-[calc(100vh-8rem)] items-center justify-center">
+        <p>Loading dashboard...</p>
+      </div>
+    );
+  }
+
   if (!driver) {
     return (
         <div className="container mx-auto flex h-[calc(100vh-8rem)] items-center justify-center">
@@ -22,17 +62,10 @@ export default async function DriverDashboardPage() {
     );
   }
 
-  const allAssignedShipments = await getDriverShipments(driver.id);
   const activeShipment = allAssignedShipments[0];
   const queuedShipments = allAssignedShipments.slice(1);
 
   if (!activeShipment) {
-    // Check for a recently cancelled shipment to show the acknowledgement message
-    const lastShipment = await getDriverShipments(driver.id);
-    if (lastShipment.length > 0 && lastShipment[0].currentStatus === 'cancelled' && !lastShipment[0].cancellationAcknowledged) {
-        return <StatusUpdatePanel shipment={lastShipment[0]} driverId={driver.id} />;
-    }
-
     return (
       <div className="container mx-auto flex h-[calc(100vh-8rem)] items-center justify-center">
         <Alert className="max-w-md">

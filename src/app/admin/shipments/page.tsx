@@ -1,12 +1,52 @@
+
+"use client";
+
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { PlusCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { getShipments } from "@/lib/data/shipments";
 import { ShipmentDataTable } from "@/components/admin/shipment-data-table";
 import { columns } from "@/components/admin/shipment-columns";
 import Link from "next/link";
+import { useToast } from "@/hooks/use-toast";
 
-export default async function AdminShipmentsPage() {
-  const shipments = await getShipments();
+// This is now a client component to handle refresh
+export default function AdminShipmentsPage() {
+  const router = useRouter();
+  const [shipments, setShipments] = React.useState<Awaited<ReturnType<typeof getShipments>>>([]);
+  const [isLoading, setIsLoading] = React.useState(true);
+  const { toast } = useToast();
+
+  const fetchShipments = React.useCallback(async () => {
+    try {
+      const data = await getShipments();
+      setShipments(data);
+    } catch (error) {
+      console.error("Failed to fetch shipments:", error);
+      toast({
+        title: "Error",
+        description: "Failed to load shipment data. Please try again later.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  }, [toast]);
+  
+  useEffect(() => {
+    fetchShipments();
+  }, [fetchShipments]);
+
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      router.refresh();
+      fetchShipments();
+    }, 5000); // Refresh every 5 seconds
+
+    return () => clearInterval(interval);
+  }, [router, fetchShipments]);
 
   return (
     <div className="space-y-6">
