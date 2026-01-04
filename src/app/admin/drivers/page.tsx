@@ -5,7 +5,6 @@ import { columns } from "@/components/admin/driver-columns";
 
 export default async function DriversPage() {
   const drivers = await getDrivers();
-  const approvedDrivers = drivers.filter(d => d.status === 'active');
 
   return (
     <div className="space-y-6">
@@ -13,11 +12,11 @@ export default async function DriversPage() {
         <div>
           <h2 className="text-2xl font-bold tracking-tight font-headline">Driver Management</h2>
           <p className="text-muted-foreground">
-            View and manage your team of approved drivers.
+            View and manage all drivers, including pending registrations.
           </p>
         </div>
       </div>
-      <DriverDataTable columns={columns} data={approvedDrivers} />
+      <DriverDataTable columns={columns} data={drivers} />
     </div>
   );
 }
