@@ -7,7 +7,7 @@ import { getDriverShipments } from "@/lib/data/shipments";
 import { StatusUpdatePanel } from "@/components/driver/status-update-panel";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Truck } from "lucide-react";
-import { getMockUser } from "@/lib/auth";
+import { getMockUserAction } from "@/lib/actions";
 import { DriverShipmentCard } from "@/components/driver/driver-shipment-card";
 import type { UserProfile, Shipment } from "@/lib/types";
 
@@ -18,7 +18,7 @@ export default function DriverDashboardPage() {
   const [isLoading, setIsLoading] = useState(true);
 
   const fetchDriverAndShipments = useCallback(async () => {
-    const driverUser = await getMockUser("driver");
+    const driverUser = await getMockUserAction("driver");
     setDriver(driverUser);
     if (driverUser) {
       const shipments = await getDriverShipments(driverUser.id);
