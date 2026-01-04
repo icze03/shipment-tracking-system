@@ -7,7 +7,7 @@ import type { Driver, Shipment, ShipmentStatus, UserProfile, UserRole } from "./
 import { getDrivers, saveDrivers, getDriverById } from "./data/drivers";
 import { getShipments, saveShipments, getShipmentById } from "./data/shipments";
 import { getMockUser } from "./auth";
-import { correctTimestamp as aiCorrectTimestamp } from "@/ai/flows/admin-assisted-timestamp_correction";
+import { correctTimestamp as aiCorrectTimestamp } from "@/ai/flows/admin-assisted-timestamp-correction";
 
 // --- Auth Actions ---
 export async function getMockUserAction(role: UserRole): Promise<UserProfile> {
@@ -252,18 +252,22 @@ export async function correctTimestampAction(data: {
         }
         
         const now = new Date().toISOString();
-        const correctedTimestamp = now;
+        const correctedTimestamp = now; // Use the current time for the correction.
         
+        // Update the main timestamp record for the timeline view
         shipment.statusTimestamps[statusType] = correctedTimestamp;
         shipment.updatedAt = now;
 
+        // Unflag the original log entry
         shipment.statusLogs[logToCorrectIndex].isFlagged = false;
 
         const adminUser = await getMockUser("admin");
+        
+        // Create a new log entry for this administrative action
         const correctionLogEntry = {
             id: uuidv4(),
             status: statusType,
-            timestamp: now,
+            timestamp: correctedTimestamp, // Log the correction at the time it happened.
             actorId: adminUser.id,
             actorName: adminUser.name,
             source: 'admin' as const,
@@ -272,11 +276,10 @@ export async function correctTimestampAction(data: {
         };
         shipment.statusLogs.push(correctionLogEntry);
         
+        // Re-sort logs and determine the new current status based on the latest valid timestamp
         shipment.statusLogs.sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());
-
         const latestStatus = Object.entries(shipment.statusTimestamps)
                                   .sort(([, a], [, b]) => new Date(b!).getTime() - new Date(a!).getTime())[0];
-        
         if (latestStatus) {
             shipment.currentStatus = latestStatus[0] as ShipmentStatus;
         }
@@ -289,10 +292,11 @@ export async function correctTimestampAction(data: {
         revalidatePath('/admin/dashboard');
         revalidatePath('/admin/approvals');
 
+        // Return a confirmation object for the UI
         const aiSuggestion = {
             suggestedTimestamp: correctedTimestamp,
-            confidence: 0.95,
-            explanation: "Timestamp corrected to the current time by administrative action."
+            confidence: 1.0, // Confidence is 100% as it's a direct admin action
+            explanation: "Timestamp updated to the time of administrative correction."
         };
 
         return { success: true, aiSuggestion };
@@ -459,6 +463,8 @@ export async function acknowledgeCancellationAction(shipmentId: string, driverId
         return { error: `Failed to acknowledge cancellation: ${e.message}` };
     }
 }
+    
+
     
 
     
