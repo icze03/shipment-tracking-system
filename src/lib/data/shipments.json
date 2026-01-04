@@ -5,8 +5,8 @@
     "assignedDriverId": "f246f518-252c-45e8-9d07-bae10c0e3618",
     "assignedDriverName": "john rivera",
     "createdAt": "2026-01-04T06:29:59.032Z",
-    "updatedAt": "2026-01-04T18:21:25.422Z",
-    "currentStatus": "departed_warehouse",
+    "updatedAt": "2026-01-04T18:37:43.616Z",
+    "currentStatus": "cancelled",
     "statusTimestamps": {
       "arrived_at_warehouse": "2026-01-04T17:36:56.788Z",
       "start_loading": "2026-01-04T18:41:41.931Z",
@@ -59,13 +59,24 @@
         "actorName": "john rivera",
         "source": "driver",
         "isFlagged": false
+      },
+      {
+        "id": "c13eae5e-a54d-4c5c-8991-6e3e383567e2",
+        "status": "cancelled",
+        "timestamp": "2026-01-04T18:37:43.616Z",
+        "actorId": "admin01",
+        "actorName": "Astraea Millares",
+        "source": "admin",
+        "notes": "the supplier told me to return the product "
       }
     ],
-    "isCompleted": false,
+    "isCompleted": true,
     "origin": "muntinlupa",
     "destination": "calamba",
     "description": "100 Sacks of rice",
-    "notes": ""
+    "notes": "",
+    "cancellationReason": "the supplier told me to return the product ",
+    "driverInstructions": "return the products from muntinlupa then return here in the logistic after returning those products"
   },
   {
     "id": "dfeaeb84-96b1-4aeb-8d4f-59dccd79d700",

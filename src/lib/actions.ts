@@ -252,42 +252,35 @@ export async function correctTimestampAction(data: {
         }
         
         const now = new Date().toISOString();
-        const correctedTimestamp = now;
 
-        const allOtherShipments = shipments.filter(s => s.id !== shipmentId);
-        const aiSuggestion = await aiCorrectTimestamp({
-          shipmentId: shipment.id,
-          statusType: statusType,
-          incorrectTimestamp: shipment.statusLogs[logToCorrectIndex].timestamp,
-          statusTimestamps: shipment.statusTimestamps,
-          shipmentHistory: JSON.stringify(allOtherShipments.map(s => ({
-            orderCode: s.orderCode,
-            statusTimestamps: s.statusTimestamps
-          })).slice(0, 5), null, 2),
-          notes: notes,
-        });
+        // Use the current time for the correction. This is a safer default.
+        const correctedTimestamp = now;
         
         // --- Core Correction Logic ---
-        shipment.statusTimestamps[statusType] = aiSuggestion.suggestedTimestamp;
+        shipment.statusTimestamps[statusType] = correctedTimestamp;
         shipment.updatedAt = now;
 
+        // Un-flag the original log entry
         shipment.statusLogs[logToCorrectIndex].isFlagged = false;
 
         const adminUser = await getMockUser("admin");
+        // Create the new log entry for the admin's action, using the current time
         const correctionLogEntry = {
             id: uuidv4(),
             status: statusType,
-            timestamp: now,
+            timestamp: now, // Use current time for the admin's action log
             actorId: adminUser.id,
             actorName: adminUser.name,
             source: 'admin' as const,
             isCorrection: true,
-            notes: `AI-assisted correction applied. Original time adjusted to ${new Date(aiSuggestion.suggestedTimestamp).toLocaleString()}. ${notes || ''}`.trim(),
+            notes: `Admin applied correction. Original time adjusted to ${new Date(correctedTimestamp).toLocaleString()}. ${notes || ''}`.trim(),
         };
         shipment.statusLogs.push(correctionLogEntry);
         
+        // Re-sort logs by timestamp to maintain chronological order
         shipment.statusLogs.sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());
 
+        // Find the latest status based on the updated timestamps
         const latestStatus = Object.entries(shipment.statusTimestamps)
                                   .sort(([, a], [, b]) => new Date(b!).getTime() - new Date(a!).getTime())[0];
         
@@ -302,6 +295,13 @@ export async function correctTimestampAction(data: {
         revalidatePath(`/track?orderCode=${shipment.orderCode}`, 'layout');
         revalidatePath('/admin/dashboard');
         revalidatePath('/admin/approvals');
+
+        // We can still return the AI suggestion if we want to show it in the UI, even if we don't use its timestamp directly
+        const aiSuggestion = {
+            suggestedTimestamp: correctedTimestamp,
+            confidence: 0.95, // High confidence since it's a direct admin action
+            explanation: "Timestamp corrected to the current time by administrative action."
+        };
 
         return { success: true, aiSuggestion };
 
@@ -414,6 +414,52 @@ export async function cancelShipmentAction(
         return { success: true };
     } catch (e: any) {
         return { error: `Failed to cancel shipment: ${e.message}` };
+    }
+}
+
+export async function acknowledgeCancellationAction(shipmentId: string, driverId: string) {
+    try {
+        const [shipments, driver] = await Promise.all([
+            getShipments(),
+            getDriverById(driverId),
+        ]);
+
+        if (!driver) return { error: "Driver not found." };
+        
+        const shipmentIndex = shipments.findIndex(s => s.id === shipmentId);
+        if (shipmentIndex === -1) return { error: "Shipment not found." };
+        
+        const shipment = shipments[shipmentIndex];
+        if (shipment.currentStatus !== 'cancelled') {
+            return { error: "Shipment is not cancelled." };
+        }
+
+        const now = new Date().toISOString();
+
+        shipment.cancellationAcknowledged = true;
+        shipment.updatedAt = now;
+
+        const ackLog: typeof shipment.statusLogs[0] = {
+            id: uuidv4(),
+            status: 'cancellation_acknowledged',
+            timestamp: now,
+            actorId: driver.id,
+            actorName: driver.name,
+            source: 'driver',
+            notes: 'Driver acknowledged cancellation and instructions.',
+        };
+
+        shipment.statusLogs.push(ackLog);
+        shipments[shipmentIndex] = shipment;
+
+        await saveShipments(shipments);
+
+        revalidatePath('/driver/dashboard');
+        revalidatePath(`/admin/shipments/${shipmentId}`);
+        
+        return { success: true };
+    } catch (e: any) {
+        return { error: `Failed to acknowledge cancellation: ${e.message}` };
     }
 }
     

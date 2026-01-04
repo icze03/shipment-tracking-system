@@ -38,36 +38,7 @@ export default async function DriverDashboardPage() {
     );
   }
 
-  // If the shipment is cancelled, show a special message.
-  if (shipment.currentStatus === 'cancelled') {
-    return (
-        <div className="container mx-auto flex h-[calc(100vh-8rem)] items-center justify-center">
-            <Alert variant="destructive" className="max-w-lg">
-                <XCircle className="h-4 w-4" />
-                <AlertTitle>Shipment {shipment.orderCode} Cancelled</AlertTitle>
-                <AlertDescription>
-                    <div className="space-y-4">
-                        <p>This shipment has been cancelled by an administrator.</p>
-                        {shipment.cancellationReason && (
-                            <div>
-                                <h4 className="font-bold">Reason:</h4>
-                                <p>{shipment.cancellationReason}</p>
-                            </div>
-                        )}
-                        {shipment.driverInstructions && (
-                            <div>
-                                <h4 className="font-bold">Next Instructions:</h4>
-                                <p>{shipment.driverInstructions}</p>
-                            </div>
-                        )}
-                         <p className="pt-2">Please contact your administrator if you have any questions.</p>
-                    </div>
-                </AlertDescription>
-            </Alert>
-        </div>
-    );
-  }
-
-  // If the shipment is active, show the status update panel.
+  // If the shipment is cancelled, or active, show the update panel.
+  // The panel will decide what UI to show based on the shipment's state.
   return <StatusUpdatePanel shipment={shipment} driverId={driver.id} />;
 }

@@ -11,6 +11,7 @@ import {
   Container,
   Anchor,
   XCircle,
+  ThumbsUp,
 } from "lucide-react";
 
 export const SHIPMENT_STATUSES: ShipmentStatus[] = [
@@ -27,6 +28,7 @@ export const SHIPMENT_STATUSES: ShipmentStatus[] = [
 export const ALL_STATUSES: ShipmentStatus[] = [
   "pending",
   ...SHIPMENT_STATUSES,
+  "cancellation_acknowledged",
 ];
 
 export const STATUS_DETAILS: Record<
@@ -43,4 +45,5 @@ export const STATUS_DETAILS: Record<
   end_unloading: { label: "Finish Unloading", icon: MapPin },
   trip_completed: { label: "Trip Completed", icon: CheckCircle2 },
   cancelled: { label: "Cancelled", icon: XCircle },
+  cancellation_acknowledged: { label: "Cancellation Acknowledged", icon: ThumbsUp },
 };

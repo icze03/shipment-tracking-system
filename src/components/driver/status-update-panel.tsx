@@ -37,12 +37,13 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { requestCorrectionAction, updateShipmentStatusAction } from "@/lib/actions";
+import { acknowledgeCancellationAction, requestCorrectionAction, updateShipmentStatusAction } from "@/lib/actions";
 import type { Shipment, ShipmentStatus, StatusLog } from "@/lib/types";
 import { SHIPMENT_STATUSES, STATUS_DETAILS } from "@/lib/constants";
-import { Loader2, AlertTriangle, History } from "lucide-react";
+import { Loader2, AlertTriangle, History, XCircle, ThumbsUp } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { ClientOnly } from "@/components/client-only";
 import { ClientFormattedDate } from "../client-formatted-date";
@@ -55,6 +56,7 @@ type StatusUpdatePanelProps = {
 export function StatusUpdatePanel({ shipment, driverId }: StatusUpdatePanelProps) {
   const [isUpdatePending, startUpdateTransition] = useTransition();
   const [isCorrectionPending, startCorrectionTransition] = useTransition();
+  const [isAckPending, startAckTransition] = useTransition();
   
   const [statusToConfirm, setStatusToConfirm] = useState<ShipmentStatus | null>(null);
   
@@ -126,6 +128,17 @@ export function StatusUpdatePanel({ shipment, driverId }: StatusUpdatePanelProps
         }
     });
   };
+  
+  const handleAcknowledgeCancellation = () => {
+    startAckTransition(async () => {
+        const result = await acknowledgeCancellationAction(shipment.id, driverId);
+         if (result.error) {
+            toast({ title: "Acknowledgement Failed", description: result.error, variant: "destructive" });
+        } else {
+            toast({ title: "Cancellation Acknowledged", description: "Your confirmation has been logged." });
+        }
+    });
+  }
 
   const openCorrectionModal = (log: StatusLog) => {
     setCorrectionModalState({ isOpen: true, logEntry: log, reason: "" });
@@ -148,6 +161,60 @@ export function StatusUpdatePanel({ shipment, driverId }: StatusUpdatePanelProps
   const statusToConfirmDetails = statusToConfirm ? STATUS_DETAILS[statusToConfirm] : null;
   
   const correctionStatusDetails = correctionModalState.logEntry ? STATUS_DETAILS[correctionModalState.logEntry.status] : null;
+
+  // Render cancellation UI if status is cancelled
+  if (shipment.currentStatus === 'cancelled') {
+    const wasOnTheWay = shipment.statusTimestamps.departed_warehouse;
+    const ackButtonText = wasOnTheWay ? "Confirm Product Return" : "Acknowledge & Return to Logistics";
+
+    if (shipment.cancellationAcknowledged) {
+        return (
+            <div className="container mx-auto flex h-[calc(100vh-8rem)] items-center justify-center">
+                <Alert className="max-w-lg">
+                    <ThumbsUp className="h-4 w-4" />
+                    <AlertTitle>Cancellation Acknowledged</AlertTitle>
+                    <AlertDescription>
+                        Your confirmation for shipment {shipment.orderCode} has been logged. Please wait for your next assignment.
+                    </AlertDescription>
+                </Alert>
+            </div>
+        );
+    }
+    
+    return (
+        <div className="container mx-auto flex h-[calc(100vh-8rem)] items-center justify-center">
+            <Alert variant="destructive" className="max-w-lg">
+                <XCircle className="h-4 w-4" />
+                <AlertTitle>Shipment {shipment.orderCode} Cancelled</AlertTitle>
+                <AlertDescription>
+                    <div className="space-y-4">
+                        <p>This shipment has been cancelled by an administrator.</p>
+                        {shipment.cancellationReason && (
+                            <div>
+                                <h4 className="font-bold">Reason:</h4>
+                                <p>{shipment.cancellationReason}</p>
+                            </div>
+                        )}
+                        {shipment.driverInstructions && (
+                            <div>
+                                <h4 className="font-bold">Next Instructions:</h4>
+                                <p>{shipment.driverInstructions}</p>
+                            </div>
+                        )}
+                        <Button 
+                            className="w-full mt-4" 
+                            onClick={handleAcknowledgeCancellation}
+                            disabled={isAckPending}
+                        >
+                           {isAckPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <ThumbsUp className="mr-2 h-4 w-4" />}
+                           {ackButtonText}
+                        </Button>
+                    </div>
+                </AlertDescription>
+            </Alert>
+        </div>
+    );
+  }
 
   return (
     <>
@@ -306,4 +373,3 @@ export function StatusUpdatePanel({ shipment, driverId }: StatusUpdatePanelProps
     </>
   );
 }
-

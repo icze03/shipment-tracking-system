@@ -27,7 +27,8 @@ export type ShipmentStatus =
   | "start_unloading"
   | "end_unloading"
   | "trip_completed"
-  | "cancelled";
+  | "cancelled"
+  | "cancellation_acknowledged";
 
 export type StatusLogSource = "driver" | "admin" | "driver-correction-request";
 
@@ -61,4 +62,5 @@ export interface Shipment {
   origin: string;
   cancellationReason?: string;
   driverInstructions?: string;
+  cancellationAcknowledged?: boolean;
 }
