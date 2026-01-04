@@ -7,6 +7,7 @@ import type { Driver, Shipment, ShipmentStatus, UserProfile, UserRole } from "./
 import { getDrivers, saveDrivers, getDriverById } from "./data/drivers";
 import { getShipments, saveShipments, getShipmentById } from "./data/shipments";
 import { getMockUser } from "./auth";
+import { correctTimestamp } from "@/ai/flows/admin-assisted-timestamp-correction";
 
 // --- Auth Actions ---
 export async function getMockUserAction(role: UserRole): Promise<UserProfile> {
@@ -14,7 +15,7 @@ export async function getMockUserAction(role: UserRole): Promise<UserProfile> {
 }
 
 export async function validateCredentialsAction(username: string, password: string): Promise<{ success: boolean; role?: UserRole; userId?: string; error?: string; }> {
-    if (username.toLowerCase() === 'astraea' && password === 'password') {
+    if (username.toLowerCase() === 'admin' && password === 'password') {
         const adminUser = await getMockUser('admin');
         return { success: true, role: 'admin', userId: adminUser.id };
     }
@@ -57,16 +58,17 @@ export async function addDriverAction(data: {
 
     const newDriver: Driver = {
       id: uuidv4(),
-      status: "pending",
+      status: "pending", // New drivers start as pending
       name: data.name,
       email: data.email,
       phone: data.phone,
       licenseNumber: data.licenseNumber,
       // In a real app, hash the password securely. Storing plain text is insecure.
-      passwordHash: data.password || 'password', // Default password if not provided
+      passwordHash: data.password || 'password123', // Default password if not provided
     };
     await saveDrivers([newDriver, ...drivers]);
     revalidatePath("/admin/approvals");
+    revalidatePath("/login"); // In case they try to log in before approval
     return { success: true, driver: newDriver };
   } catch (e: any) {
     return { error: `Failed to add driver: ${e.message}` };
@@ -160,6 +162,7 @@ notes: data.notes,
     revalidatePath("/admin/dashboard");
     revalidatePath("/admin/shipments");
     revalidatePath("/admin/reports");
+    revalidatePath("/driver/dashboard");
 
     return { success: true, shipment: newShipment };
   } catch (e: any) {
@@ -247,12 +250,22 @@ export async function correctTimestampAction(data: {
         if (logToCorrectIndex === -1) {
             return { error: "Original log entry to correct not found." };
         }
-
-        // Simulate AI suggesting a new timestamp (e.g., one hour later)
-        const incorrectDate = new Date(shipment.statusLogs[logToCorrectIndex].timestamp);
-        incorrectDate.setHours(incorrectDate.getHours() + 1);
-        const suggestedTimestamp = incorrectDate.toISOString();
         const now = new Date().toISOString();
+        const allOtherShipments = shipments.filter(s => s.id !== shipmentId);
+        
+        const aiSuggestion = await correctTimestamp({
+          shipmentId: shipment.id,
+          statusType: statusType,
+          incorrectTimestamp: shipment.statusLogs[logToCorrectIndex].timestamp,
+          statusTimestamps: shipment.statusTimestamps,
+          shipmentHistory: JSON.stringify(allOtherShipments.map(s => ({
+            orderCode: s.orderCode,
+            statusTimestamps: s.statusTimestamps
+          })).slice(0, 5), null, 2),
+          notes: notes,
+        });
+
+        const suggestedTimestamp = aiSuggestion.suggestedTimestamp;
         
         // --- Core Correction Logic ---
         // 1. Update the main statusTimestamps map with the AI-suggested time for the timeline view
@@ -267,21 +280,27 @@ export async function correctTimestampAction(data: {
         const correctionLogEntry = {
             id: uuidv4(),
             status: statusType,
-            timestamp: now, // **FIXED**: Use the current time for the admin's action log
+            timestamp: now,
             actorId: adminUser.id,
             actorName: adminUser.name,
             source: 'admin' as const,
             isCorrection: true,
-            notes: `AI-assisted correction applied. Original time adjusted to ${new Date(suggestedTimestamp).toLocaleTimeString()}. ${notes || ''}`.trim(),
+            notes: `AI-assisted correction applied. Original time adjusted to ${new Date(suggestedTimestamp).toLocaleString()}. ${notes || ''}`.trim(),
         };
         shipment.statusLogs.push(correctionLogEntry);
         
         // 4. (Optional but good practice) Re-sort logs by timestamp to maintain chronological order
+        // This is tricky because the admin action time (now) might be different from the corrected historical time (suggestedTimestamp)
+        // We sort the LOGS by their own timestamp.
         shipment.statusLogs.sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());
 
-        // 5. Update the currentStatus if the corrected status is now the latest one chronologically
-        const latestLog = shipment.statusLogs[shipment.statusLogs.length - 1];
-        shipment.currentStatus = latestLog.status;
+        // 5. Update the currentStatus based on the latest entry in the *historical* timeline
+        const latestStatus = Object.entries(shipment.statusTimestamps)
+                                  .sort(([, a], [, b]) => new Date(b!).getTime() - new Date(a!).getTime())[0];
+        
+        if (latestStatus) {
+            shipment.currentStatus = latestStatus[0] as ShipmentStatus;
+        }
         
         shipments[shipmentIndex] = shipment;
         await saveShipments(shipments);
@@ -289,13 +308,7 @@ export async function correctTimestampAction(data: {
         revalidatePath(`/admin/shipments/${shipmentId}`);
         revalidatePath(`/track?orderCode=${shipment.orderCode}`, 'layout');
         revalidatePath('/admin/dashboard');
-
-        // This would be the actual AI Flow response in a real app
-        const aiSuggestion = {
-            suggestedTimestamp: suggestedTimestamp,
-            confidence: 0.85,
-            explanation: "Based on historical data and typical transit times, the timestamp was adjusted by one hour to better align with expected delivery patterns."
-        };
+        revalidatePath('/admin/approvals');
 
         return { success: true, aiSuggestion };
 
@@ -303,6 +316,7 @@ export async function correctTimestampAction(data: {
         return { error: e.message };
     }
 }
+
 
 export async function requestCorrectionAction(data: {
     shipmentId: string;
@@ -325,10 +339,10 @@ export async function requestCorrectionAction(data: {
         const shipment = shipments[shipmentIndex];
 
         // Find the specific log entry to flag, looking for the most recent one matching the status and driver
-        const logToFlagIndex = shipment.statusLogs.slice().reverse().findIndex(log => log.status === statusToCorrect && log.actorId === driverId && !log.isCorrection);
+        const logToFlagIndex = shipment.statusLogs.slice().reverse().findIndex(log => log.status === statusToCorrect && log.actorId === driverId && !log.isCorrection && !log.isFlagged);
         
         if (logToFlagIndex === -1) {
-            return { error: "Could not find the original status update to flag for correction." };
+            return { error: "Could not find the original status update to flag for correction. It may have already been flagged or corrected." };
         }
         
         // Get the correct index in the original array
@@ -347,9 +361,12 @@ export async function requestCorrectionAction(data: {
         revalidatePath('/driver/dashboard');
         revalidatePath(`/admin/shipments/${shipmentId}`);
         revalidatePath(`/track?orderCode=${shipment.orderCode}`, 'layout');
+        revalidatePath('/admin/approvals');
 
         return { success: true };
     } catch (e: any) {
         return { error: `Failed to submit correction request: ${e.message}` };
     }
 }
+
+    
