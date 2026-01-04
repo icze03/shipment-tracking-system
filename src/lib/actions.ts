@@ -252,26 +252,27 @@ export async function correctTimestampAction(data: {
         const incorrectDate = new Date(shipment.statusLogs[logToCorrectIndex].timestamp);
         incorrectDate.setHours(incorrectDate.getHours() + 1);
         const suggestedTimestamp = incorrectDate.toISOString();
+        const now = new Date().toISOString();
         
         // --- Core Correction Logic ---
-        // 1. Update the main statusTimestamps map with the corrected time
+        // 1. Update the main statusTimestamps map with the AI-suggested time
         shipment.statusTimestamps[statusType] = suggestedTimestamp;
-        shipment.updatedAt = new Date().toISOString();
+        shipment.updatedAt = now; // Use the current time for the update
 
         // 2. Mark the old, incorrect log entry as no longer flagged
         shipment.statusLogs[logToCorrectIndex].isFlagged = false;
 
-        // 3. Add a *new* log entry for the correction itself
+        // 3. Add a *new* log entry for the correction itself, using the current time
         const adminUser = await getMockUser("admin");
         const correctionLogEntry = {
             id: uuidv4(),
             status: statusType,
-            timestamp: suggestedTimestamp,
+            timestamp: now, // Use the current time for the admin's action
             actorId: adminUser.id,
             actorName: adminUser.name,
             source: 'admin' as const,
             isCorrection: true,
-            notes: `AI-assisted correction. ${notes || ''}`.trim(),
+            notes: `AI-assisted correction applied. Original time adjusted to ${new Date(suggestedTimestamp).toLocaleTimeString()}. ${notes || ''}`.trim(),
         };
         shipment.statusLogs.push(correctionLogEntry);
         
