@@ -14,7 +14,7 @@ export async function getMockUserAction(role: UserRole): Promise<UserProfile> {
 }
 
 export async function validateCredentialsAction(username: string, password: string): Promise<{ success: boolean; role?: UserRole; userId?: string; error?: string; }> {
-    if (username.toLowerCase() === 'admin' && password === 'password') {
+    if (username.toLowerCase() === 'astraea' && password === 'password') {
         const adminUser = await getMockUser('admin');
         return { success: true, role: 'admin', userId: adminUser.id };
     }

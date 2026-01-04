@@ -9,7 +9,7 @@ export async function getMockUser(role: UserRole): Promise<UserProfile> {
   if (role === "admin") {
     return {
       id: "admin01",
-      name: "Admin User",
+      name: "Astraea Millares",
       email: "admin@greenlane.com",
       role: "admin",
     };
