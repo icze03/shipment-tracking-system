@@ -1,14 +1,37 @@
 [
   {
+    "id": "37750a0d-fb50-404a-b4a4-6b9965811bf1",
+    "orderCode": "GLT-HS3HJ2",
+    "assignedDriverId": "f246f518-252c-45e8-9d07-bae10c0e3618",
+    "assignedDriverName": "john rivera",
+    "createdAt": "2026-01-04T06:29:59.032Z",
+    "updatedAt": "2026-01-04T06:29:59.032Z",
+    "currentStatus": "pending",
+    "statusTimestamps": {},
+    "statusLogs": [],
+    "isCompleted": false,
+    "origin": "muntinlupa",
+    "destination": "calamba",
+    "description": "100 Sacks of rice",
+    "notes": ""
+  },
+  {
     "id": "dfeaeb84-96b1-4aeb-8d4f-59dccd79d700",
     "orderCode": "GLT-0XI1AR",
     "assignedDriverId": "f246f518-252c-45e8-9d07-bae10c0e3618",
     "assignedDriverName": "john rivera",
     "createdAt": "2026-01-02T11:16:52.108Z",
-    "updatedAt": "2026-01-02T11:17:19.673Z",
-    "currentStatus": "arrived_at_warehouse",
+    "updatedAt": "2026-01-04T06:28:16.623Z",
+    "currentStatus": "trip_completed",
     "statusTimestamps": {
-      "arrived_at_warehouse": "2026-01-02T11:17:19.673Z"
+      "arrived_at_warehouse": "2026-01-02T11:17:19.673Z",
+      "start_loading": "2026-01-04T06:16:09.767Z",
+      "end_loading": "2026-01-04T06:16:16.161Z",
+      "departed_warehouse": "2026-01-04T06:16:21.077Z",
+      "arrived_at_destination": "2026-01-04T06:28:13.884Z",
+      "start_unloading": "2026-01-04T06:28:14.802Z",
+      "end_unloading": "2026-01-04T06:28:15.629Z",
+      "trip_completed": "2026-01-04T06:28:16.623Z"
     },
     "statusLogs": [
       {
@@ -18,9 +41,65 @@
         "actorId": "f246f518-252c-45e8-9d07-bae10c0e3618",
         "actorName": "john rivera",
         "source": "driver"
+      },
+      {
+        "id": "28deb605-fe05-4726-902f-bc177c18ecfe",
+        "status": "start_loading",
+        "timestamp": "2026-01-04T06:16:09.767Z",
+        "actorId": "f246f518-252c-45e8-9d07-bae10c0e3618",
+        "actorName": "john rivera",
+        "source": "driver"
+      },
+      {
+        "id": "fad7a0f3-0bf7-43d7-bfbb-a9c64fc3bd0e",
+        "status": "end_loading",
+        "timestamp": "2026-01-04T06:16:16.161Z",
+        "actorId": "f246f518-252c-45e8-9d07-bae10c0e3618",
+        "actorName": "john rivera",
+        "source": "driver"
+      },
+      {
+        "id": "e07af317-60b7-4d84-982b-e2ac73c403c8",
+        "status": "departed_warehouse",
+        "timestamp": "2026-01-04T06:16:21.077Z",
+        "actorId": "f246f518-252c-45e8-9d07-bae10c0e3618",
+        "actorName": "john rivera",
+        "source": "driver"
+      },
+      {
+        "id": "0d1bd308-8a3e-4e85-af7d-d3367badb9f2",
+        "status": "arrived_at_destination",
+        "timestamp": "2026-01-04T06:28:13.884Z",
+        "actorId": "f246f518-252c-45e8-9d07-bae10c0e3618",
+        "actorName": "john rivera",
+        "source": "driver"
+      },
+      {
+        "id": "3df950ff-d842-4ef9-a9bf-c383e9795985",
+        "status": "start_unloading",
+        "timestamp": "2026-01-04T06:28:14.802Z",
+        "actorId": "f246f518-252c-45e8-9d07-bae10c0e3618",
+        "actorName": "john rivera",
+        "source": "driver"
+      },
+      {
+        "id": "fb42f278-4fcf-4ce0-9442-2a8d872e5719",
+        "status": "end_unloading",
+        "timestamp": "2026-01-04T06:28:15.629Z",
+        "actorId": "f246f518-252c-45e8-9d07-bae10c0e3618",
+        "actorName": "john rivera",
+        "source": "driver"
+      },
+      {
+        "id": "c7e1bee8-b690-4e50-aa0a-59ad14f9477e",
+        "status": "trip_completed",
+        "timestamp": "2026-01-04T06:28:16.623Z",
+        "actorId": "f246f518-252c-45e8-9d07-bae10c0e3618",
+        "actorName": "john rivera",
+        "source": "driver"
       }
     ],
-    "isCompleted": false,
+    "isCompleted": true,
     "origin": "muntinlupa",
     "destination": "palawan",
     "description": "1 automobile",

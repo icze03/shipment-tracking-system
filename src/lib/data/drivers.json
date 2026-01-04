@@ -1,14 +1,5 @@
 [
   {
-    "id": "4d796881-4ff0-4560-87fc-112a249a809a",
-    "status": "pending",
-    "name": "klein imperio",
-    "email": "kleinimperio03@gmail.com",
-    "phone": "09956405671",
-    "licenseNumber": "tr234k123",
-    "passwordHash": "kleinimmperio"
-  },
-  {
     "id": "f246f518-252c-45e8-9d07-bae10c0e3618",
     "status": "active",
     "name": "john rivera",
@@ -16,5 +7,14 @@
     "phone": "09123456789",
     "licenseNumber": "d109567123",
     "passwordHash": "johnrivera"
+  },
+  {
+    "id": "4d796881-4ff0-4560-87fc-112a249a809a",
+    "status": "active",
+    "name": "klein imperio",
+    "email": "kleinimperio03@gmail.com",
+    "phone": "09956405671",
+    "licenseNumber": "tr234k123",
+    "passwordHash": "kleinimmperio"
   }
 ]
