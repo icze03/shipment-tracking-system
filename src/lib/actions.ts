@@ -323,16 +323,19 @@ export async function requestCorrectionAction(data: {
         
         const shipment = shipments[shipmentIndex];
 
-        // Find the specific log entry to flag
-        const logToFlagIndex = shipment.statusLogs.findIndex(log => log.status === statusToCorrect && log.actorId === driverId && !log.isCorrection);
+        // Find the specific log entry to flag, looking for the most recent one matching the status and driver
+        const logToFlagIndex = shipment.statusLogs.slice().reverse().findIndex(log => log.status === statusToCorrect && log.actorId === driverId && !log.isCorrection);
         
         if (logToFlagIndex === -1) {
             return { error: "Could not find the original status update to flag for correction." };
         }
+        
+        // Get the correct index in the original array
+        const originalIndex = shipment.statusLogs.length - 1 - logToFlagIndex;
 
         // Flag the original entry and add the reason
-        shipment.statusLogs[logToFlagIndex].isFlagged = true;
-        shipment.statusLogs[logToFlagIndex].correctionReason = reason;
+        shipment.statusLogs[originalIndex].isFlagged = true;
+        shipment.statusLogs[originalIndex].correctionReason = reason;
 
         shipment.updatedAt = new Date().toISOString();
         
