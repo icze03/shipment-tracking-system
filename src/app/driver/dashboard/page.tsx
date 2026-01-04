@@ -8,5 +8,5 @@ export default async function DriverDashboardPage() {
   const driver = await getMockUserAction("driver");
   const shipments = driver ? await getDriverShipments(driver.id) : [];
 
-  return <DriverDashboardClient initialDriver={driver} initialShipments={shipments} />;
+  return <DriverDashboardClient driver={driver} shipments={shipments} />;
 }

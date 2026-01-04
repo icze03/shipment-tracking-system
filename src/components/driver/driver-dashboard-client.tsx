@@ -3,43 +3,20 @@
 
 import { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { getDriverShipments } from "@/lib/data/shipments";
 import { StatusUpdatePanel } from "@/components/driver/status-update-panel";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Truck } from "lucide-react";
-import { getMockUserAction } from "@/lib/actions";
 import { DriverShipmentCard } from "@/components/driver/driver-shipment-card";
 import type { UserProfile, Shipment } from "@/lib/types";
 
 type DriverDashboardClientProps = {
-    initialDriver: UserProfile | null;
-    initialShipments: Shipment[];
+    driver: UserProfile | null;
+    shipments: Shipment[];
 }
 
-export function DriverDashboardClient({ initialDriver, initialShipments }: DriverDashboardClientProps) {
+export function DriverDashboardClient({ driver, shipments: initialShipments }: DriverDashboardClientProps) {
   const router = useRouter();
-  const [driver, setDriver] = useState<UserProfile | null>(initialDriver);
   const [allAssignedShipments, setAllAssignedShipments] = useState<Shipment[]>(initialShipments);
-  const [isLoading, setIsLoading] = useState(!initialDriver);
-
-  const fetchDriverAndShipments = useCallback(async () => {
-    // We can still use server actions to refetch data on the client
-    const driverUser = await getMockUserAction("driver");
-    setDriver(driverUser);
-    if (driverUser) {
-      const shipments = await getDriverShipments(driverUser.id);
-      setAllAssignedShipments(shipments);
-    }
-    if (isLoading) setIsLoading(false);
-  }, [isLoading]);
-
-  useEffect(() => {
-    // If initial data is not there, fetch it.
-    if (!initialDriver) {
-        fetchDriverAndShipments();
-    }
-  }, [initialDriver, fetchDriverAndShipments]);
-
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -54,14 +31,6 @@ export function DriverDashboardClient({ initialDriver, initialShipments }: Drive
   useEffect(() => {
     setAllAssignedShipments(initialShipments);
   }, [initialShipments]);
-
-  if (isLoading) {
-    return (
-      <div className="container mx-auto flex h-[calc(100vh-8rem)] items-center justify-center">
-        <p>Loading dashboard...</p>
-      </div>
-    );
-  }
 
   if (!driver) {
     return (
