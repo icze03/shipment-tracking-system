@@ -7,7 +7,7 @@ import type { Driver, Shipment, ShipmentStatus, UserProfile, UserRole } from "./
 import { getDrivers, saveDrivers, getDriverById } from "./data/drivers";
 import { getShipments, saveShipments, getShipmentById } from "./data/shipments";
 import { getMockUser } from "./auth";
-import { correctTimestamp as aiCorrectTimestamp } from "@/ai/flows/admin-assisted-timestamp-correction";
+import { correctTimestamp as aiCorrectTimestamp } from "@/ai/flows/admin-assisted-timestamp_correction";
 
 // --- Auth Actions ---
 export async function getMockUserAction(role: UserRole): Promise<UserProfile> {
@@ -252,35 +252,28 @@ export async function correctTimestampAction(data: {
         }
         
         const now = new Date().toISOString();
-
-        // Use the current time for the correction. This is a safer default.
         const correctedTimestamp = now;
         
-        // --- Core Correction Logic ---
         shipment.statusTimestamps[statusType] = correctedTimestamp;
         shipment.updatedAt = now;
 
-        // Un-flag the original log entry
         shipment.statusLogs[logToCorrectIndex].isFlagged = false;
 
         const adminUser = await getMockUser("admin");
-        // Create the new log entry for the admin's action, using the current time
         const correctionLogEntry = {
             id: uuidv4(),
             status: statusType,
-            timestamp: now, // Use current time for the admin's action log
+            timestamp: now,
             actorId: adminUser.id,
             actorName: adminUser.name,
             source: 'admin' as const,
             isCorrection: true,
-            notes: `Admin applied correction. Original time adjusted to ${new Date(correctedTimestamp).toLocaleString()}. ${notes || ''}`.trim(),
+            notes: `Admin applied correction. ${notes || ''}`.trim(),
         };
         shipment.statusLogs.push(correctionLogEntry);
         
-        // Re-sort logs by timestamp to maintain chronological order
         shipment.statusLogs.sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());
 
-        // Find the latest status based on the updated timestamps
         const latestStatus = Object.entries(shipment.statusTimestamps)
                                   .sort(([, a], [, b]) => new Date(b!).getTime() - new Date(a!).getTime())[0];
         
@@ -296,10 +289,9 @@ export async function correctTimestampAction(data: {
         revalidatePath('/admin/dashboard');
         revalidatePath('/admin/approvals');
 
-        // We can still return the AI suggestion if we want to show it in the UI, even if we don't use its timestamp directly
         const aiSuggestion = {
             suggestedTimestamp: correctedTimestamp,
-            confidence: 0.95, // High confidence since it's a direct admin action
+            confidence: 0.95,
             explanation: "Timestamp corrected to the current time by administrative action."
         };
 
@@ -439,6 +431,11 @@ export async function acknowledgeCancellationAction(shipmentId: string, driverId
         shipment.cancellationAcknowledged = true;
         shipment.updatedAt = now;
 
+        const wasOnTheWay = !!shipment.statusTimestamps.departed_warehouse;
+        const note = wasOnTheWay
+            ? "Driver confirmed product return after cancellation."
+            : "Driver acknowledged cancellation and will return to logistics.";
+
         const ackLog: typeof shipment.statusLogs[0] = {
             id: uuidv4(),
             status: 'cancellation_acknowledged',
@@ -446,7 +443,7 @@ export async function acknowledgeCancellationAction(shipmentId: string, driverId
             actorId: driver.id,
             actorName: driver.name,
             source: 'driver',
-            notes: 'Driver acknowledged cancellation and instructions.',
+            notes: note,
         };
 
         shipment.statusLogs.push(ackLog);
@@ -462,4 +459,6 @@ export async function acknowledgeCancellationAction(shipmentId: string, driverId
         return { error: `Failed to acknowledge cancellation: ${e.message}` };
     }
 }
+    
+
     

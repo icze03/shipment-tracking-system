@@ -5,7 +5,7 @@
     "assignedDriverId": "f246f518-252c-45e8-9d07-bae10c0e3618",
     "assignedDriverName": "john rivera",
     "createdAt": "2026-01-04T06:29:59.032Z",
-    "updatedAt": "2026-01-04T18:37:43.616Z",
+    "updatedAt": "2026-01-04T18:42:25.736Z",
     "currentStatus": "cancelled",
     "statusTimestamps": {
       "arrived_at_warehouse": "2026-01-04T17:36:56.788Z",
@@ -68,6 +68,15 @@
         "actorName": "Astraea Millares",
         "source": "admin",
         "notes": "the supplier told me to return the product "
+      },
+      {
+        "id": "c27d9d24-78a0-4dad-85cc-3f1687614d2e",
+        "status": "cancellation_acknowledged",
+        "timestamp": "2026-01-04T18:42:25.736Z",
+        "actorId": "f246f518-252c-45e8-9d07-bae10c0e3618",
+        "actorName": "john rivera",
+        "source": "driver",
+        "notes": "Driver acknowledged cancellation and instructions."
       }
     ],
     "isCompleted": true,
@@ -76,7 +85,8 @@
     "description": "100 Sacks of rice",
     "notes": "",
     "cancellationReason": "the supplier told me to return the product ",
-    "driverInstructions": "return the products from muntinlupa then return here in the logistic after returning those products"
+    "driverInstructions": "return the products from muntinlupa then return here in the logistic after returning those products",
+    "cancellationAcknowledged": true
   },
   {
     "id": "dfeaeb84-96b1-4aeb-8d4f-59dccd79d700",
