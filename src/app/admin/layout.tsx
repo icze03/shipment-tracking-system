@@ -17,6 +17,7 @@ import { LayoutDashboard, Truck, Users, FileDown, UserCheck } from "lucide-react
 import { getShipments } from "@/lib/data/shipments";
 import { getDrivers } from "@/lib/data/drivers";
 import { Badge } from "@/components/ui/badge";
+import { NotificationBell } from "@/components/admin/notification-bell";
 
 export default async function AdminLayout({
   children,
@@ -26,9 +27,10 @@ export default async function AdminLayout({
   const shipments = await getShipments();
   const drivers = await getDrivers();
 
-  const pendingDriverApprovals = drivers.filter(d => d.status === 'pending').length;
-  const pendingCorrections = shipments.filter(s => s.statusLogs.some(log => log.isFlagged)).length;
-  const totalPending = pendingDriverApprovals + pendingCorrections;
+  const pendingDrivers = drivers.filter(d => d.status === 'pending');
+  const shipmentsWithFlags = shipments.filter(s => s.statusLogs.some(log => log.isFlagged));
+  
+  const totalPending = pendingDrivers.length + shipmentsWithFlags.length;
 
   return (
     <SidebarProvider>
@@ -97,6 +99,10 @@ export default async function AdminLayout({
                     
                     <div className="flex flex-1 items-center justify-end space-x-4">
                         <nav className="flex items-center space-x-2">
+                            <NotificationBell 
+                              pendingDrivers={pendingDrivers}
+                              shipmentsWithFlags={shipmentsWithFlags}
+                            />
                             <UserNav />
                         </nav>
                     </div>
