@@ -4,9 +4,9 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, User, Calendar, MapPin, Flag, FileText } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { formatDate } from "@/lib/utils";
 import { ShipmentStatusTimeline } from "@/components/shipment-status-timeline";
 import { ShipmentDetailClient } from "@/components/admin/shipment-detail-client";
+import { ClientFormattedDate } from "@/components/client-formatted-date";
 
 type ShipmentDetailPageProps = {
   params: {
@@ -51,7 +51,7 @@ export default async function ShipmentDetailPage({ params }: ShipmentDetailPageP
                 </div>
                 <div className="flex items-center gap-2">
                   <Calendar className="h-4 w-4 text-muted-foreground" />
-                  <span>Created: {formatDate(shipment.createdAt)}</span>
+                  <span>Created: <ClientFormattedDate date={shipment.createdAt} /></span>
                 </div>
                 <div className="flex items-center gap-2">
                   <MapPin className="h-4 w-4 text-muted-foreground" />

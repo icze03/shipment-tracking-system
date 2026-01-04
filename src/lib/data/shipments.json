@@ -5,11 +5,12 @@
     "assignedDriverId": "f246f518-252c-45e8-9d07-bae10c0e3618",
     "assignedDriverName": "john rivera",
     "createdAt": "2026-01-04T06:29:59.032Z",
-    "updatedAt": "2026-01-04T18:01:14.603Z",
-    "currentStatus": "start_loading",
+    "updatedAt": "2026-01-04T18:10:46.621Z",
+    "currentStatus": "end_loading",
     "statusTimestamps": {
       "arrived_at_warehouse": "2026-01-04T17:36:56.788Z",
-      "start_loading": "2026-01-04T17:41:41.931Z"
+      "start_loading": "2026-01-04T18:41:41.931Z",
+      "end_loading": "2026-01-04T18:10:46.621Z"
     },
     "statusLogs": [
       {
@@ -27,8 +28,27 @@
         "actorId": "f246f518-252c-45e8-9d07-bae10c0e3618",
         "actorName": "john rivera",
         "source": "driver",
-        "isFlagged": true,
+        "isFlagged": false,
         "correctionReason": "I confirm too early I wish to request a correction please thank you!"
+      },
+      {
+        "id": "4c763ea8-3709-49c5-a0c6-c48a7d7cd7bd",
+        "status": "start_loading",
+        "timestamp": "2026-01-04T18:41:41.931Z",
+        "actorId": "admin01",
+        "actorName": "Astraea Millares",
+        "source": "admin",
+        "isCorrection": true,
+        "notes": "AI-assisted correction. ok make sure to not let it happen again"
+      },
+      {
+        "id": "9960b72c-25be-4cc3-ba1c-b34623b3683c",
+        "status": "end_loading",
+        "timestamp": "2026-01-04T18:10:46.621Z",
+        "actorId": "f246f518-252c-45e8-9d07-bae10c0e3618",
+        "actorName": "john rivera",
+        "source": "driver",
+        "isFlagged": false
       }
     ],
     "isCompleted": false,

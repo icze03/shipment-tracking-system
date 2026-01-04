@@ -2,7 +2,7 @@ import { CheckCircle2, Circle, Truck } from "lucide-react";
 import type { Shipment } from "@/lib/types";
 import { ALL_STATUSES, STATUS_DETAILS } from "@/lib/constants";
 import { cn } from "@/lib/utils";
-import { formatDate } from "@/lib/utils";
+import { ClientFormattedDate } from "./client-formatted-date";
 
 export function ShipmentStatusTimeline({ shipment }: { shipment: Shipment }) {
   return (
@@ -37,7 +37,7 @@ export function ShipmentStatusTimeline({ shipment }: { shipment: Shipment }) {
               </h3>
               {isCompleted ? (
                 <time className="block text-sm font-normal leading-none text-muted-foreground">
-                  {formatDate(timestamp)}
+                  <ClientFormattedDate date={timestamp} />
                 </time>
               ) : (
                 <p className="text-sm text-muted-foreground">Pending</p>

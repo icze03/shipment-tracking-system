@@ -7,9 +7,9 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
 import { AlertTriangle, Edit } from "lucide-react";
-import { formatDate } from "@/lib/utils";
 import { STATUS_DETAILS } from "@/lib/constants";
 import { TimestampCorrectionModal } from "@/components/admin/timestamp-correction-modal";
+import { ClientFormattedDate } from "../client-formatted-date";
 
 type ShipmentDetailClientProps = {
   shipment: Shipment;
@@ -48,7 +48,7 @@ export function ShipmentDetailClient({ shipment }: ShipmentDetailClientProps) {
                   by {log.actorName} ({log.source})
                 </p>
                 <p className="text-xs text-muted-foreground">
-                  {formatDate(log.timestamp)}
+                  <ClientFormattedDate date={log.timestamp} />
                 </p>
                 
                 {log.isFlagged && log.correctionReason && (

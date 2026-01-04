@@ -14,8 +14,8 @@ export function formatDate(date: string | Date | undefined | null) {
     return "Pending";
   }
 
+  // Removed hardcoded timezone to use the user's local timezone by default.
   return dateObj.toLocaleString("en-US", {
-    timeZone: "Asia/Manila",
     month: "short",
     day: "2-digit",
     year: "numeric",
