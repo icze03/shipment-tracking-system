@@ -1,4 +1,4 @@
-"use client"
+
 import Link from "next/link";
 import {
   SidebarProvider,
@@ -14,12 +14,22 @@ import {
 import { Logo } from "@/components/logo";
 import { UserNav } from "@/components/layout/user-nav";
 import { LayoutDashboard, Truck, Users, FileDown, UserCheck } from "lucide-react";
+import { getShipments } from "@/lib/data/shipments";
+import { getDrivers } from "@/lib/data/drivers";
+import { Badge } from "@/components/ui/badge";
 
-export default function AdminLayout({
+export default async function AdminLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const shipments = await getShipments();
+  const drivers = await getDrivers();
+
+  const pendingDriverApprovals = drivers.filter(d => d.status === 'pending').length;
+  const pendingCorrections = shipments.filter(s => s.statusLogs.some(log => log.isFlagged)).length;
+  const totalPending = pendingDriverApprovals + pendingCorrections;
+
   return (
     <SidebarProvider>
       <div className="flex min-h-screen">
@@ -50,6 +60,11 @@ export default function AdminLayout({
                   <Link href="/admin/approvals">
                     <UserCheck />
                     <span>Approvals</span>
+                     {totalPending > 0 && (
+                      <Badge variant="destructive" className="ml-auto">
+                        {totalPending}
+                      </Badge>
+                    )}
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>

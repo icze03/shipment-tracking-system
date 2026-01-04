@@ -1,8 +1,9 @@
+
 "use client";
 
 import type { ColumnDef } from "@tanstack/react-table";
 import Link from "next/link";
-import { MoreHorizontal, ArrowUpDown } from "lucide-react";
+import { MoreHorizontal, ArrowUpDown, AlertTriangle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -17,6 +18,7 @@ import { Badge } from "@/components/ui/badge";
 import { STATUS_DETAILS } from "@/lib/constants";
 import { ClientFormattedDate } from "@/components/client-formatted-date";
 import { ClientOnly } from "@/components/client-only";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 export const columns: ColumnDef<Shipment>[] = [
   {
@@ -32,7 +34,26 @@ export const columns: ColumnDef<Shipment>[] = [
         </Button>
       );
     },
-    cell: ({ row }) => <div className="font-medium pl-4">{row.getValue("orderCode")}</div>,
+    cell: ({ row }) => {
+      const hasFlaggedLog = row.original.statusLogs.some(log => log.isFlagged);
+      return (
+        <div className="flex items-center gap-2 font-medium pl-4">
+          {hasFlaggedLog && (
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger>
+                  <AlertTriangle className="h-4 w-4 text-destructive" />
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Correction pending</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          )}
+          {row.getValue("orderCode")}
+        </div>
+      );
+    },
   },
   {
     accessorKey: "assignedDriverName",
