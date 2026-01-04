@@ -312,62 +312,66 @@ export function StatusUpdatePanel({ shipment, driverId }: StatusUpdatePanelProps
 
         </Card>
 
-      <AlertDialog
-        open={!!statusToConfirm}
-        onOpenChange={(isOpen) => !isOpen && setStatusToConfirm(null)}
-      >
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Confirm Status Update</AlertDialogTitle>
-            <AlertDialogDescription>
-              Are you sure you want to set this status to{" "}
-              <strong>"{statusToConfirmDetails?.label}"</strong>?
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel disabled={isUpdatePending}>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={handleStatusUpdate} disabled={isUpdatePending}>
-              {isUpdatePending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              Confirm
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      <ClientOnly>
+        <AlertDialog
+            open={!!statusToConfirm}
+            onOpenChange={(isOpen) => !isOpen && setStatusToConfirm(null)}
+        >
+            <AlertDialogContent>
+            <AlertDialogHeader>
+                <AlertDialogTitle>Confirm Status Update</AlertDialogTitle>
+                <AlertDialogDescription>
+                Are you sure you want to set this status to{" "}
+                <strong>"{statusToConfirmDetails?.label}"</strong>?
+                </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+                <AlertDialogCancel disabled={isUpdatePending}>Cancel</AlertDialogCancel>
+                <AlertDialogAction onClick={handleStatusUpdate} disabled={isUpdatePending}>
+                {isUpdatePending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                Confirm
+                </AlertDialogAction>
+            </AlertDialogFooter>
+            </AlertDialogContent>
+        </AlertDialog>
+      </ClientOnly>
 
-      <Dialog open={correctionModalState.isOpen} onOpenChange={closeCorrectionModal}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Request Status Correction</DialogTitle>
-            <DialogDescription>
-              Requesting a correction for status:{" "}
-              <strong>{correctionStatusDetails?.label}</strong> logged at{" "}
-              <ClientFormattedDate date={correctionModalState.logEntry?.timestamp} />. Please provide a reason for the administrator.
-            </DialogDescription>
-          </DialogHeader>
-          <div className="py-4">
-            <Label htmlFor="correction-reason" className="sr-only">
-              Reason for correction
-            </Label>
-            <Textarea
-              id="correction-reason"
-              placeholder="e.g., I accidentally confirmed 'End Loading' too early."
-              value={correctionModalState.reason}
-              onChange={(e) => setCorrectionModalState(prev => ({...prev, reason: e.target.value }))}
-            />
-          </div>
-          <DialogFooter>
-            <DialogClose asChild>
-              <Button type="button" variant="outline" disabled={isCorrectionPending}>
-                Cancel
-              </Button>
-            </DialogClose>
-            <Button type="button" onClick={handleCorrectionSubmit} disabled={isCorrectionPending}>
-              {isCorrectionPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              Submit Request
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <ClientOnly>
+        <Dialog open={correctionModalState.isOpen} onOpenChange={closeCorrectionModal}>
+            <DialogContent>
+            <DialogHeader>
+                <DialogTitle>Request Status Correction</DialogTitle>
+                <DialogDescription>
+                Requesting a correction for status:{" "}
+                <strong>{correctionStatusDetails?.label}</strong> logged at{" "}
+                <ClientFormattedDate date={correctionModalState.logEntry?.timestamp} />. Please provide a reason for the administrator.
+                </DialogDescription>
+            </DialogHeader>
+            <div className="py-4">
+                <Label htmlFor="correction-reason" className="sr-only">
+                Reason for correction
+                </Label>
+                <Textarea
+                id="correction-reason"
+                placeholder="e.g., I accidentally confirmed 'End Loading' too early."
+                value={correctionModalState.reason}
+                onChange={(e) => setCorrectionModalState(prev => ({...prev, reason: e.target.value }))}
+                />
+            </div>
+            <DialogFooter>
+                <DialogClose asChild>
+                <Button type="button" variant="outline" disabled={isCorrectionPending}>
+                    Cancel
+                </Button>
+                </DialogClose>
+                <Button type="button" onClick={handleCorrectionSubmit} disabled={isCorrectionPending}>
+                {isCorrectionPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                Submit Request
+                </Button>
+            </DialogFooter>
+            </DialogContent>
+        </Dialog>
+      </ClientOnly>
     </>
   );
 }
