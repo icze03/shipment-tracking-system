@@ -255,19 +255,19 @@ export async function correctTimestampAction(data: {
         const now = new Date().toISOString();
         
         // --- Core Correction Logic ---
-        // 1. Update the main statusTimestamps map with the AI-suggested time
+        // 1. Update the main statusTimestamps map with the AI-suggested time for the timeline view
         shipment.statusTimestamps[statusType] = suggestedTimestamp;
-        shipment.updatedAt = now; // Use the current time for the update
+        shipment.updatedAt = now; // Use the current time for the update action
 
         // 2. Mark the old, incorrect log entry as no longer flagged
         shipment.statusLogs[logToCorrectIndex].isFlagged = false;
 
-        // 3. Add a *new* log entry for the correction itself, using the current time
+        // 3. Add a *new* log entry for the correction itself, using the current time of the admin's action
         const adminUser = await getMockUser("admin");
         const correctionLogEntry = {
             id: uuidv4(),
             status: statusType,
-            timestamp: now, // Use the current time for the admin's action
+            timestamp: now, // **FIXED**: Use the current time for the admin's action log
             actorId: adminUser.id,
             actorName: adminUser.name,
             source: 'admin' as const,
@@ -276,10 +276,10 @@ export async function correctTimestampAction(data: {
         };
         shipment.statusLogs.push(correctionLogEntry);
         
-        // 4. (Optional but good practice) Re-sort logs by timestamp
+        // 4. (Optional but good practice) Re-sort logs by timestamp to maintain chronological order
         shipment.statusLogs.sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());
 
-        // 5. Update the currentStatus if the corrected status is the latest one
+        // 5. Update the currentStatus if the corrected status is now the latest one chronologically
         const latestLog = shipment.statusLogs[shipment.statusLogs.length - 1];
         shipment.currentStatus = latestLog.status;
         
