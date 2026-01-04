@@ -5,10 +5,11 @@
     "assignedDriverId": "f246f518-252c-45e8-9d07-bae10c0e3618",
     "assignedDriverName": "john rivera",
     "createdAt": "2026-01-04T18:47:26.513Z",
-    "updatedAt": "2026-01-04T19:02:34.684Z",
-    "currentStatus": "arrived_at_warehouse",
+    "updatedAt": "2026-01-04T19:13:36.562Z",
+    "currentStatus": "start_loading",
     "statusTimestamps": {
-      "arrived_at_warehouse": "2026-01-04T19:01:50.097Z"
+      "arrived_at_warehouse": "2026-01-04T19:12:44.582Z",
+      "start_loading": "2026-01-04T19:13:36.562Z"
     },
     "statusLogs": [
       {
@@ -18,8 +19,27 @@
         "actorId": "f246f518-252c-45e8-9d07-bae10c0e3618",
         "actorName": "john rivera",
         "source": "driver",
-        "isFlagged": true,
+        "isFlagged": false,
         "correctionReason": "I got flat tire i need to return to the warehouse to get a new spare tire"
+      },
+      {
+        "id": "82b9f96d-1094-4116-8dfc-68de092ed754",
+        "status": "arrived_at_warehouse",
+        "timestamp": "2026-01-04T19:12:44.582Z",
+        "actorId": "admin01",
+        "actorName": "Astraea Millares",
+        "source": "admin",
+        "isCorrection": true,
+        "notes": "Admin applied correction. ok make sure to bring extra next time"
+      },
+      {
+        "id": "4de66523-9778-41d7-908d-ca6a7b529a4a",
+        "status": "start_loading",
+        "timestamp": "2026-01-04T19:13:36.562Z",
+        "actorId": "f246f518-252c-45e8-9d07-bae10c0e3618",
+        "actorName": "john rivera",
+        "source": "driver",
+        "isFlagged": false
       }
     ],
     "isCompleted": false,
