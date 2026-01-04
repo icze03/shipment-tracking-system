@@ -1,6 +1,7 @@
+
 "use client";
 
-import { useTransition, useState } from "react";
+import { useTransition, useState, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -99,7 +100,6 @@ export function StatusUpdatePanel({ shipment, driverId }: StatusUpdatePanelProps
             driverId,
             statusToCorrect: shipment.currentStatus,
             reason: correctionReason,
-            originalTimestamp: shipment.statusTimestamps[shipment.currentStatus] || shipment.updatedAt,
         });
 
         if (result.error) {
@@ -116,7 +116,16 @@ export function StatusUpdatePanel({ shipment, driverId }: StatusUpdatePanelProps
   const nextStatusDetails = nextStatus ? STATUS_DETAILS[nextStatus] : null;
   const statusToConfirmDetails = statusToConfirm ? STATUS_DETAILS[statusToConfirm] : null;
 
-  const canRequestCorrection = shipment.currentStatus !== 'pending' && !shipment.isCompleted;
+  const canRequestCorrection = useMemo(() => {
+    if (shipment.currentStatus === 'pending' || shipment.isCompleted) return false;
+    // Find the log entry for the current status by this driver
+    const currentStatusLog = shipment.statusLogs.find(
+      log => log.status === shipment.currentStatus && log.actorId === driverId && !log.isCorrection
+    );
+    // Can request correction if the log exists and is not already flagged
+    return !!currentStatusLog && !currentStatusLog.isFlagged;
+  }, [shipment.currentStatus, shipment.isCompleted, shipment.statusLogs, driverId]);
+
 
   return (
     <>
@@ -139,7 +148,7 @@ export function StatusUpdatePanel({ shipment, driverId }: StatusUpdatePanelProps
                             <DialogTrigger asChild>
                                 <Button variant="link" size="sm" className="text-xs h-auto p-0">
                                     <AlertTriangle className="mr-1 h-3 w-3" />
-                                    Request Correction
+                                    Made a mistake? Request Correction
                                 </Button>
                             </DialogTrigger>
                             <DialogContent>

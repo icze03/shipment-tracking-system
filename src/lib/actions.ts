@@ -152,7 +152,7 @@ export async function createShipmentAction(data: {
       origin: data.origin,
       destination: data.destination,
       description: data.description,
-      notes: data.notes,
+notes: data.notes,
     };
     
     await saveShipments([newShipment, ...shipments]);
@@ -191,7 +191,8 @@ export async function updateShipmentStatusAction(data: {
             timestamp: now,
             actorId: driver.id,
             actorName: driver.name,
-            source: 'driver' as const
+            source: 'driver' as const,
+            isFlagged: false,
         };
 
         shipment.currentStatus = status;
@@ -229,15 +230,10 @@ export async function updateShipmentStatusAction(data: {
 export async function correctTimestampAction(data: {
     shipmentId: string;
     statusType: ShipmentStatus;
-    incorrectTimestamp: string;
-    statusTimestamps: Record<string, string>;
-    shipmentHistory: string;
+    logIdToCorrect: string;
     notes?: string;
 }) {
-    // This is a placeholder for the AI flow.
-    // In a real scenario, you would call the Genkit flow here.
-    // For this prototype, we'll simulate a response and update the shipment.
-    const { shipmentId, statusType } = data;
+    const { shipmentId, statusType, logIdToCorrect, notes } = data;
 
     try {
         const shipments = await getShipments();
@@ -247,41 +243,60 @@ export async function correctTimestampAction(data: {
         }
 
         const shipment = shipments[shipmentIndex];
+        const logToCorrectIndex = shipment.statusLogs.findIndex(log => log.id === logIdToCorrect);
+        if (logToCorrectIndex === -1) {
+            return { error: "Original log entry to correct not found." };
+        }
 
         // Simulate AI suggesting a new timestamp (e.g., one hour later)
-        const incorrectDate = new Date(data.incorrectTimestamp);
+        const incorrectDate = new Date(shipment.statusLogs[logToCorrectIndex].timestamp);
         incorrectDate.setHours(incorrectDate.getHours() + 1);
         const suggestedTimestamp = incorrectDate.toISOString();
         
-        // Update the timestamp
+        // --- Core Correction Logic ---
+        // 1. Update the main statusTimestamps map with the corrected time
         shipment.statusTimestamps[statusType] = suggestedTimestamp;
         shipment.updatedAt = new Date().toISOString();
 
-        // Add a log entry for the correction
+        // 2. Mark the old, incorrect log entry as no longer flagged
+        shipment.statusLogs[logToCorrectIndex].isFlagged = false;
+
+        // 3. Add a *new* log entry for the correction itself
         const adminUser = await getMockUser("admin");
-        shipment.statusLogs.push({
+        const correctionLogEntry = {
             id: uuidv4(),
             status: statusType,
             timestamp: suggestedTimestamp,
             actorId: adminUser.id,
             actorName: adminUser.name,
-            source: 'admin',
-            notes: `Corrected via AI suggestion from original: ${data.incorrectTimestamp}`
-        });
+            source: 'admin' as const,
+            isCorrection: true,
+            notes: `AI-assisted correction. ${notes || ''}`.trim(),
+        };
+        shipment.statusLogs.push(correctionLogEntry);
+        
+        // 4. (Optional but good practice) Re-sort logs by timestamp
+        shipment.statusLogs.sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());
 
+        // 5. Update the currentStatus if the corrected status is the latest one
+        const latestLog = shipment.statusLogs[shipment.statusLogs.length - 1];
+        shipment.currentStatus = latestLog.status;
+        
         shipments[shipmentIndex] = shipment;
         await saveShipments(shipments);
         
         revalidatePath(`/admin/shipments/${shipmentId}`);
+        revalidatePath(`/track?orderCode=${shipment.orderCode}`, 'layout');
+        revalidatePath('/admin/dashboard');
 
-        return { 
-            success: true, 
-            aiSuggestion: {
-                suggestedTimestamp: suggestedTimestamp,
-                confidence: 0.85,
-                explanation: "Based on historical data for similar routes and traffic conditions at that time, the timestamp was adjusted by one hour."
-            }
+        // This would be the actual AI Flow response in a real app
+        const aiSuggestion = {
+            suggestedTimestamp: suggestedTimestamp,
+            confidence: 0.85,
+            explanation: "Based on historical data and typical transit times, the timestamp was adjusted by one hour to better align with expected delivery patterns."
         };
+
+        return { success: true, aiSuggestion };
 
     } catch (e: any) {
         return { error: e.message };
@@ -293,9 +308,8 @@ export async function requestCorrectionAction(data: {
     driverId: string;
     statusToCorrect: ShipmentStatus;
     reason: string;
-    originalTimestamp: string;
 }) {
-    const { shipmentId, driverId, statusToCorrect, reason, originalTimestamp } = data;
+    const { shipmentId, driverId, statusToCorrect, reason } = data;
     try {
         const [driver, shipments] = await Promise.all([
             getDriverById(driverId),
@@ -308,21 +322,19 @@ export async function requestCorrectionAction(data: {
         if (shipmentIndex === -1) return { error: "Shipment not found." };
         
         const shipment = shipments[shipmentIndex];
-        const now = new Date().toISOString();
 
-        const newLogEntry = {
-            id: uuidv4(),
-            status: statusToCorrect,
-            timestamp: originalTimestamp, // The timestamp of the event being corrected
-            actorId: driver.id,
-            actorName: driver.name,
-            source: "driver-correction-request" as const,
-            notes: `Correction requested at: ${now}`,
-            correctionReason: reason,
-        };
+        // Find the specific log entry to flag
+        const logToFlagIndex = shipment.statusLogs.findIndex(log => log.status === statusToCorrect && log.actorId === driverId && !log.isCorrection);
+        
+        if (logToFlagIndex === -1) {
+            return { error: "Could not find the original status update to flag for correction." };
+        }
 
-        shipment.statusLogs.push(newLogEntry);
-        shipment.updatedAt = now;
+        // Flag the original entry and add the reason
+        shipment.statusLogs[logToFlagIndex].isFlagged = true;
+        shipment.statusLogs[logToFlagIndex].correctionReason = reason;
+
+        shipment.updatedAt = new Date().toISOString();
         
         shipments[shipmentIndex] = shipment;
         await saveShipments(shipments);

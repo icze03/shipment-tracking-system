@@ -5,10 +5,21 @@
     "assignedDriverId": "f246f518-252c-45e8-9d07-bae10c0e3618",
     "assignedDriverName": "john rivera",
     "createdAt": "2026-01-04T06:29:59.032Z",
-    "updatedAt": "2026-01-04T06:29:59.032Z",
-    "currentStatus": "pending",
-    "statusTimestamps": {},
-    "statusLogs": [],
+    "updatedAt": "2026-01-04T17:36:56.788Z",
+    "currentStatus": "arrived_at_warehouse",
+    "statusTimestamps": {
+      "arrived_at_warehouse": "2026-01-04T17:36:56.788Z"
+    },
+    "statusLogs": [
+      {
+        "id": "aeb3c463-d4b0-43f3-861c-bf18f7b75303",
+        "status": "arrived_at_warehouse",
+        "timestamp": "2026-01-04T17:36:56.788Z",
+        "actorId": "f246f518-252c-45e8-9d07-bae10c0e3618",
+        "actorName": "john rivera",
+        "source": "driver"
+      }
+    ],
     "isCompleted": false,
     "origin": "muntinlupa",
     "destination": "calamba",
