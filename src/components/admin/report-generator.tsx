@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useTransition } from "react";
@@ -5,8 +6,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { FileDown, Loader2 } from "lucide-react";
 import { getShipmentsAction, getDriversAction } from "@/lib/actions";
-import type { Shipment, Driver } from "@/lib/types";
+import type { Shipment, Driver, StatusLog } from "@/lib/types";
 import { useToast } from "@/hooks/use-toast";
+import { formatDate } from "@/lib/utils";
 
 export function ReportGenerator() {
   const [isShipmentsPending, startShipmentsTransition] = useTransition();
@@ -59,11 +61,36 @@ export function ReportGenerator() {
         'id', 'orderCode', 'assignedDriverId', 'assignedDriverName', 
         'createdAt', 'updatedAt', 'currentStatus', 'isCompleted', 
         'origin', 'destination', 'description', 'notes', 
-        'statusTimestamps', 'statusLogs', 'cancellationReason', 
-        'driverInstructions', 'cancellationAcknowledged'
+        'cancellationReason', 'driverInstructions', 'cancellationAcknowledged',
+        'status_pending',
+        'status_arrived_at_warehouse', 'status_start_loading', 'status_end_loading',
+        'status_departed_warehouse', 'status_arrived_at_destination',
+        'status_start_unloading', 'status_end_unloading', 'status_trip_completed',
+        'status_cancelled', 'status_cancellation_acknowledged'
       ];
       
-      const csvContent = convertToCSV(shipments, headers);
+      // Pre-format dates and flatten status timestamps
+      const formattedShipments = shipments.map(s => {
+        const flatStatusTimestamps = Object.entries(s.statusTimestamps).reduce((acc, [key, value]) => {
+            acc[`status_${key}`] = formatDate(value);
+            return acc;
+        }, {} as Record<string, string>);
+
+        const formattedLogs = s.statusLogs.map(log => ({
+            ...log,
+            timestamp: formatDate(log.timestamp)
+        }));
+
+        return {
+            ...s,
+            createdAt: formatDate(s.createdAt),
+            updatedAt: formatDate(s.updatedAt),
+            statusLogs: formattedLogs, // Keep logs as structured JSON string in CSV
+            ...flatStatusTimestamps
+        }
+      });
+
+      const csvContent = convertToCSV(formattedShipments, headers);
       downloadCSV(csvContent, `greenlane_shipments_${new Date().toISOString()}.csv`);
       toast({ title: "Shipment report generated successfully!" });
     });
