@@ -104,6 +104,14 @@
         "source": {
           "type": "string",
           "description": "The source of the status change (driver or admin)."
+        },
+        "latitude": {
+            "type": "number",
+            "description": "The latitude coordinate where the status was logged."
+        },
+        "longitude": {
+            "type": "number",
+            "description": "The longitude coordinate where the status was logged."
         }
       },
       "required": [

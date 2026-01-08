@@ -18,7 +18,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { AlertTriangle, Edit, Loader2, XCircle } from "lucide-react";
+import { AlertTriangle, Edit, Loader2, XCircle, MapPin } from "lucide-react";
 import { STATUS_DETAILS } from "@/lib/constants";
 import { TimestampCorrectionModal } from "@/components/admin/timestamp-correction-modal";
 import { ClientFormattedDate } from "../client-formatted-date";
@@ -26,6 +26,7 @@ import { useToast } from "@/hooks/use-toast";
 import { cancelShipmentAction } from "@/lib/actions";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
+import Link from "next/link";
 
 type ShipmentDetailClientProps = {
   shipment: Shipment;
@@ -89,6 +90,20 @@ export function ShipmentDetailClient({ shipment }: ShipmentDetailClientProps) {
                     <ClientFormattedDate date={log.timestamp} />
                   </p>
                   
+                  {log.latitude && log.longitude && (
+                    <div className="text-xs text-muted-foreground mt-1 flex items-center gap-1">
+                      <MapPin className="h-3 w-3" />
+                      <span>
+                        {log.latitude.toFixed(5)}, {log.longitude.toFixed(5)}
+                      </span>
+                      <Button variant="link" size="sm" asChild className="h-auto p-0 text-xs ml-1">
+                        <Link href={`https://www.google.com/maps/search/?api=1&query=${log.latitude},${log.longitude}`} target="_blank" rel="noopener noreferrer">
+                          View Map
+                        </Link>
+                      </Button>
+                    </div>
+                  )}
+
                   {log.isFlagged && log.correctionReason && (
                      <p className="mt-2 text-xs text-destructive border-l-2 border-destructive pl-2 italic">
                        Driver's Reason: {log.correctionReason}

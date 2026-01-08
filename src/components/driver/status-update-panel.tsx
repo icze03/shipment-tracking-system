@@ -43,7 +43,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { acknowledgeCancellationAction, requestCorrectionAction, updateShipmentStatusAction } from "@/lib/actions";
 import type { Shipment, ShipmentStatus, StatusLog } from "@/lib/types";
 import { SHIPMENT_STATUSES, STATUS_DETAILS } from "@/lib/constants";
-import { Loader2, AlertTriangle, History, XCircle, ThumbsUp } from "lucide-react";
+import { Loader2, AlertTriangle, History, XCircle, ThumbsUp, MapPin } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { ClientOnly } from "@/components/client-only";
 import { ClientFormattedDate } from "../client-formatted-date";
@@ -76,29 +76,62 @@ export function StatusUpdatePanel({ shipment, driverId }: StatusUpdatePanelProps
       ? SHIPMENT_STATUSES[0]
       : SHIPMENT_STATUSES[currentStatusIndex + 1];
 
-  const handleStatusUpdate = () => {
+  const handleLocationAndStatusUpdate = () => {
     if (!statusToConfirm) return;
 
-    startUpdateTransition(async () => {
-      const result = await updateShipmentStatusAction({
-        shipmentId: shipment.id,
-        status: statusToConfirm,
-        driverId,
-      });
-      if (result.error) {
+    if (!navigator.geolocation) {
         toast({
-          title: "Update Failed",
-          description: result.error,
-          variant: "destructive",
+            title: "Geolocation Not Supported",
+            description: "Your browser does not support location services.",
+            variant: "destructive"
         });
-      } else {
-        toast({
-          title: "Status Updated!",
-          description: `Shipment is now: ${STATUS_DETAILS[statusToConfirm]?.label}`,
-        });
-      }
-      setStatusToConfirm(null); // Close the modal
+        // Proceed without location
+        performStatusUpdate(statusToConfirm);
+        return;
+    }
+
+    startUpdateTransition(() => {
+        navigator.geolocation.getCurrentPosition(
+            (position) => {
+                const { latitude, longitude } = position.coords;
+                performStatusUpdate(statusToConfirm, { latitude, longitude });
+            },
+            (error) => {
+                console.error("Geolocation error:", error);
+                toast({
+                    title: "Could Not Get Location",
+                    description: "Proceeding without location data. Please ensure location services are enabled.",
+                    variant: "destructive"
+                });
+                // Proceed without location if there's an error
+                performStatusUpdate(statusToConfirm);
+            },
+            { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+        );
     });
+  };
+
+  const performStatusUpdate = async (status: ShipmentStatus, location?: {latitude: number, longitude: number}) => {
+    const result = await updateShipmentStatusAction({
+      shipmentId: shipment.id,
+      status: status,
+      driverId,
+      latitude: location?.latitude,
+      longitude: location?.longitude,
+    });
+    if (result.error) {
+      toast({
+        title: "Update Failed",
+        description: result.error,
+        variant: "destructive",
+      });
+    } else {
+      toast({
+        title: "Status Updated!",
+        description: `Shipment is now: ${STATUS_DETAILS[status]?.label}`,
+      });
+    }
+    setStatusToConfirm(null); // Close the modal
   };
   
   const handleCorrectionSubmit = () => {
@@ -321,13 +354,13 @@ export function StatusUpdatePanel({ shipment, driverId }: StatusUpdatePanelProps
             <AlertDialogHeader>
                 <AlertDialogTitle>Confirm Status Update</AlertDialogTitle>
                 <AlertDialogDescription>
-                Are you sure you want to set this status to{" "}
-                <strong>"{statusToConfirmDetails?.label}"</strong>?
+                    This will record your current location. Are you sure you want to set the status to{" "}
+                    <strong>"{statusToConfirmDetails?.label}"</strong>?
                 </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
                 <AlertDialogCancel disabled={isUpdatePending}>Cancel</AlertDialogCancel>
-                <AlertDialogAction onClick={handleStatusUpdate} disabled={isUpdatePending}>
+                <AlertDialogAction onClick={handleLocationAndStatusUpdate} disabled={isUpdatePending}>
                 {isUpdatePending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                 Confirm
                 </AlertDialogAction>

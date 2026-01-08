@@ -43,6 +43,8 @@ export type StatusLog = {
   correctionReason?: string;
   isCorrection?: boolean; // True if this log entry is an admin's correction of a prior entry.
   isFlagged?: boolean; // True if a driver has flagged this entry as incorrect.
+  latitude?: number;
+  longitude?: number;
 };
 
 export interface Shipment {

@@ -196,8 +196,10 @@ export async function updateShipmentStatusAction(data: {
     shipmentId: string;
     status: ShipmentStatus;
     driverId: string;
+    latitude?: number;
+    longitude?: number;
 }) {
-    const { shipmentId, status, driverId } = data;
+    const { shipmentId, status, driverId, latitude, longitude } = data;
     try {
         const [shipment, driver, shipments] = await Promise.all([
             getShipmentById(shipmentId),
@@ -218,6 +220,8 @@ export async function updateShipmentStatusAction(data: {
             actorName: driver.name,
             source: 'driver' as const,
             isFlagged: false,
+            latitude,
+            longitude,
         };
 
         shipment.currentStatus = status;
