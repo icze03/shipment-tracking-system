@@ -93,9 +93,10 @@ export function ClearShipmentsDialog({ onClear }: ClearShipmentsDialogProps) {
             </Button>
             <div className="flex gap-2">
                 <AlertDialogCancel>Cancel</AlertDialogCancel>
-                <AlertDialogAction onClick={() => setStep("confirmDelete")}>
-                I have a backup, proceed
-                </AlertDialogAction>
+                {/* Use a regular button to prevent auto-closing */}
+                <Button onClick={() => setStep("confirmDelete")}>
+                  I have a backup, proceed
+                </Button>
             </div>
           </AlertDialogFooter>
         </AlertDialogContent>
@@ -129,5 +130,3 @@ export function ClearShipmentsDialog({ onClear }: ClearShipmentsDialogProps) {
     </AlertDialog>
   );
 }
-
-    
