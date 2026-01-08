@@ -211,23 +211,38 @@ export async function updateShipmentStatusAction(data: {
         if (!driver) return { error: "Driver not found." };
         
         const now = getPhilippineTimeISO();
+        const nowTime = new Date(now).getTime();
 
-        const newLogEntry = {
-            id: uuidv4(),
-            status: status,
-            timestamp: now,
-            actorId: driver.id,
-            actorName: driver.name,
-            source: 'driver' as const,
-            isFlagged: false,
-            latitude,
-            longitude,
-        };
+        const recentLogIndex = shipment.statusLogs.findIndex(log => 
+            log.status === status && 
+            log.actorId === driverId &&
+            !log.latitude && // Find one without location
+            (nowTime - new Date(log.timestamp).getTime()) < 15000 // Within 15 seconds
+        );
+        
+        if (recentLogIndex > -1 && latitude && longitude) {
+            // If a recent log exists without location, update it instead of creating a new one
+            shipment.statusLogs[recentLogIndex].latitude = latitude;
+            shipment.statusLogs[recentLogIndex].longitude = longitude;
+        } else {
+            // Otherwise, create a new log entry
+            const newLogEntry = {
+                id: uuidv4(),
+                status: status,
+                timestamp: now,
+                actorId: driver.id,
+                actorName: driver.name,
+                source: 'driver' as const,
+                isFlagged: false,
+                latitude,
+                longitude,
+            };
+            shipment.statusLogs.push(newLogEntry);
+        }
 
         shipment.currentStatus = status;
         shipment.statusTimestamps[status] = now;
         shipment.updatedAt = now;
-        shipment.statusLogs.push(newLogEntry);
         
         if (status === 'trip_completed') {
             shipment.isCompleted = true;
@@ -515,6 +530,9 @@ export async function clearAllShipmentsAction() {
     
 
 
+
+
+    
 
 
     
