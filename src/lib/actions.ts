@@ -487,8 +487,12 @@ export async function acknowledgeCancellationAction(shipmentId: string, driverId
     
 export async function clearAllShipmentsAction() {
   try {
-    // This action overwrites the shipments data file with an empty array.
-    await saveShipments([]);
+    const allShipments = await getShipments();
+    // Filter to keep only shipments that are NOT completed.
+    const activeShipments = allShipments.filter(shipment => !shipment.isCompleted);
+    
+    // Save the filtered list, effectively deleting completed/cancelled ones.
+    await saveShipments(activeShipments);
     
     // Revalidate all paths that show shipment data to reflect the change.
     revalidatePath("/admin/dashboard");
@@ -507,3 +511,6 @@ export async function clearAllShipmentsAction() {
     
 
 
+
+
+    

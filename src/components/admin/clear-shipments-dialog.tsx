@@ -43,7 +43,7 @@ export function ClearShipmentsDialog({ onClear }: ClearShipmentsDialogProps) {
       } else {
         toast({
           title: "Success!",
-          description: "All shipment records have been cleared.",
+          description: "All completed shipment records have been cleared.",
         });
         onClear(); // Re-fetch the data on the parent page
       }
@@ -79,7 +79,7 @@ export function ClearShipmentsDialog({ onClear }: ClearShipmentsDialogProps) {
                 Backup Your Data First!
             </AlertDialogTitle>
             <AlertDialogDescription>
-              This action will permanently delete all shipment records. Before
+              This action will permanently delete all completed and cancelled shipment records. Before
               proceeding, it is highly recommended that you export the data for
               your records.
             </AlertDialogDescription>
@@ -106,7 +106,7 @@ export function ClearShipmentsDialog({ onClear }: ClearShipmentsDialogProps) {
             <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
             <AlertDialogDescription>
               This is your final confirmation. This action cannot be
-              undone and will permanently delete all shipment data.
+              undone and will permanently delete all completed and cancelled shipment data.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
@@ -121,7 +121,7 @@ export function ClearShipmentsDialog({ onClear }: ClearShipmentsDialogProps) {
               {isPending && (
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
               )}
-              Yes, delete all shipments
+              Yes, delete completed shipments
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
@@ -129,3 +129,5 @@ export function ClearShipmentsDialog({ onClear }: ClearShipmentsDialogProps) {
     </AlertDialog>
   );
 }
+
+    
