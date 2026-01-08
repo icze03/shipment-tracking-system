@@ -97,7 +97,7 @@ export function StatusUpdatePanel({ shipment, driverId }: StatusUpdatePanelProps
                 performStatusUpdate(statusToConfirm, { latitude, longitude });
             },
             (error) => {
-                console.error(`Geolocation error: ${error.message} (Code: ${error.code})`);
+                console.warn(`Geolocation error: ${error.message} (Code: ${error.code})`);
                 toast({
                     title: "Could Not Get Location",
                     description: "Proceeding without location data. Please ensure location services are enabled.",
@@ -106,7 +106,7 @@ export function StatusUpdatePanel({ shipment, driverId }: StatusUpdatePanelProps
                 // Proceed without location if there's an error
                 performStatusUpdate(statusToConfirm);
             },
-            { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+            { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 }
         );
     });
   };
