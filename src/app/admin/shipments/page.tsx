@@ -3,20 +3,17 @@
 
 import * as React from "react";
 import { useEffect } from "react";
-import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { PlusCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { getShipmentsAction } from "@/lib/actions";
 import type { Shipment } from "@/lib/types";
 import { ShipmentDataTable } from "@/components/admin/shipment-data-table";
 import { columns } from "@/components/admin/shipment-columns";
-import Link from "next/link";
 import { useToast } from "@/hooks/use-toast";
 import { ClearShipmentsDialog } from "@/components/admin/clear-shipments-dialog";
 
-// This is now a client component to handle refresh
 export default function AdminShipmentsPage() {
-  const router = useRouter();
   const [shipments, setShipments] = React.useState<Shipment[]>([]);
   const [isLoading, setIsLoading] = React.useState(true);
   const { toast } = useToast();
@@ -42,10 +39,8 @@ export default function AdminShipmentsPage() {
     fetchShipments();
   }, [fetchShipments]);
 
-
   useEffect(() => {
     const interval = setInterval(() => {
-      // Instead of router.refresh(), we re-fetch the data to update the client state
       fetchShipments();
     }, 5000); // Refresh every 5 seconds
 
