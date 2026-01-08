@@ -1,5 +1,4 @@
 
-
 "use client";
 
 import { useTransition, useState, useMemo } from "react";
@@ -47,6 +46,7 @@ import { Loader2, AlertTriangle, History, XCircle, ThumbsUp, MapPin } from "luci
 import { useToast } from "@/hooks/use-toast";
 import { ClientOnly } from "@/components/client-only";
 import { ClientFormattedDate } from "../client-formatted-date";
+import Link from "next/link";
 
 type StatusUpdatePanelProps = {
   shipment: Shipment;
@@ -97,7 +97,7 @@ export function StatusUpdatePanel({ shipment, driverId }: StatusUpdatePanelProps
                 performStatusUpdate(statusToConfirm, { latitude, longitude });
             },
             (error) => {
-                console.error("Geolocation error:", error);
+                console.error(`Geolocation error: ${error.message} (Code: ${error.code})`);
                 toast({
                     title: "Could Not Get Location",
                     description: "Proceeding without location data. Please ensure location services are enabled.",
@@ -318,6 +318,19 @@ export function StatusUpdatePanel({ shipment, driverId }: StatusUpdatePanelProps
                                         <div>
                                             <p className="font-medium">{STATUS_DETAILS[log.status]?.label}</p>
                                             <p className="text-xs text-muted-foreground"><ClientFormattedDate date={log.timestamp} /></p>
+                                             {log.latitude && log.longitude && (
+                                                <div className="text-xs text-muted-foreground mt-1 flex items-center gap-1">
+                                                <MapPin className="h-3 w-3" />
+                                                <span>
+                                                    {log.latitude.toFixed(5)}, {log.longitude.toFixed(5)}
+                                                </span>
+                                                <Button variant="link" size="sm" asChild className="h-auto p-0 text-xs ml-1">
+                                                    <Link href={`https://www.google.com/maps/search/?api=1&query=${log.latitude},${log.longitude}`} target="_blank" rel="noopener noreferrer">
+                                                    View Map
+                                                    </Link>
+                                                </Button>
+                                                </div>
+                                            )}
                                         </div>
                                         {log.isFlagged ? (
                                             <span className="text-xs text-destructive font-medium">Correction Pending</span>
@@ -408,3 +421,5 @@ export function StatusUpdatePanel({ shipment, driverId }: StatusUpdatePanelProps
     </>
   );
 }
+
+    
