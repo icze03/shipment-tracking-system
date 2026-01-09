@@ -80,44 +80,43 @@ export function StatusUpdatePanel({ shipment, driverId }: StatusUpdatePanelProps
     if (!statusToConfirm) return;
 
     if (!navigator.geolocation) {
-        toast({
-            title: "Geolocation Not Supported",
-            description: "Your browser does not support location services.",
-            variant: "destructive"
-        });
-        // Proceed without location
-        performStatusUpdate(statusToConfirm);
-        return;
+      toast({
+        title: "Geolocation Not Supported",
+        description: "Your browser does not support location services. This is required to update status.",
+        variant: "destructive"
+      });
+      setStatusToConfirm(null);
+      return;
     }
 
     startUpdateTransition(() => {
-        navigator.geolocation.getCurrentPosition(
-            (position) => {
-                const { latitude, longitude } = position.coords;
-                performStatusUpdate(statusToConfirm, { latitude, longitude });
-            },
-            (error) => {
-                console.warn(`Geolocation error: ${error.message} (Code: ${error.code})`);
-                toast({
-                    title: "Could Not Get Location",
-                    description: "Proceeding without location data. Please ensure location services are enabled.",
-                    variant: "destructive"
-                });
-                // Proceed without location if there's an error
-                performStatusUpdate(statusToConfirm);
-            },
-            { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 }
-        );
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const { latitude, longitude } = position.coords;
+          performStatusUpdate(statusToConfirm, { latitude, longitude });
+        },
+        (error) => {
+          console.warn(`Geolocation error: ${error.message} (Code: ${error.code})`);
+          toast({
+            title: "Could Not Get Location",
+            description: "Location is required to update status. Please check your device's location settings and try again.",
+            variant: "destructive"
+          });
+          // Stop the update process if location fails
+          setStatusToConfirm(null);
+        },
+        { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 }
+      );
     });
   };
 
-  const performStatusUpdate = async (status: ShipmentStatus, location?: {latitude: number, longitude: number}) => {
+  const performStatusUpdate = async (status: ShipmentStatus, location: {latitude: number, longitude: number}) => {
     const result = await updateShipmentStatusAction({
       shipmentId: shipment.id,
       status: status,
       driverId,
-      latitude: location?.latitude,
-      longitude: location?.longitude,
+      latitude: location.latitude,
+      longitude: location.longitude,
     });
     if (result.error) {
       toast({
