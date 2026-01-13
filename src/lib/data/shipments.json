@@ -1,18 +1,138 @@
 [
   {
+    "id": "dd99c690-88e5-44a8-b05f-0f3f346001ef",
+    "orderCode": "GLT-XLE5W3",
+    "assignedDriverId": "f246f518-252c-45e8-9d07-bae10c0e3618",
+    "assignedDriverName": "john rivera",
+    "createdAt": "2026-01-09T14:16:31.000+08:00",
+    "updatedAt": "2026-01-09T14:16:31.000+08:00",
+    "currentStatus": "pending",
+    "statusTimestamps": {},
+    "statusLogs": [],
+    "isCompleted": false,
+    "origin": "muntinlupa",
+    "destination": "calamba",
+    "description": "100 Sacks of rice",
+    "notes": ""
+  },
+  {
+    "id": "cfa97a2f-c44c-42c3-b1be-7ff30e8d2de6",
+    "orderCode": "GLT-FOBK22",
+    "assignedDriverId": "f246f518-252c-45e8-9d07-bae10c0e3618",
+    "assignedDriverName": "john rivera",
+    "createdAt": "2026-01-04T18:48:44.751Z",
+    "updatedAt": "2026-01-13T16:07:49.000+08:00",
+    "currentStatus": "start_unloading",
+    "statusTimestamps": {
+      "arrived_at_warehouse": "2026-01-09T12:45:51.000+08:00",
+      "start_loading": "2026-01-09T12:45:55.000+08:00",
+      "end_loading": "2026-01-09T12:45:58.000+08:00",
+      "departed_warehouse": "2026-01-09T12:46:01.000+08:00",
+      "arrived_at_destination": "2026-01-09T14:04:54.000+08:00",
+      "start_unloading": "2026-01-13T16:07:49.000+08:00"
+    },
+    "statusLogs": [
+      {
+        "id": "f95cce7e-1321-4f1b-8017-0deab7aa9e64",
+        "status": "arrived_at_warehouse",
+        "timestamp": "2026-01-09T12:45:51.000+08:00",
+        "actorId": "f246f518-252c-45e8-9d07-bae10c0e3618",
+        "actorName": "john rivera",
+        "source": "driver",
+        "isFlagged": false,
+        "latitude": 14.3895951,
+        "longitude": 121.0443183
+      },
+      {
+        "id": "5a6acb81-c6c7-4d9d-ab72-5088e8733f67",
+        "status": "start_loading",
+        "timestamp": "2026-01-09T12:45:55.000+08:00",
+        "actorId": "f246f518-252c-45e8-9d07-bae10c0e3618",
+        "actorName": "john rivera",
+        "source": "driver",
+        "isFlagged": false,
+        "latitude": 14.3895951,
+        "longitude": 121.0443183
+      },
+      {
+        "id": "e497ea89-d32c-472a-8837-7380663a31d3",
+        "status": "end_loading",
+        "timestamp": "2026-01-09T12:45:58.000+08:00",
+        "actorId": "f246f518-252c-45e8-9d07-bae10c0e3618",
+        "actorName": "john rivera",
+        "source": "driver",
+        "isFlagged": false,
+        "latitude": 14.3895951,
+        "longitude": 121.0443183
+      },
+      {
+        "id": "ab1b3a16-ec21-4352-85e3-e52cc9ba33c0",
+        "status": "departed_warehouse",
+        "timestamp": "2026-01-09T12:46:01.000+08:00",
+        "actorId": "f246f518-252c-45e8-9d07-bae10c0e3618",
+        "actorName": "john rivera",
+        "source": "driver",
+        "isFlagged": false,
+        "latitude": 14.3895951,
+        "longitude": 121.0443183
+      },
+      {
+        "id": "829df964-2ebc-449e-a0ba-270443475fb8",
+        "status": "arrived_at_destination",
+        "timestamp": "2026-01-09T12:46:04.000+08:00",
+        "actorId": "f246f518-252c-45e8-9d07-bae10c0e3618",
+        "actorName": "john rivera",
+        "source": "driver",
+        "isFlagged": false,
+        "latitude": 14.3895951,
+        "longitude": 121.0443183,
+        "correctionReason": "i need to go back i left something\n"
+      },
+      {
+        "id": "8a4aa972-eb14-4b96-a3df-e32982ef140f",
+        "status": "arrived_at_destination",
+        "timestamp": "2026-01-09T14:04:54.000+08:00",
+        "actorId": "admin01",
+        "actorName": "Astraea Millares",
+        "source": "admin",
+        "isCorrection": true,
+        "notes": "Admin applied correction. ok"
+      },
+      {
+        "id": "44e59ed2-f296-4d46-b562-7eead52b7be0",
+        "status": "start_unloading",
+        "timestamp": "2026-01-13T16:07:49.000+08:00",
+        "actorId": "f246f518-252c-45e8-9d07-bae10c0e3618",
+        "actorName": "john rivera",
+        "source": "driver",
+        "isFlagged": false,
+        "latitude": 14.389608,
+        "longitude": 121.0443175
+      }
+    ],
+    "isCompleted": false,
+    "origin": "muntinlupa",
+    "destination": "pangasinan",
+    "description": "100 Sacks of rice",
+    "notes": "fragile make sure the sacks are not damage before loading"
+  },
+  {
     "id": "7f8b62c7-24bd-4928-8e8b-e5d2d2f7774c",
     "orderCode": "GLT-S9LL4K",
     "assignedDriverId": "f246f518-252c-45e8-9d07-bae10c0e3618",
     "assignedDriverName": "john rivera",
     "createdAt": "2026-01-04T18:47:26.513Z",
-    "updatedAt": "2026-01-09T12:40:59.000+08:00",
-    "currentStatus": "arrived_at_destination",
+    "updatedAt": "2026-01-09T12:45:46.000+08:00",
+    "currentStatus": "trip_completed",
     "statusTimestamps": {
       "arrived_at_warehouse": "2026-01-04T19:12:44.582Z",
       "start_loading": "2026-01-04T19:13:36.562Z",
       "end_loading": "2026-01-09T06:09:17.000+08:00",
       "departed_warehouse": "2026-01-09T06:29:51.000+08:00",
-      "arrived_at_destination": "2026-01-09T12:40:59.000+08:00"
+      "arrived_at_destination": "2026-01-09T12:40:59.000+08:00",
+      "start_unloading": "2026-01-09T12:45:06.000+08:00",
+      "end_unloading": "2026-01-09T12:45:37.000+08:00",
+      "trip_completed": "2026-01-09T12:45:46.000+08:00"
     },
     "statusLogs": [
       {
@@ -81,28 +201,43 @@
         "actorName": "john rivera",
         "source": "driver",
         "isFlagged": false
+      },
+      {
+        "id": "71418162-22ed-411c-8cc9-e656af778146",
+        "status": "start_unloading",
+        "timestamp": "2026-01-09T12:45:06.000+08:00",
+        "actorId": "f246f518-252c-45e8-9d07-bae10c0e3618",
+        "actorName": "john rivera",
+        "source": "driver",
+        "isFlagged": false
+      },
+      {
+        "id": "e9f8aff6-af7e-4999-8c15-fa2b47a8720f",
+        "status": "end_unloading",
+        "timestamp": "2026-01-09T12:45:37.000+08:00",
+        "actorId": "f246f518-252c-45e8-9d07-bae10c0e3618",
+        "actorName": "john rivera",
+        "source": "driver",
+        "isFlagged": false,
+        "latitude": 14.3895951,
+        "longitude": 121.0443183
+      },
+      {
+        "id": "4b1c869d-5927-41a7-b4c4-a98837a37340",
+        "status": "trip_completed",
+        "timestamp": "2026-01-09T12:45:46.000+08:00",
+        "actorId": "f246f518-252c-45e8-9d07-bae10c0e3618",
+        "actorName": "john rivera",
+        "source": "driver",
+        "isFlagged": false,
+        "latitude": 14.3895951,
+        "longitude": 121.0443183
       }
     ],
-    "isCompleted": false,
+    "isCompleted": true,
     "origin": "rice farm inc. marilao bulacan",
     "destination": "Muntinlupa city",
     "description": "150 Sacks of rice",
     "notes": "make sure to not break the sack when loading and unloading"
-  },
-  {
-    "id": "cfa97a2f-c44c-42c3-b1be-7ff30e8d2de6",
-    "orderCode": "GLT-FOBK22",
-    "assignedDriverId": "f246f518-252c-45e8-9d07-bae10c0e3618",
-    "assignedDriverName": "john rivera",
-    "createdAt": "2026-01-04T18:48:44.751Z",
-    "updatedAt": "2026-01-04T18:48:44.751Z",
-    "currentStatus": "pending",
-    "statusTimestamps": {},
-    "statusLogs": [],
-    "isCompleted": false,
-    "origin": "muntinlupa",
-    "destination": "pangasinan",
-    "description": "100 Sacks of rice",
-    "notes": "fragile make sure the sacks are not damage before loading"
   }
 ]
