@@ -16,7 +16,7 @@ export async function getMockUserAction(role: UserRole): Promise<UserProfile> {
 }
 
 export async function validateCredentialsAction(username: string, password: string): Promise<{ success: boolean; role?: UserRole; userId?: string; error?: string; }> {
-    if (username.toLowerCase() === 'admin' && password === 'password') {
+    if (username.toLowerCase() === 'admin' && password === 'admin1234') {
         const adminUser = await getMockUser('admin');
         return { success: true, role: 'admin', userId: adminUser.id };
     }
@@ -209,36 +209,23 @@ export async function updateShipmentStatusAction(data: {
 
         if (!shipment) return { error: "Shipment not found." };
         if (!driver) return { error: "Driver not found." };
+        if (!latitude || !longitude) return { error: "Location data is required." };
         
         const now = getPhilippineTimeISO();
-        const nowTime = new Date(now).getTime();
-
-        const recentLogIndex = shipment.statusLogs.findIndex(log => 
-            log.status === status && 
-            log.actorId === driverId &&
-            !log.latitude && // Find one without location
-            (nowTime - new Date(log.timestamp).getTime()) < 15000 // Within 15 seconds
-        );
         
-        if (recentLogIndex > -1 && latitude && longitude) {
-            // If a recent log exists without location, update it instead of creating a new one
-            shipment.statusLogs[recentLogIndex].latitude = latitude;
-            shipment.statusLogs[recentLogIndex].longitude = longitude;
-        } else {
-            // Otherwise, create a new log entry
-            const newLogEntry = {
-                id: uuidv4(),
-                status: status,
-                timestamp: now,
-                actorId: driver.id,
-                actorName: driver.name,
-                source: 'driver' as const,
-                isFlagged: false,
-                latitude,
-                longitude,
-            };
-            shipment.statusLogs.push(newLogEntry);
-        }
+        // Always create a new log entry. The duplicate check was flawed.
+        const newLogEntry = {
+            id: uuidv4(),
+            status: status,
+            timestamp: now,
+            actorId: driver.id,
+            actorName: driver.name,
+            source: 'driver' as const,
+            isFlagged: false,
+            latitude,
+            longitude,
+        };
+        shipment.statusLogs.push(newLogEntry);
 
         shipment.currentStatus = status;
         shipment.statusTimestamps[status] = now;
@@ -534,5 +521,7 @@ export async function clearAllShipmentsAction() {
 
     
 
+
+    
 
     
