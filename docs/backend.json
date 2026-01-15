@@ -64,6 +64,20 @@
         "isCompleted": {
           "type": "boolean",
           "description": "Indicates whether the shipment is completed."
+        },
+        "expenses": {
+            "type": "array",
+            "description": "A list of expenses related to the shipment.",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "id": { "type": "string" },
+                    "type": { "type": "string" },
+                    "amount": { "type": "number" },
+                    "notes": { "type": "string" }
+                },
+                "required": ["id", "type", "amount"]
+            }
         }
       },
       "required": [

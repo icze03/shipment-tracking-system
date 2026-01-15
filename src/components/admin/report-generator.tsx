@@ -6,7 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { FileDown, Loader2 } from "lucide-react";
 import { getShipmentsAction, getDriversAction } from "@/lib/actions";
-import type { Shipment, Driver, StatusLog } from "@/lib/types";
+import type { Shipment, Driver, StatusLog, Expense } from "@/lib/types";
 import { useToast } from "@/hooks/use-toast";
 import { formatDate } from "@/lib/utils";
 
@@ -57,6 +57,9 @@ export function ReportGenerator() {
         return;
       }
       
+      const expenseTypes = [...new Set(shipments.flatMap(s => s.expenses?.map(e => e.type) || []))];
+      const expenseHeaders = expenseTypes.map(type => `expense_${type.toLowerCase().replace(/\s+/g, '_')}`);
+
       const headers = [
         'id', 'orderCode', 'assignedDriverId', 'assignedDriverName', 
         'createdAt', 'updatedAt', 'currentStatus', 'isCompleted', 
@@ -66,10 +69,11 @@ export function ReportGenerator() {
         'status_arrived_at_warehouse', 'status_start_loading', 'status_end_loading',
         'status_departed_warehouse', 'status_arrived_at_destination',
         'status_start_unloading', 'status_end_unloading', 'status_trip_completed',
-        'status_cancelled', 'status_cancellation_acknowledged'
+        'status_cancelled', 'status_cancellation_acknowledged',
+        ...expenseHeaders,
+        'total_expenses'
       ];
       
-      // Pre-format dates and flatten status timestamps
       const formattedShipments = shipments.map(s => {
         const flatStatusTimestamps = Object.entries(s.statusTimestamps).reduce((acc, [key, value]) => {
             acc[`status_${key}`] = formatDate(value);
@@ -81,12 +85,23 @@ export function ReportGenerator() {
             timestamp: formatDate(log.timestamp)
         }));
 
+        const flatExpenses = expenseTypes.reduce((acc, type) => {
+            const expenseKey = `expense_${type.toLowerCase().replace(/\s+/g, '_')}`;
+            const totalAmount = s.expenses?.filter(e => e.type === type).reduce((sum, e) => sum + e.amount, 0) || 0;
+            acc[expenseKey] = totalAmount;
+            return acc;
+        }, {} as Record<string, number>);
+
+        const totalExpenses = s.expenses?.reduce((sum, e) => sum + e.amount, 0) || 0;
+
         return {
             ...s,
             createdAt: formatDate(s.createdAt),
             updatedAt: formatDate(s.updatedAt),
-            statusLogs: formattedLogs, // Keep logs as structured JSON string in CSV
-            ...flatStatusTimestamps
+            statusLogs: formattedLogs,
+            ...flatStatusTimestamps,
+            ...flatExpenses,
+            total_expenses: totalExpenses
         }
       });
 
@@ -119,7 +134,7 @@ export function ReportGenerator() {
         <CardHeader>
           <CardTitle>Shipment Data</CardTitle>
           <CardDescription>
-            Export a complete CSV file of all shipments, including their status history and details.
+            Export a complete CSV file of all shipments, including their status history, expenses, and details.
           </CardDescription>
         </CardHeader>
         <CardContent>

@@ -40,13 +40,15 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { acknowledgeCancellationAction, requestCorrectionAction, updateShipmentStatusAction } from "@/lib/actions";
-import type { Shipment, ShipmentStatus, StatusLog } from "@/lib/types";
+import type { Shipment, ShipmentStatus, StatusLog, Expense } from "@/lib/types";
 import { SHIPMENT_STATUSES, STATUS_DETAILS } from "@/lib/constants";
-import { Loader2, AlertTriangle, History, XCircle, ThumbsUp, MapPin } from "lucide-react";
+import { Loader2, AlertTriangle, History, XCircle, ThumbsUp, MapPin, ListPlus } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { ClientOnly } from "@/components/client-only";
 import { ClientFormattedDate } from "../client-formatted-date";
 import Link from "next/link";
+import { ExpenseTrackerDialog } from "./expense-tracker-dialog";
+import { v4 as uuidv4 } from "uuid";
 
 type StatusUpdatePanelProps = {
   shipment: Shipment;
@@ -66,6 +68,8 @@ export function StatusUpdatePanel({ shipment, driverId }: StatusUpdatePanelProps
     reason: string;
   }>({ isOpen: false, logEntry: null, reason: "" });
 
+  const [isExpenseModalOpen, setIsExpenseModalOpen] = useState(false);
+
   const { toast } = useToast();
 
   const currentStatusIndex = SHIPMENT_STATUSES.indexOf(
@@ -76,7 +80,7 @@ export function StatusUpdatePanel({ shipment, driverId }: StatusUpdatePanelProps
       ? SHIPMENT_STATUSES[0]
       : SHIPMENT_STATUSES[currentStatusIndex + 1];
 
-  const handleLocationAndStatusUpdate = () => {
+  const handleLocationAndStatusUpdate = (expenses?: Expense[]) => {
     if (!statusToConfirm) return;
 
     if (!navigator.geolocation) {
@@ -93,7 +97,7 @@ export function StatusUpdatePanel({ shipment, driverId }: StatusUpdatePanelProps
       navigator.geolocation.getCurrentPosition(
         (position) => {
           const { latitude, longitude } = position.coords;
-          performStatusUpdate(statusToConfirm, { latitude, longitude });
+          performStatusUpdate(statusToConfirm, { latitude, longitude }, expenses);
         },
         (error) => {
           console.warn(`Geolocation error: ${error.message} (Code: ${error.code})`);
@@ -110,13 +114,14 @@ export function StatusUpdatePanel({ shipment, driverId }: StatusUpdatePanelProps
     });
   };
 
-  const performStatusUpdate = async (status: ShipmentStatus, location: {latitude: number, longitude: number}) => {
+  const performStatusUpdate = async (status: ShipmentStatus, location: {latitude: number, longitude: number}, expenses?: Expense[]) => {
     const result = await updateShipmentStatusAction({
       shipmentId: shipment.id,
       status: status,
       driverId,
       latitude: location.latitude,
       longitude: location.longitude,
+      expenses,
     });
     if (result.error) {
       toast({
@@ -131,6 +136,11 @@ export function StatusUpdatePanel({ shipment, driverId }: StatusUpdatePanelProps
       });
     }
     setStatusToConfirm(null); // Close the modal
+    setIsExpenseModalOpen(false); // Close expense modal if it was open
+  };
+  
+  const handleFinalizeTrip = (expenses: Expense[]) => {
+     handleLocationAndStatusUpdate(expenses);
   };
   
   const handleCorrectionSubmit = () => {
@@ -275,20 +285,36 @@ export function StatusUpdatePanel({ shipment, driverId }: StatusUpdatePanelProps
             <div className="space-y-4">
               <p className="text-sm font-medium">Next Action:</p>
               {nextStatus && nextStatusDetails ? (
-                <Button
-                  className="w-full h-24 text-2xl bg-primary hover:bg-primary/90 text-primary-foreground flex items-center justify-center gap-4"
-                  onClick={() => setStatusToConfirm(nextStatus)}
-                  disabled={isUpdatePending}
-                >
-                  {isUpdatePending && statusToConfirm !== nextStatus ? (
-                    <Loader2 className="h-12 w-12 animate-spin" />
+                <>
+                  {nextStatus === 'trip_completed' ? (
+                     <Button
+                        className="w-full h-24 text-2xl bg-green-600 hover:bg-green-600/90 text-primary-foreground flex items-center justify-center gap-4"
+                        onClick={() => {
+                            setStatusToConfirm(nextStatus);
+                            setIsExpenseModalOpen(true);
+                        }}
+                        disabled={isUpdatePending}
+                    >
+                        <ListPlus className="h-10 w-10" />
+                        <span>Log Expenses & Complete</span>
+                    </Button>
                   ) : (
-                    <>
-                      <nextStatusDetails.icon className="h-10 w-10" />
-                      <span>{nextStatusDetails.label}</span>
-                    </>
+                    <Button
+                      className="w-full h-24 text-2xl bg-primary hover:bg-primary/90 text-primary-foreground flex items-center justify-center gap-4"
+                      onClick={() => setStatusToConfirm(nextStatus)}
+                      disabled={isUpdatePending}
+                    >
+                      {isUpdatePending && statusToConfirm !== nextStatus ? (
+                        <Loader2 className="h-12 w-12 animate-spin" />
+                      ) : (
+                        <>
+                          <nextStatusDetails.icon className="h-10 w-10" />
+                          <span>{nextStatusDetails.label}</span>
+                        </>
+                      )}
+                    </Button>
                   )}
-                </Button>
+                </>
               ) : (
                 <div className="text-center text-muted-foreground p-8 border rounded-lg">
                   <p className="font-semibold">Trip Completed!</p>
@@ -359,7 +385,7 @@ export function StatusUpdatePanel({ shipment, driverId }: StatusUpdatePanelProps
 
       <ClientOnly>
         <AlertDialog
-            open={!!statusToConfirm}
+            open={!!statusToConfirm && !isExpenseModalOpen}
             onOpenChange={(isOpen) => !isOpen && setStatusToConfirm(null)}
         >
             <AlertDialogContent>
@@ -372,13 +398,23 @@ export function StatusUpdatePanel({ shipment, driverId }: StatusUpdatePanelProps
             </AlertDialogHeader>
             <AlertDialogFooter>
                 <AlertDialogCancel disabled={isUpdatePending}>Cancel</AlertDialogCancel>
-                <AlertDialogAction onClick={handleLocationAndStatusUpdate} disabled={isUpdatePending}>
+                <AlertDialogAction onClick={() => handleLocationAndStatusUpdate()} disabled={isUpdatePending}>
                 {isUpdatePending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                 Confirm
                 </AlertDialogAction>
             </AlertDialogFooter>
             </AlertDialogContent>
         </AlertDialog>
+        
+        <ExpenseTrackerDialog
+            isOpen={isExpenseModalOpen}
+            onClose={() => {
+                setIsExpenseModalOpen(false);
+                setStatusToConfirm(null);
+            }}
+            onSave={handleFinalizeTrip}
+            isSaving={isUpdatePending}
+        />
       </ClientOnly>
 
       <ClientOnly>
@@ -420,5 +456,3 @@ export function StatusUpdatePanel({ shipment, driverId }: StatusUpdatePanelProps
     </>
   );
 }
-
-    

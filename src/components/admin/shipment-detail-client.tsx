@@ -2,7 +2,7 @@
 "use client";
 
 import { useMemo, useState, useTransition } from "react";
-import type { Shipment, StatusLog } from "@/lib/types";
+import type { Shipment, StatusLog, Expense } from "@/lib/types";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
@@ -18,7 +18,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { AlertTriangle, Edit, Loader2, XCircle, MapPin } from "lucide-react";
+import { AlertTriangle, Edit, Loader2, XCircle, MapPin, DollarSign } from "lucide-react";
 import { STATUS_DETAILS } from "@/lib/constants";
 import { TimestampCorrectionModal } from "@/components/admin/timestamp-correction-modal";
 import { ClientFormattedDate } from "../client-formatted-date";
@@ -27,6 +27,7 @@ import { cancelShipmentAction } from "@/lib/actions";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import Link from "next/link";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../ui/table";
 
 type ShipmentDetailClientProps = {
   shipment: Shipment;
@@ -58,6 +59,10 @@ export function ShipmentDetailClient({ shipment }: ShipmentDetailClientProps) {
   }, [shipment.statusLogs]);
 
   const canCancel = !shipment.isCompleted && shipment.currentStatus !== 'cancelled';
+
+  const totalExpenses = useMemo(() => {
+    return shipment.expenses?.reduce((total, expense) => total + expense.amount, 0) || 0;
+  }, [shipment.expenses]);
 
   return (
     <div className="md:col-span-1 space-y-6">
@@ -131,6 +136,47 @@ export function ShipmentDetailClient({ shipment }: ShipmentDetailClientProps) {
         </CardContent>
       </Card>
       
+      {shipment.expenses && shipment.expenses.length > 0 && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <DollarSign className="h-5 w-5" />
+              Trip Expenses
+            </CardTitle>
+            <CardDescription>Expenses logged by the driver for this shipment.</CardDescription>
+          </CardHeader>
+          <CardContent className="p-0">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Type</TableHead>
+                  <TableHead className="text-right">Amount</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {shipment.expenses.map((expense) => (
+                  <TableRow key={expense.id}>
+                    <TableCell>
+                      <p className="font-medium capitalize">{expense.type}</p>
+                      {expense.notes && <p className="text-xs text-muted-foreground">{expense.notes}</p>}
+                    </TableCell>
+                    <TableCell className="text-right font-mono">
+                      ${expense.amount.toFixed(2)}
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </CardContent>
+          <CardFooter className="justify-end font-bold pt-4">
+            <div className="flex items-center gap-4">
+              <span>Total:</span>
+              <span className="font-mono">${totalExpenses.toFixed(2)}</span>
+            </div>
+          </CardFooter>
+        </Card>
+      )}
+
       <Card>
         <CardHeader>
           <CardTitle>Admin Actions</CardTitle>

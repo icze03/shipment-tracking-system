@@ -47,6 +47,13 @@ export type StatusLog = {
   longitude?: number;
 };
 
+export type Expense = {
+  id: string;
+  type: string;
+  amount: number;
+  notes?: string;
+};
+
 export interface Shipment {
   id: string;
   orderCode: string;
@@ -65,4 +72,5 @@ export interface Shipment {
   cancellationReason?: string;
   driverInstructions?: string;
   cancellationAcknowledged?: boolean;
+  expenses?: Expense[];
 }

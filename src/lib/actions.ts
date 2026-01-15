@@ -3,7 +3,7 @@
 
 import { revalidatePath } from "next/cache";
 import { v4 as uuidv4 } from "uuid";
-import type { Driver, Shipment, ShipmentStatus, UserProfile, UserRole } from "./types";
+import type { Driver, Expense, Shipment, ShipmentStatus, UserProfile, UserRole } from "./types";
 import { getDrivers, saveDrivers, getDriverById, updateDriver } from "./data/drivers";
 import { getShipments, saveShipments, getShipmentById } from "./data/shipments";
 import { getMockUser } from "./auth";
@@ -177,6 +177,7 @@ export async function createShipmentAction(data: {
       destination: data.destination,
       description: data.description,
       notes: data.notes,
+      expenses: [],
     };
     
     await saveShipments([newShipment, ...shipments]);
@@ -198,8 +199,9 @@ export async function updateShipmentStatusAction(data: {
     driverId: string;
     latitude?: number;
     longitude?: number;
+    expenses?: Expense[];
 }) {
-    const { shipmentId, status, driverId, latitude, longitude } = data;
+    const { shipmentId, status, driverId, latitude, longitude, expenses } = data;
     try {
         const [shipment, driver, shipments] = await Promise.all([
             getShipmentById(shipmentId),
@@ -213,7 +215,6 @@ export async function updateShipmentStatusAction(data: {
         
         const now = getPhilippineTimeISO();
         
-        // Always create a new log entry. The duplicate check was flawed.
         const newLogEntry = {
             id: uuidv4(),
             status: status,
@@ -233,13 +234,15 @@ export async function updateShipmentStatusAction(data: {
         
         if (status === 'trip_completed') {
             shipment.isCompleted = true;
+            if (expenses) {
+              shipment.expenses = expenses;
+            }
         }
         
         const shipmentIndex = shipments.findIndex(s => s.id === shipmentId);
         if (shipmentIndex > -1) {
             shipments[shipmentIndex] = shipment;
         } else {
-            // This case should ideally not happen if data is consistent
             shipments.unshift(shipment);
         }
 
@@ -512,16 +515,3 @@ export async function clearAllShipmentsAction() {
     return { error: `Failed to clear shipments: ${e.message}` };
   }
 }
-    
-
-    
-
-
-
-
-    
-
-
-    
-
-    
