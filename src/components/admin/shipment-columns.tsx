@@ -1,3 +1,4 @@
+
 "use client";
 
 import type { ColumnDef } from "@tanstack/react-table";
@@ -119,8 +120,13 @@ export const columns: ColumnDef<Shipment>[] = [
     header: "Driver",
   },
     {
-    accessorKey: "destination",
-    header: "Destination",
+    accessorKey: "destinations",
+    header: "Final Destination",
+    cell: ({ row }) => {
+        const shipment = row.original;
+        const finalDestination = shipment.destinations[shipment.destinations.length - 1];
+        return <span>{finalDestination}</span>
+    }
   },
   {
     accessorKey: "currentStatus",

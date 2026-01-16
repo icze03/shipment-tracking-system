@@ -1,3 +1,4 @@
+
 export type UserRole = "admin" | "driver";
 
 export interface UserProfile {
@@ -67,7 +68,8 @@ export interface Shipment {
   statusTimestamps: Partial<Record<ShipmentStatus, string>>;
   statusLogs: StatusLog[];
   isCompleted: boolean;
-  destination: string;
+  shipmentType: 'single_drop' | 'multi_drop';
+  destinations: string[];
   origin: string;
   cancellationReason?: string;
   driverInstructions?: string;

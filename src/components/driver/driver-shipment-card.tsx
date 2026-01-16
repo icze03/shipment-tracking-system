@@ -1,3 +1,4 @@
+
 "use client";
 
 import type { Shipment } from "@/lib/types";
@@ -12,6 +13,7 @@ type DriverShipmentCardProps = {
 
 export function DriverShipmentCard({ shipment }: DriverShipmentCardProps) {
     const statusDetail = STATUS_DETAILS[shipment.currentStatus];
+    const finalDestination = shipment.destinations[shipment.destinations.length - 1];
     return (
         <Card className="bg-muted/50">
             <CardHeader>
@@ -32,8 +34,14 @@ export function DriverShipmentCard({ shipment }: DriverShipmentCardProps) {
                 </div>
                 <div className="flex items-center gap-2">
                     <Flag className="h-4 w-4" />
-                    <span>To: {shipment.destination}</span>
+                    <span>To: {finalDestination}</span>
                 </div>
+                 {shipment.destinations.length > 1 && (
+                    <div className="flex items-center gap-2">
+                        <Clock className="h-4 w-4" />
+                        <span>({shipment.destinations.length} total stops)</span>
+                    </div>
+                 )}
                 <div className="flex items-center gap-2 pt-2">
                     {statusDetail?.icon && <statusDetail.icon className="h-4 w-4" />}
                     <span>Status: {statusDetail?.label ?? "Unknown"}</span>

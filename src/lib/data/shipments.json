@@ -6,15 +6,19 @@
     "assignedDriverId": "f246f518-252c-45e8-9d07-bae10c0e3618",
     "assignedDriverName": "John Rivera",
     "createdAt": "2024-05-10T10:00:00.000+08:00",
-    "updatedAt": "2024-05-15T11:00:00.000+08:00",
-    "currentStatus": "trip_completed",
+    "updatedAt": "2024-05-16T13:34:03.000+08:00",
+    "currentStatus": "arrived_at_destination",
+    "shipmentType": "single_drop",
+    "destinations": [
+      "Pangasinan"
+    ],
     "statusTimestamps": {
       "arrived_at_warehouse": "2024-05-11T09:00:00.000+08:00",
       "start_loading": "2024-05-11T09:30:00.000+08:00",
       "end_loading": "2024-05-11T11:00:00.000+08:00",
       "departed_warehouse": "2024-05-11T11:30:00.000+08:00",
-      "arrived_at_destination": "2024-05-12T14:00:00.000+08:00",
-      "start_unloading": "2024-05-13T10:00:00.000+08:00",
+      "arrived_at_destination": "2024-05-16T13:34:03.000+08:00",
+      "start_unloading": "2024-05-16T13:33:53.000+08:00",
       "end_unloading": "2024-05-13T11:30:00.000+08:00",
       "trip_completed": "2024-05-15T11:00:00.000+08:00"
     },
@@ -70,7 +74,7 @@
         "actorId": "f246f518-252c-45e8-9d07-bae10c0e3618",
         "actorName": "John Rivera",
         "source": "driver",
-        "isFlagged": true,
+        "isFlagged": false,
         "latitude": 14.3895951,
         "longitude": 121.0443183,
         "correctionReason": "I need to go back, I left something."
@@ -92,7 +96,7 @@
         "actorId": "f246f518-252c-45e8-9d07-bae10c0e3618",
         "actorName": "John Rivera",
         "source": "driver",
-        "isFlagged": true,
+        "isFlagged": false,
         "latitude": 14.389608,
         "longitude": 121.0443175,
         "correctionReason": "Need spare tire."
@@ -128,11 +132,30 @@
         "isFlagged": false,
         "latitude": 14.3842221,
         "longitude": 121.0449656
+      },
+      {
+        "id": "1e072aef-bed6-4497-80f7-81dd67b0f74c",
+        "status": "start_unloading",
+        "timestamp": "2024-05-16T13:33:53.000+08:00",
+        "actorId": "admin01",
+        "actorName": "Astraea Millares",
+        "source": "admin",
+        "isCorrection": true,
+        "notes": "Admin applied correction. ok"
+      },
+      {
+        "id": "6597ceca-6caa-429f-82e3-9b52abe33ddd",
+        "status": "arrived_at_destination",
+        "timestamp": "2024-05-16T13:34:03.000+08:00",
+        "actorId": "admin01",
+        "actorName": "Astraea Millares",
+        "source": "admin",
+        "isCorrection": true,
+        "notes": "Admin applied correction. done"
       }
     ],
     "isCompleted": true,
     "origin": "Muntinlupa",
-    "destination": "Pangasinan",
     "description": "100 Sacks of rice",
     "notes": "Fragile. Make sure the sacks are not damaged before loading.",
     "expenses": [
@@ -151,11 +174,14 @@
     "createdAt": "2024-05-16T14:00:00.000+08:00",
     "updatedAt": "2024-05-16T14:00:00.000+08:00",
     "currentStatus": "pending",
+    "shipmentType": "single_drop",
+    "destinations": [
+      "Calamba"
+    ],
     "statusTimestamps": {},
     "statusLogs": [],
     "isCompleted": false,
     "origin": "Muntinlupa",
-    "destination": "Calamba",
     "description": "50 boxes of canned goods",
     "notes": ""
   },
@@ -167,6 +193,10 @@
     "createdAt": "2024-05-01T10:00:00.000+08:00",
     "updatedAt": "2024-05-05T12:00:00.000+08:00",
     "currentStatus": "trip_completed",
+    "shipmentType": "single_drop",
+    "destinations": [
+      "Muntinlupa City"
+    ],
     "statusTimestamps": {
       "arrived_at_warehouse": "2024-05-02T09:00:00.000+08:00",
       "start_loading": "2024-05-02T09:30:00.000+08:00",
@@ -180,7 +210,6 @@
     "statusLogs": [],
     "isCompleted": true,
     "origin": "Rice Farm Inc., Marilao, Bulacan",
-    "destination": "Muntinlupa City",
     "description": "150 Sacks of rice",
     "notes": "Make sure to not break the sack when loading and unloading."
   }

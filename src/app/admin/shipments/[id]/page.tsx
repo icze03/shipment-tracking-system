@@ -1,3 +1,4 @@
+
 import { getShipmentById } from "@/lib/data/shipments";
 import { notFound } from "next/navigation";
 import Link from "next/link";
@@ -63,13 +64,22 @@ export default async function ShipmentDetailPage({ params }: ShipmentDetailPageP
                   <Calendar className="h-4 w-4 text-muted-foreground" />
                   <span>Created: <ClientFormattedDate date={shipment.createdAt} /></span>
                 </div>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 sm:col-span-2">
                   <MapPin className="h-4 w-4 text-muted-foreground" />
                   <span>Origin: {shipment.origin}</span>
                 </div>
-                <div className="flex items-center gap-2">
-                  <Flag className="h-4 w-4 text-muted-foreground" />
-                  <span>Destination: {shipment.destination}</span>
+                <div className="flex items-start gap-2 sm:col-span-2">
+                  <Flag className="h-4 w-4 text-muted-foreground mt-1" />
+                  <div className="flex flex-col">
+                      <span className="text-foreground">Destination{shipment.destinations.length > 1 ? 's' : ''}</span>
+                      {shipment.destinations.length > 1 ? (
+                        <ol className="list-decimal list-inside text-muted-foreground mt-1 space-y-1">
+                          {shipment.destinations.map((dest, i) => <li key={i}>{dest}</li>)}
+                        </ol>
+                      ) : (
+                        <p className="text-muted-foreground">{shipment.destinations[0]}</p>
+                      )}
+                    </div>
                 </div>
                 {shipment.notes && (
                   <div className="flex items-start gap-2 col-span-1 sm:col-span-2">

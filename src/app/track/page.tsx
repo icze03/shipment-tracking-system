@@ -1,3 +1,4 @@
+
 import { Suspense } from "react";
 import { getShipmentByOrderCode } from "@/lib/data/shipments";
 import { PublicHeader } from "@/components/layout/public-header";
@@ -61,10 +62,20 @@ async function ShipmentDetails({ orderCode }: { orderCode: string }) {
     );
   }
 
+  const finalDestination = shipment.destinations[shipment.destinations.length - 1];
+
   return (
     <div className="mt-8">
       <h2 className="text-xl font-bold mb-2">Status for {shipment.orderCode}</h2>
-      <p className="text-muted-foreground mb-6">From <span className="font-medium text-foreground">{shipment.origin}</span> to <span className="font-medium text-foreground">{shipment.destination}</span>.</p>
+      <p className="text-muted-foreground mb-6">From <span className="font-medium text-foreground">{shipment.origin}</span> to <span className="font-medium text-foreground">{finalDestination}</span>.</p>
+       {shipment.destinations.length > 1 && (
+        <div className="text-sm text-muted-foreground mb-6 border p-4 rounded-md">
+            <p className="font-medium text-foreground">All Drop-off Points:</p>
+            <ol className="list-decimal list-inside mt-2 space-y-1">
+                {shipment.destinations.map((dest, i) => <li key={i}>{dest}</li>)}
+            </ol>
+        </div>
+      )}
       <ShipmentStatusTimeline shipment={shipment} />
     </div>
   );

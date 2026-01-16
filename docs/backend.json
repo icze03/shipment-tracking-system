@@ -100,9 +100,17 @@
             "type": "string",
             "description": "The origin address of the shipment."
         },
-        "destination": {
+        "destinations": {
+          "type": "array",
+          "description": "A list of destination addresses for the shipment.",
+          "items": {
+              "type": "string"
+          }
+        },
+        "shipmentType": {
             "type": "string",
-            "description": "The destination address of the shipment."
+            "description": "The type of shipment (single or multiple drop-offs).",
+            "enum": ["single_drop", "multi_drop"]
         },
         "expenses": {
             "type": "array",
@@ -128,7 +136,8 @@
         "currentStatus",
         "isCompleted",
         "origin",
-        "destination"
+        "destinations",
+        "shipmentType"
       ]
     },
     "StatusLog": {

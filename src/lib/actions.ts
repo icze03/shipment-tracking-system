@@ -146,7 +146,8 @@ export async function getShipmentsAction() {
 
 export async function createShipmentAction(data: {
   origin: string;
-  destination: string;
+  destinations: string[];
+  shipmentType: 'single_drop' | 'multi_drop';
   description: string;
   driverId: string;
   notes?: string;
@@ -174,7 +175,8 @@ export async function createShipmentAction(data: {
       statusLogs: [],
       isCompleted: false,
       origin: data.origin,
-      destination: data.destination,
+      destinations: data.destinations,
+      shipmentType: data.shipmentType,
       description: data.description,
       notes: data.notes,
       expenses: [],

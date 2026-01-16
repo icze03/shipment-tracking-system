@@ -42,7 +42,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { acknowledgeCancellationAction, requestCorrectionAction, updateShipmentStatusAction } from "@/lib/actions";
 import type { Shipment, ShipmentStatus, StatusLog, Expense } from "@/lib/types";
 import { SHIPMENT_STATUSES, STATUS_DETAILS } from "@/lib/constants";
-import { Loader2, AlertTriangle, History, XCircle, ThumbsUp, MapPin, ListPlus } from "lucide-react";
+import { Loader2, AlertTriangle, History, XCircle, ThumbsUp, MapPin, ListPlus, Flag } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { ClientOnly } from "@/components/client-only";
 import { ClientFormattedDate } from "../client-formatted-date";
@@ -204,6 +204,8 @@ export function StatusUpdatePanel({ shipment, driverId }: StatusUpdatePanelProps
   
   const correctionStatusDetails = correctionModalState.logEntry ? STATUS_DETAILS[correctionModalState.logEntry.status] : null;
 
+  const finalDestination = shipment.destinations[shipment.destinations.length - 1];
+
   // Render cancellation UI if status is cancelled
   if (shipment.currentStatus === 'cancelled') {
     const wasOnTheWay = shipment.statusTimestamps.departed_warehouse;
@@ -266,8 +268,24 @@ export function StatusUpdatePanel({ shipment, driverId }: StatusUpdatePanelProps
               Shipment: {shipment.orderCode}
             </CardTitle>
             <CardDescription>
-              {shipment.origin} to {shipment.destination}
+              {shipment.origin} to {finalDestination}
             </CardDescription>
+             {shipment.destinations.length > 1 && (
+                <Accordion type="single" collapsible className="w-full text-sm">
+                    <AccordionItem value="destinations">
+                        <AccordionTrigger className="py-2">View all {shipment.destinations.length} drop-off points</AccordionTrigger>
+                        <AccordionContent>
+                             <ol className="list-decimal list-inside space-y-1 text-muted-foreground">
+                                {shipment.destinations.map((dest, i) => (
+                                <li key={i} className={i === shipment.destinations.length - 1 ? 'font-bold text-foreground' : ''}>
+                                    {dest} {i === shipment.destinations.length - 1 && '(Final)'}
+                                </li>
+                                ))}
+                            </ol>
+                        </AccordionContent>
+                    </AccordionItem>
+                </Accordion>
+             )}
           </CardHeader>
           <CardContent className="space-y-6">
             <div>
