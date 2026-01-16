@@ -15,9 +15,11 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { Loader2, Trash2, FileDown, AlertTriangle } from "lucide-react";
+import { Loader2, Trash2, FileDown, AlertTriangle, KeyRound } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { clearAllShipmentsAction } from "@/lib/actions";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 type ClearShipmentsDialogProps = {
   onClear: () => void;
@@ -27,9 +29,11 @@ export function ClearShipmentsDialog({ onClear }: ClearShipmentsDialogProps) {
   const { toast } = useToast();
   const [isPending, startTransition] = useTransition();
   const [open, setOpen] = useState(false);
-  const [step, setStep] = useState<"initial" | "confirmDelete">(
+  const [step, setStep] = useState<"initial" | "authorize" | "confirmDelete">(
     "initial"
   );
+  const [authCode, setAuthCode] = useState("");
+  const [authError, setAuthError] = useState("");
 
   const handleClearRecords = () => {
     startTransition(async () => {
@@ -48,23 +52,36 @@ export function ClearShipmentsDialog({ onClear }: ClearShipmentsDialogProps) {
         onClear(); // Re-fetch the data on the parent page
       }
       setOpen(false); // Close dialog on completion
-      setStep("initial"); // Reset step
+      // Reset states
+      setStep("initial");
+      setAuthCode("");
+      setAuthError("");
     });
+  };
+
+  const handleAuthorize = () => {
+    if (authCode === "1234") {
+      setAuthError("");
+      setStep("confirmDelete");
+    } else {
+      setAuthError("Incorrect authorization code. Please try again.");
+    }
   };
 
   const onOpenChange = (isOpen: boolean) => {
     setOpen(isOpen);
     if (!isOpen) {
       // Reset to initial step when dialog is closed
-      setTimeout(() => setStep("initial"), 200);
+      setTimeout(() => {
+        setStep("initial");
+        setAuthCode("");
+        setAuthError("");
+      }, 200);
     }
   };
 
   return (
-    <AlertDialog
-      open={open}
-      onOpenChange={onOpenChange}
-    >
+    <AlertDialog open={open} onOpenChange={onOpenChange}>
       <AlertDialogTrigger asChild>
         <Button variant="destructive">
           <Trash2 className="mr-2 h-4 w-4" />
@@ -75,13 +92,13 @@ export function ClearShipmentsDialog({ onClear }: ClearShipmentsDialogProps) {
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle className="flex items-center gap-2">
-                <AlertTriangle className="text-destructive h-6 w-6" />
-                Backup Your Data First!
+              <AlertTriangle className="text-destructive h-6 w-6" />
+              Backup Your Data First!
             </AlertDialogTitle>
             <AlertDialogDescription>
-              This action will permanently delete all completed and cancelled shipment records. Before
-              proceeding, it is highly recommended that you export the data for
-              your records.
+              This action will permanently delete all completed and cancelled
+              shipment records. Before proceeding, it is highly recommended that
+              you export the data for your records.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter className="sm:justify-between items-center gap-4">
@@ -92,12 +109,49 @@ export function ClearShipmentsDialog({ onClear }: ClearShipmentsDialogProps) {
               </Link>
             </Button>
             <div className="flex gap-2">
-                <AlertDialogCancel>Cancel</AlertDialogCancel>
-                {/* Use a regular button to prevent auto-closing */}
-                <Button onClick={() => setStep("confirmDelete")}>
-                  I have a backup, proceed
-                </Button>
+              <AlertDialogCancel>Cancel</AlertDialogCancel>
+              <Button onClick={() => setStep("authorize")}>
+                I have a backup, proceed
+              </Button>
             </div>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      )}
+      {step === "authorize" && (
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle className="flex items-center gap-2">
+              <KeyRound className="h-6 w-6" />
+              Authorization Required
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              To proceed with this destructive action, please enter the
+              authorization code.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <div className="py-4 space-y-2">
+            <Label htmlFor="auth-code">Admin Authorization Code</Label>
+            <Input
+              id="auth-code"
+              type="password"
+              placeholder="Enter code..."
+              value={authCode}
+              onChange={(e) => {
+                setAuthCode(e.target.value);
+                if (authError) setAuthError(""); // Clear error on new input
+              }}
+            />
+            {authError && (
+              <p className="text-sm font-medium text-destructive">
+                {authError}
+              </p>
+            )}
+          </div>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => setStep("initial")}>
+              Back
+            </AlertDialogCancel>
+            <Button onClick={handleAuthorize}>Confirm</Button>
           </AlertDialogFooter>
         </AlertDialogContent>
       )}
@@ -106,12 +160,15 @@ export function ClearShipmentsDialog({ onClear }: ClearShipmentsDialogProps) {
           <AlertDialogHeader>
             <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
             <AlertDialogDescription>
-              This is your final confirmation. This action cannot be
-              undone and will permanently delete all completed and cancelled shipment data.
+              This is your final confirmation. This action cannot be undone and
+              will permanently delete all completed and cancelled shipment data.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel disabled={isPending} onClick={() => setStep("initial")}>
+            <AlertDialogCancel
+              disabled={isPending}
+              onClick={() => setStep("authorize")}
+            >
               Cancel
             </AlertDialogCancel>
             <AlertDialogAction
@@ -119,9 +176,7 @@ export function ClearShipmentsDialog({ onClear }: ClearShipmentsDialogProps) {
               disabled={isPending}
               onClick={handleClearRecords}
             >
-              {isPending && (
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              )}
+              {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               Yes, delete completed shipments
             </AlertDialogAction>
           </AlertDialogFooter>
