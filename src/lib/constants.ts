@@ -12,6 +12,7 @@ import {
   Anchor,
   XCircle,
   ThumbsUp,
+  ChevronsRight,
 } from "lucide-react";
 
 export const SHIPMENT_STATUSES: ShipmentStatus[] = [
@@ -28,6 +29,7 @@ export const SHIPMENT_STATUSES: ShipmentStatus[] = [
 export const ALL_STATUSES: ShipmentStatus[] = [
   "pending",
   ...SHIPMENT_STATUSES,
+  "en_route_to_drop_off",
   "cancellation_acknowledged",
 ];
 
@@ -40,6 +42,7 @@ export const STATUS_DETAILS: Record<
   start_loading: { label: "Start Loading", icon: PackageOpen },
   end_loading: { label: "Finish Loading", icon: Package },
   departed_warehouse: { label: "Depart from Warehouse", icon: Send },
+  en_route_to_drop_off: { label: "En Route to Next Drop-off", icon: ChevronsRight },
   arrived_at_destination: { label: "Arrived at Destination", icon: Anchor },
   start_unloading: { label: "Start Unloading", icon: Container },
   end_unloading: { label: "Finish Unloading", icon: MapPin },

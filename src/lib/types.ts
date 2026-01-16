@@ -24,6 +24,7 @@ export type ShipmentStatus =
   | "start_loading"
   | "end_loading"
   | "departed_warehouse"
+  | "en_route_to_drop_off"
   | "arrived_at_destination"
   | "start_unloading"
   | "end_unloading"
@@ -71,6 +72,7 @@ export interface Shipment {
   shipmentType: 'single_drop' | 'multi_drop';
   destinations: string[];
   origin: string;
+  currentDestinationIndex?: number;
   cancellationReason?: string;
   driverInstructions?: string;
   cancellationAcknowledged?: boolean;

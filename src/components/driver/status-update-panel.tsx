@@ -71,14 +71,45 @@ export function StatusUpdatePanel({ shipment, driverId }: StatusUpdatePanelProps
   const [isExpenseModalOpen, setIsExpenseModalOpen] = useState(false);
 
   const { toast } = useToast();
+  
+  const { 
+    nextStatus, 
+    destinationDisplay,
+    nextStatusDetails 
+  } = useMemo(() => {
+    const currentDestinationIndex = shipment.currentDestinationIndex ?? 0;
+    const isFinalDestination = currentDestinationIndex >= shipment.destinations.length - 1;
+    const destinationDisplay = `${shipment.destinations[currentDestinationIndex]} (${currentDestinationIndex + 1} of ${shipment.destinations.length})`;
 
-  const currentStatusIndex = SHIPMENT_STATUSES.indexOf(
-    shipment.currentStatus as any
-  );
-  const nextStatus =
-    shipment.currentStatus === "pending"
-      ? SHIPMENT_STATUSES[0]
-      : SHIPMENT_STATUSES[currentStatusIndex + 1];
+    let nextStatus: ShipmentStatus | null = null;
+    
+    if (shipment.currentStatus === 'pending') {
+        nextStatus = 'arrived_at_warehouse';
+    } else if (shipment.currentStatus === 'end_unloading') {
+        if (shipment.shipmentType === 'multi_drop' && !isFinalDestination) {
+            nextStatus = 'en_route_to_drop_off';
+        } else {
+            nextStatus = 'trip_completed';
+        }
+    } else if (shipment.currentStatus === 'en_route_to_drop_off') {
+        nextStatus = 'arrived_at_destination';
+    } else {
+        const linearIndex = SHIPMENT_STATUSES.indexOf(shipment.currentStatus as any);
+        if (linearIndex > -1 && linearIndex < SHIPMENT_STATUSES.length - 1) {
+            // Special case for multi-drop 'arrived_at_destination'
+            if (shipment.shipmentType === 'multi_drop' && SHIPMENT_STATUSES[linearIndex + 1] === 'start_unloading') {
+                 nextStatus = 'start_unloading';
+            } else if (linearIndex < SHIPMENT_STATUSES.length - 1) {
+                 nextStatus = SHIPMENT_STATUSES[linearIndex + 1];
+            }
+        }
+    }
+    
+    const nextStatusDetails = nextStatus ? STATUS_DETAILS[nextStatus] : null;
+    
+    return { nextStatus, destinationDisplay, nextStatusDetails };
+  }, [shipment]);
+
 
   const handleLocationAndStatusUpdate = (expenses?: Expense[]) => {
     if (!statusToConfirm) return;
@@ -199,7 +230,6 @@ export function StatusUpdatePanel({ shipment, driverId }: StatusUpdatePanelProps
 
 
   const currentStatusDetails = STATUS_DETAILS[shipment.currentStatus];
-  const nextStatusDetails = nextStatus ? STATUS_DETAILS[nextStatus] : null;
   const statusToConfirmDetails = statusToConfirm ? STATUS_DETAILS[statusToConfirm] : null;
   
   const correctionStatusDetails = correctionModalState.logEntry ? STATUS_DETAILS[correctionModalState.logEntry.status] : null;
@@ -277,8 +307,8 @@ export function StatusUpdatePanel({ shipment, driverId }: StatusUpdatePanelProps
                         <AccordionContent>
                              <ol className="list-decimal list-inside space-y-1 text-muted-foreground">
                                 {shipment.destinations.map((dest, i) => (
-                                <li key={i} className={i === shipment.destinations.length - 1 ? 'font-bold text-foreground' : ''}>
-                                    {dest} {i === shipment.destinations.length - 1 && '(Final)'}
+                                <li key={i} className={i === (shipment.currentDestinationIndex ?? 0) ? 'font-bold text-foreground' : ''}>
+                                    {dest} {i === (shipment.currentDestinationIndex ?? 0) && '(Current)'}
                                 </li>
                                 ))}
                             </ol>
@@ -288,6 +318,15 @@ export function StatusUpdatePanel({ shipment, driverId }: StatusUpdatePanelProps
              )}
           </CardHeader>
           <CardContent className="space-y-6">
+            {shipment.shipmentType === 'multi_drop' && !shipment.isCompleted && (
+              <div>
+                <p className="text-sm text-muted-foreground">Current Target</p>
+                <div className="flex items-center gap-2 text-lg font-semibold">
+                  <Flag className="h-5 w-5" />
+                  <span>{destinationDisplay}</span>
+                </div>
+              </div>
+            )}
             <div>
               <p className="text-sm text-muted-foreground">Current Status</p>
               <div className="flex items-center gap-2 text-lg font-semibold">

@@ -177,6 +177,7 @@ export async function createShipmentAction(data: {
       origin: data.origin,
       destinations: data.destinations,
       shipmentType: data.shipmentType,
+      currentDestinationIndex: 0,
       description: data.description,
       notes: data.notes,
       expenses: [],
@@ -234,6 +235,10 @@ export async function updateShipmentStatusAction(data: {
         shipment.statusTimestamps[status] = now;
         shipment.updatedAt = now;
         
+        if (status === 'en_route_to_drop_off') {
+            shipment.currentDestinationIndex = (shipment.currentDestinationIndex ?? 0) + 1;
+        }
+
         if (status === 'trip_completed') {
             shipment.isCompleted = true;
             if (expenses) {
