@@ -5,8 +5,8 @@
     "assignedDriverId": "f246f518-252c-45e8-9d07-bae10c0e3618",
     "assignedDriverName": "john rivera",
     "createdAt": "2026-01-04T18:48:44.751Z",
-    "updatedAt": "2026-01-13T19:51:47.000+08:00",
-    "currentStatus": "end_unloading",
+    "updatedAt": "2026-01-16T11:19:44.000+08:00",
+    "currentStatus": "trip_completed",
     "statusTimestamps": {
       "arrived_at_warehouse": "2026-01-09T12:45:51.000+08:00",
       "start_loading": "2026-01-09T12:45:55.000+08:00",
@@ -14,7 +14,8 @@
       "departed_warehouse": "2026-01-09T12:46:01.000+08:00",
       "arrived_at_destination": "2026-01-09T14:04:54.000+08:00",
       "start_unloading": "2026-01-13T19:50:14.000+08:00",
-      "end_unloading": "2026-01-13T19:51:47.000+08:00"
+      "end_unloading": "2026-01-13T19:51:47.000+08:00",
+      "trip_completed": "2026-01-16T11:19:44.000+08:00"
     },
     "statusLogs": [
       {
@@ -115,13 +116,31 @@
         "isFlagged": false,
         "latitude": 14.3896057,
         "longitude": 121.0443187
+      },
+      {
+        "id": "06cff27a-ecf7-4155-af79-ae8aef7afd3e",
+        "status": "trip_completed",
+        "timestamp": "2026-01-16T11:19:44.000+08:00",
+        "actorId": "f246f518-252c-45e8-9d07-bae10c0e3618",
+        "actorName": "john rivera",
+        "source": "driver",
+        "isFlagged": false,
+        "latitude": 14.3842221,
+        "longitude": 121.0449656
       }
     ],
-    "isCompleted": false,
+    "isCompleted": true,
     "origin": "muntinlupa",
     "destination": "pangasinan",
     "description": "100 Sacks of rice",
-    "notes": "fragile make sure the sacks are not damage before loading"
+    "notes": "fragile make sure the sacks are not damage before loading",
+    "expenses": [
+      {
+        "id": "e7ac8f63-d056-4eb5-8f5e-212c0798d7b1",
+        "type": "Gas",
+        "amount": 450
+      }
+    ]
   },
   {
     "id": "dd99c690-88e5-44a8-b05f-0f3f346001ef",

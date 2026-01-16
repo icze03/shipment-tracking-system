@@ -1,9 +1,8 @@
-
 "use client";
 
 import type { ColumnDef } from "@tanstack/react-table";
 import Link from "next/link";
-import { MoreHorizontal, ArrowUpDown, AlertTriangle } from "lucide-react";
+import { MoreHorizontal, ArrowUpDown, AlertTriangle, XCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -11,6 +10,7 @@ import {
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuTrigger,
+  DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
 import type { Shipment } from "@/lib/types";
 import { StatusProgress } from "@/components/shipment/status-progress";
@@ -19,6 +19,65 @@ import { STATUS_DETAILS } from "@/lib/constants";
 import { ClientFormattedDate } from "@/components/client-formatted-date";
 import { ClientOnly } from "@/components/client-only";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { useTransition } from "react";
+import { useToast } from "@/hooks/use-toast";
+import { cancelShipmentAction } from "@/lib/actions";
+
+function ActionsCell({ shipment }: { shipment: Shipment }) {
+  const [isPending, startTransition] = useTransition();
+  const { toast } = useToast();
+
+  const handleCancel = () => {
+    if (!confirm(`Are you sure you want to cancel shipment ${shipment.orderCode}? This action cannot be undone.`)) {
+      return;
+    }
+    startTransition(async () => {
+      const result = await cancelShipmentAction(shipment.id, "Cancelled by admin from dashboard.");
+      if (result.error) {
+        toast({ title: "Error", description: result.error, variant: "destructive" });
+      } else {
+        toast({ title: "Success", description: "Shipment has been cancelled." });
+      }
+    });
+  };
+
+  return (
+    <div className="text-right pr-4">
+      <ClientOnly>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" className="h-8 w-8 p-0">
+              <span className="sr-only">Open menu</span>
+              <MoreHorizontal className="h-4 w-4" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuLabel>Actions</DropdownMenuLabel>
+            <DropdownMenuItem asChild>
+              <Link href={`/admin/shipments/${shipment.id}`}>
+                View Details
+              </Link>
+            </DropdownMenuItem>
+            <DropdownMenuItem asChild>
+              <Link href={`/track?orderCode=${shipment.orderCode}`}>
+                View Public Page
+              </Link>
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem
+              onClick={handleCancel}
+              disabled={isPending || shipment.isCompleted || shipment.currentStatus === 'cancelled'}
+              className="text-destructive focus:bg-destructive/10 focus:text-destructive"
+            >
+              <XCircle className="mr-2 h-4 w-4" />
+              Cancel Shipment
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </ClientOnly>
+    </div>
+  );
+}
 
 export const columns: ColumnDef<Shipment>[] = [
   {
@@ -106,36 +165,6 @@ export const columns: ColumnDef<Shipment>[] = [
   },
   {
     id: "actions",
-    cell: ({ row }) => {
-      const shipment = row.original;
-
-      return (
-        <div className="text-right pr-4">
-          <ClientOnly>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="h-8 w-8 p-0">
-                  <span className="sr-only">Open menu</span>
-                  <MoreHorizontal className="h-4 w-4" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                <DropdownMenuItem asChild>
-                  <Link href={`/admin/shipments/${shipment.id}`}>
-                    View Details
-                  </Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem asChild>
-                  <Link href={`/track?orderCode=${shipment.orderCode}`}>
-                    View Public Page
-                  </Link>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </ClientOnly>
-        </div>
-      );
-    },
+    cell: ({ row }) => <ActionsCell shipment={row.original} />,
   },
 ];
