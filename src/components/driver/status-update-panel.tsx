@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useTransition, useState, useMemo } from "react";
@@ -234,7 +233,13 @@ export function StatusUpdatePanel({ shipment, driverId }: StatusUpdatePanelProps
   
   const correctionStatusDetails = correctionModalState.logEntry ? STATUS_DETAILS[correctionModalState.logEntry.status] : null;
 
-  const finalDestination = shipment.destinations[shipment.destinations.length - 1];
+  const currentDestinationIndex = shipment.currentDestinationIndex ?? 0;
+  const currentLegOrigin = currentDestinationIndex === 0 
+    ? shipment.origin 
+    : shipment.destinations[currentDestinationIndex - 1];
+  const currentLegDestination = shipment.destinations.length > currentDestinationIndex 
+    ? shipment.destinations[currentDestinationIndex]
+    : shipment.destinations[shipment.destinations.length - 1];
 
   // Render cancellation UI if status is cancelled
   if (shipment.currentStatus === 'cancelled') {
@@ -298,7 +303,7 @@ export function StatusUpdatePanel({ shipment, driverId }: StatusUpdatePanelProps
               Shipment: {shipment.orderCode}
             </CardTitle>
             <CardDescription>
-              {shipment.origin} to {finalDestination}
+              {currentLegOrigin} to {currentLegDestination}
             </CardDescription>
              {shipment.destinations.length > 1 && (
                 <Accordion type="single" collapsible className="w-full text-sm">
