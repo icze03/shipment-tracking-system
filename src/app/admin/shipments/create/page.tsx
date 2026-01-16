@@ -1,5 +1,6 @@
 import { CreateShipmentForm } from "@/components/admin/create-shipment-form";
 import { getDrivers } from "@/lib/data/drivers";
+import { ClientOnly } from "@/components/client-only";
 
 export default async function CreateShipmentPage() {
   const drivers = await getDrivers();
@@ -12,7 +13,9 @@ export default async function CreateShipmentPage() {
           Fill in the details below to create and assign a new shipment.
         </p>
       </div>
-      <CreateShipmentForm drivers={drivers} />
+      <ClientOnly>
+        <CreateShipmentForm drivers={drivers} />
+      </ClientOnly>
     </div>
   );
 }
