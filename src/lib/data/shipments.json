@@ -1,29 +1,30 @@
+
 [
   {
     "id": "cfa97a2f-c44c-42c3-b1be-7ff30e8d2de6",
     "orderCode": "GLT-FOBK22",
     "assignedDriverId": "f246f518-252c-45e8-9d07-bae10c0e3618",
-    "assignedDriverName": "john rivera",
-    "createdAt": "2026-01-04T18:48:44.751Z",
-    "updatedAt": "2026-01-16T11:19:44.000+08:00",
+    "assignedDriverName": "John Rivera",
+    "createdAt": "2024-05-10T10:00:00.000+08:00",
+    "updatedAt": "2024-05-15T11:00:00.000+08:00",
     "currentStatus": "trip_completed",
     "statusTimestamps": {
-      "arrived_at_warehouse": "2026-01-09T12:45:51.000+08:00",
-      "start_loading": "2026-01-09T12:45:55.000+08:00",
-      "end_loading": "2026-01-09T12:45:58.000+08:00",
-      "departed_warehouse": "2026-01-09T12:46:01.000+08:00",
-      "arrived_at_destination": "2026-01-09T14:04:54.000+08:00",
-      "start_unloading": "2026-01-13T19:50:14.000+08:00",
-      "end_unloading": "2026-01-13T19:51:47.000+08:00",
-      "trip_completed": "2026-01-16T11:19:44.000+08:00"
+      "arrived_at_warehouse": "2024-05-11T09:00:00.000+08:00",
+      "start_loading": "2024-05-11T09:30:00.000+08:00",
+      "end_loading": "2024-05-11T11:00:00.000+08:00",
+      "departed_warehouse": "2024-05-11T11:30:00.000+08:00",
+      "arrived_at_destination": "2024-05-12T14:00:00.000+08:00",
+      "start_unloading": "2024-05-13T10:00:00.000+08:00",
+      "end_unloading": "2024-05-13T11:30:00.000+08:00",
+      "trip_completed": "2024-05-15T11:00:00.000+08:00"
     },
     "statusLogs": [
       {
         "id": "f95cce7e-1321-4f1b-8017-0deab7aa9e64",
         "status": "arrived_at_warehouse",
-        "timestamp": "2026-01-09T12:45:51.000+08:00",
+        "timestamp": "2024-05-11T09:00:00.000+08:00",
         "actorId": "f246f518-252c-45e8-9d07-bae10c0e3618",
-        "actorName": "john rivera",
+        "actorName": "John Rivera",
         "source": "driver",
         "isFlagged": false,
         "latitude": 14.3895951,
@@ -32,9 +33,9 @@
       {
         "id": "5a6acb81-c6c7-4d9d-ab72-5088e8733f67",
         "status": "start_loading",
-        "timestamp": "2026-01-09T12:45:55.000+08:00",
+        "timestamp": "2024-05-11T09:30:00.000+08:00",
         "actorId": "f246f518-252c-45e8-9d07-bae10c0e3618",
-        "actorName": "john rivera",
+        "actorName": "John Rivera",
         "source": "driver",
         "isFlagged": false,
         "latitude": 14.3895951,
@@ -43,9 +44,9 @@
       {
         "id": "e497ea89-d32c-472a-8837-7380663a31d3",
         "status": "end_loading",
-        "timestamp": "2026-01-09T12:45:58.000+08:00",
+        "timestamp": "2024-05-11T11:00:00.000+08:00",
         "actorId": "f246f518-252c-45e8-9d07-bae10c0e3618",
-        "actorName": "john rivera",
+        "actorName": "John Rivera",
         "source": "driver",
         "isFlagged": false,
         "latitude": 14.3895951,
@@ -54,9 +55,9 @@
       {
         "id": "ab1b3a16-ec21-4352-85e3-e52cc9ba33c0",
         "status": "departed_warehouse",
-        "timestamp": "2026-01-09T12:46:01.000+08:00",
+        "timestamp": "2024-05-11T11:30:00.000+08:00",
         "actorId": "f246f518-252c-45e8-9d07-bae10c0e3618",
-        "actorName": "john rivera",
+        "actorName": "John Rivera",
         "source": "driver",
         "isFlagged": false,
         "latitude": 14.3895951,
@@ -65,53 +66,53 @@
       {
         "id": "829df964-2ebc-449e-a0ba-270443475fb8",
         "status": "arrived_at_destination",
-        "timestamp": "2026-01-09T12:46:04.000+08:00",
+        "timestamp": "2024-05-12T11:00:00.000+08:00",
         "actorId": "f246f518-252c-45e8-9d07-bae10c0e3618",
-        "actorName": "john rivera",
+        "actorName": "John Rivera",
         "source": "driver",
-        "isFlagged": false,
+        "isFlagged": true,
         "latitude": 14.3895951,
         "longitude": 121.0443183,
-        "correctionReason": "i need to go back i left something\n"
+        "correctionReason": "I need to go back, I left something."
       },
       {
         "id": "8a4aa972-eb14-4b96-a3df-e32982ef140f",
         "status": "arrived_at_destination",
-        "timestamp": "2026-01-09T14:04:54.000+08:00",
+        "timestamp": "2024-05-12T14:00:00.000+08:00",
         "actorId": "admin01",
         "actorName": "Astraea Millares",
         "source": "admin",
         "isCorrection": true,
-        "notes": "Admin applied correction. ok"
+        "notes": "Admin applied correction."
       },
       {
         "id": "44e59ed2-f296-4d46-b562-7eead52b7be0",
         "status": "start_unloading",
-        "timestamp": "2026-01-13T16:07:49.000+08:00",
+        "timestamp": "2024-05-13T09:00:00.000+08:00",
         "actorId": "f246f518-252c-45e8-9d07-bae10c0e3618",
-        "actorName": "john rivera",
+        "actorName": "John Rivera",
         "source": "driver",
-        "isFlagged": false,
+        "isFlagged": true,
         "latitude": 14.389608,
         "longitude": 121.0443175,
-        "correctionReason": "i need spare tire"
+        "correctionReason": "Need spare tire."
       },
       {
         "id": "4e2548fa-ee4e-43f0-9c75-d1c89f516ff8",
         "status": "start_unloading",
-        "timestamp": "2026-01-13T19:50:14.000+08:00",
+        "timestamp": "2024-05-13T10:00:00.000+08:00",
         "actorId": "admin01",
         "actorName": "Astraea Millares",
         "source": "admin",
         "isCorrection": true,
-        "notes": "Admin applied correction. ok go back and get a new tire"
+        "notes": "Admin applied correction. OK, go back and get a new tire."
       },
       {
         "id": "bab98681-314f-409d-8286-efa0cc709286",
         "status": "end_unloading",
-        "timestamp": "2026-01-13T19:51:47.000+08:00",
+        "timestamp": "2024-05-13T11:30:00.000+08:00",
         "actorId": "f246f518-252c-45e8-9d07-bae10c0e3618",
-        "actorName": "john rivera",
+        "actorName": "John Rivera",
         "source": "driver",
         "isFlagged": false,
         "latitude": 14.3896057,
@@ -120,9 +121,9 @@
       {
         "id": "06cff27a-ecf7-4155-af79-ae8aef7afd3e",
         "status": "trip_completed",
-        "timestamp": "2026-01-16T11:19:44.000+08:00",
+        "timestamp": "2024-05-15T11:00:00.000+08:00",
         "actorId": "f246f518-252c-45e8-9d07-bae10c0e3618",
-        "actorName": "john rivera",
+        "actorName": "John Rivera",
         "source": "driver",
         "isFlagged": false,
         "latitude": 14.3842221,
@@ -130,10 +131,10 @@
       }
     ],
     "isCompleted": true,
-    "origin": "muntinlupa",
-    "destination": "pangasinan",
+    "origin": "Muntinlupa",
+    "destination": "Pangasinan",
     "description": "100 Sacks of rice",
-    "notes": "fragile make sure the sacks are not damage before loading",
+    "notes": "Fragile. Make sure the sacks are not damaged before loading.",
     "expenses": [
       {
         "id": "e7ac8f63-d056-4eb5-8f5e-212c0798d7b1",
@@ -146,140 +147,41 @@
     "id": "dd99c690-88e5-44a8-b05f-0f3f346001ef",
     "orderCode": "GLT-XLE5W3",
     "assignedDriverId": "f246f518-252c-45e8-9d07-bae10c0e3618",
-    "assignedDriverName": "john rivera",
-    "createdAt": "2026-01-09T14:16:31.000+08:00",
-    "updatedAt": "2026-01-09T14:16:31.000+08:00",
+    "assignedDriverName": "John Rivera",
+    "createdAt": "2024-05-16T14:00:00.000+08:00",
+    "updatedAt": "2024-05-16T14:00:00.000+08:00",
     "currentStatus": "pending",
     "statusTimestamps": {},
     "statusLogs": [],
     "isCompleted": false,
-    "origin": "muntinlupa",
-    "destination": "calamba",
-    "description": "100 Sacks of rice",
+    "origin": "Muntinlupa",
+    "destination": "Calamba",
+    "description": "50 boxes of canned goods",
     "notes": ""
   },
   {
     "id": "7f8b62c7-24bd-4928-8e8b-e5d2d2f7774c",
     "orderCode": "GLT-S9LL4K",
-    "assignedDriverId": "f246f518-252c-45e8-9d07-bae10c0e3618",
-    "assignedDriverName": "john rivera",
-    "createdAt": "2026-01-04T18:47:26.513Z",
-    "updatedAt": "2026-01-09T12:45:46.000+08:00",
+    "assignedDriverId": "4d796881-4ff0-4560-87fc-112a249a809a",
+    "assignedDriverName": "Klein Imperio",
+    "createdAt": "2024-05-01T10:00:00.000+08:00",
+    "updatedAt": "2024-05-05T12:00:00.000+08:00",
     "currentStatus": "trip_completed",
     "statusTimestamps": {
-      "arrived_at_warehouse": "2026-01-04T19:12:44.582Z",
-      "start_loading": "2026-01-04T19:13:36.562Z",
-      "end_loading": "2026-01-09T06:09:17.000+08:00",
-      "departed_warehouse": "2026-01-09T06:29:51.000+08:00",
-      "arrived_at_destination": "2026-01-09T12:40:59.000+08:00",
-      "start_unloading": "2026-01-09T12:45:06.000+08:00",
-      "end_unloading": "2026-01-09T12:45:37.000+08:00",
-      "trip_completed": "2026-01-09T12:45:46.000+08:00"
+      "arrived_at_warehouse": "2024-05-02T09:00:00.000+08:00",
+      "start_loading": "2024-05-02T09:30:00.000+08:00",
+      "end_loading": "2024-05-02T11:00:00.000+08:00",
+      "departed_warehouse": "2024-05-02T11:30:00.000+08:00",
+      "arrived_at_destination": "2024-05-03T17:00:00.000+08:00",
+      "start_unloading": "2024-05-03T17:30:00.000+08:00",
+      "end_unloading": "2024-05-03T18:30:00.000+08:00",
+      "trip_completed": "2024-05-05T12:00:00.000+08:00"
     },
-    "statusLogs": [
-      {
-        "id": "b9841421-3c2e-48ab-90a0-3163a08b0aba",
-        "status": "arrived_at_warehouse",
-        "timestamp": "2026-01-04T19:01:50.097Z",
-        "actorId": "f246f518-252c-45e8-9d07-bae10c0e3618",
-        "actorName": "john rivera",
-        "source": "driver",
-        "isFlagged": false,
-        "correctionReason": "I got flat tire i need to return to the warehouse to get a new spare tire"
-      },
-      {
-        "id": "82b9f96d-1094-4116-8dfc-68de092ed754",
-        "status": "arrived_at_warehouse",
-        "timestamp": "2026-01-04T19:12:44.582Z",
-        "actorId": "admin01",
-        "actorName": "Astraea Millares",
-        "source": "admin",
-        "isCorrection": true,
-        "notes": "Admin applied correction. ok make sure to bring extra next time"
-      },
-      {
-        "id": "4de66523-9778-41d7-908d-ca6a7b529a4a",
-        "status": "start_loading",
-        "timestamp": "2026-01-04T19:13:36.562Z",
-        "actorId": "f246f518-252c-45e8-9d07-bae10c0e3618",
-        "actorName": "john rivera",
-        "source": "driver",
-        "isFlagged": false
-      },
-      {
-        "id": "60a11c1b-5ca1-4793-9873-641aa9f230dd",
-        "status": "end_loading",
-        "timestamp": "2026-01-09T06:09:13.000+08:00",
-        "actorId": "f246f518-252c-45e8-9d07-bae10c0e3618",
-        "actorName": "john rivera",
-        "source": "driver",
-        "isFlagged": false
-      },
-      {
-        "id": "327e72fb-6304-4caf-abe2-533c5d671474",
-        "status": "end_loading",
-        "timestamp": "2026-01-09T06:09:17.000+08:00",
-        "actorId": "f246f518-252c-45e8-9d07-bae10c0e3618",
-        "actorName": "john rivera",
-        "source": "driver",
-        "isFlagged": false,
-        "latitude": 14.389592,
-        "longitude": 121.0443124
-      },
-      {
-        "id": "311e2bce-1779-4446-bcae-0820a5d4e145",
-        "status": "departed_warehouse",
-        "timestamp": "2026-01-09T06:29:51.000+08:00",
-        "actorId": "f246f518-252c-45e8-9d07-bae10c0e3618",
-        "actorName": "john rivera",
-        "source": "driver",
-        "isFlagged": false
-      },
-      {
-        "id": "8da1df49-8280-4c6e-b623-dc490c1baf3f",
-        "status": "arrived_at_destination",
-        "timestamp": "2026-01-09T12:40:59.000+08:00",
-        "actorId": "f246f518-252c-45e8-9d07-bae10c0e3618",
-        "actorName": "john rivera",
-        "source": "driver",
-        "isFlagged": false
-      },
-      {
-        "id": "71418162-22ed-411c-8cc9-e656af778146",
-        "status": "start_unloading",
-        "timestamp": "2026-01-09T12:45:06.000+08:00",
-        "actorId": "f246f518-252c-45e8-9d07-bae10c0e3618",
-        "actorName": "john rivera",
-        "source": "driver",
-        "isFlagged": false
-      },
-      {
-        "id": "e9f8aff6-af7e-4999-8c15-fa2b47a8720f",
-        "status": "end_unloading",
-        "timestamp": "2026-01-09T12:45:37.000+08:00",
-        "actorId": "f246f518-252c-45e8-9d07-bae10c0e3618",
-        "actorName": "john rivera",
-        "source": "driver",
-        "isFlagged": false,
-        "latitude": 14.3895951,
-        "longitude": 121.0443183
-      },
-      {
-        "id": "4b1c869d-5927-41a7-b4c4-a98837a37340",
-        "status": "trip_completed",
-        "timestamp": "2026-01-09T12:45:46.000+08:00",
-        "actorId": "f246f518-252c-45e8-9d07-bae10c0e3618",
-        "actorName": "john rivera",
-        "source": "driver",
-        "isFlagged": false,
-        "latitude": 14.3895951,
-        "longitude": 121.0443183
-      }
-    ],
+    "statusLogs": [],
     "isCompleted": true,
-    "origin": "rice farm inc. marilao bulacan",
-    "destination": "Muntinlupa city",
+    "origin": "Rice Farm Inc., Marilao, Bulacan",
+    "destination": "Muntinlupa City",
     "description": "150 Sacks of rice",
-    "notes": "make sure to not break the sack when loading and unloading"
+    "notes": "Make sure to not break the sack when loading and unloading."
   }
 ]
