@@ -1,25 +1,213 @@
 [
   {
+    "id": "67e7e4fa-96e3-45f7-b29d-241c8b043690",
+    "orderCode": "GLT-FCAYCH",
+    "assignedDriverId": "f246f518-252c-45e8-9d07-bae10c0e3618",
+    "assignedDriverName": "John Rivera",
+    "createdAt": "2026-01-16T16:43:15.000+08:00",
+    "updatedAt": "2026-01-16T16:43:15.000+08:00",
+    "currentStatus": "pending",
+    "statusTimestamps": {},
+    "statusLogs": [],
+    "isCompleted": false,
+    "origin": "SwiftTrack logistic",
+    "destinations": [
+      "sucat",
+      "paranaque",
+      "pasay",
+      "muntinlupa"
+    ],
+    "shipmentType": "multi_drop",
+    "currentDestinationIndex": 0,
+    "description": "150 Sacks of rice",
+    "notes": "sucat-20 sacks of rice\nparanaque-30 sack of rice\npasay-50 sack of rice\nmuntinlupa-50 sack of rice",
+    "expenses": []
+  },
+  {
     "id": "176a5ed4-8f43-46d6-bbe4-f8c01e2340c4",
     "orderCode": "GLT-0QWCMO",
     "assignedDriverId": "f246f518-252c-45e8-9d07-bae10c0e3618",
     "assignedDriverName": "John Rivera",
     "createdAt": "2026-01-16T14:13:28.000+08:00",
-    "updatedAt": "2026-01-16T14:13:28.000+08:00",
-    "currentStatus": "pending",
-    "statusTimestamps": {},
-    "statusLogs": [],
-    "isCompleted": false,
+    "updatedAt": "2026-01-16T16:40:11.000+08:00",
+    "currentStatus": "trip_completed",
+    "statusTimestamps": {
+      "arrived_at_warehouse": "2026-01-16T16:36:51.000+08:00",
+      "start_loading": "2026-01-16T16:36:53.000+08:00",
+      "end_loading": "2026-01-16T16:36:56.000+08:00",
+      "departed_warehouse": "2026-01-16T16:37:05.000+08:00",
+      "arrived_at_destination_0": "2026-01-16T16:39:51.000+08:00",
+      "start_unloading_0": "2026-01-16T16:39:54.000+08:00",
+      "end_unloading_0": "2026-01-16T16:39:56.000+08:00",
+      "en_route_to_drop_off": "2026-01-16T16:39:58.000+08:00",
+      "arrived_at_destination_1": "2026-01-16T16:40:01.000+08:00",
+      "start_unloading_1": "2026-01-16T16:40:03.000+08:00",
+      "end_unloading_1": "2026-01-16T16:40:05.000+08:00",
+      "trip_completed": "2026-01-16T16:40:11.000+08:00"
+    },
+    "statusLogs": [
+      {
+        "id": "874b890b-87b1-461c-9568-789bf1cfa91b",
+        "status": "arrived_at_warehouse",
+        "timestamp": "2026-01-16T16:36:51.000+08:00",
+        "actorId": "f246f518-252c-45e8-9d07-bae10c0e3618",
+        "actorName": "John Rivera",
+        "source": "driver",
+        "isFlagged": false,
+        "latitude": 14.3896059,
+        "longitude": 121.0443111,
+        "destinationIndex": 0
+      },
+      {
+        "id": "35c94093-358e-46aa-826e-70ca11be4c81",
+        "status": "start_loading",
+        "timestamp": "2026-01-16T16:36:53.000+08:00",
+        "actorId": "f246f518-252c-45e8-9d07-bae10c0e3618",
+        "actorName": "John Rivera",
+        "source": "driver",
+        "isFlagged": false,
+        "latitude": 14.3896059,
+        "longitude": 121.0443111,
+        "destinationIndex": 0
+      },
+      {
+        "id": "fc9c243b-848c-41a2-8df8-838a34dd0f15",
+        "status": "end_loading",
+        "timestamp": "2026-01-16T16:36:56.000+08:00",
+        "actorId": "f246f518-252c-45e8-9d07-bae10c0e3618",
+        "actorName": "John Rivera",
+        "source": "driver",
+        "isFlagged": false,
+        "latitude": 14.3896059,
+        "longitude": 121.0443111,
+        "destinationIndex": 0
+      },
+      {
+        "id": "5668e73d-f993-4c39-94da-f1c050d703ba",
+        "status": "departed_warehouse",
+        "timestamp": "2026-01-16T16:37:05.000+08:00",
+        "actorId": "f246f518-252c-45e8-9d07-bae10c0e3618",
+        "actorName": "John Rivera",
+        "source": "driver",
+        "isFlagged": false,
+        "latitude": 14.3896059,
+        "longitude": 121.0443111,
+        "destinationIndex": 0
+      },
+      {
+        "id": "eb51367d-01e3-4c89-99e4-a842e98305ad",
+        "status": "arrived_at_destination",
+        "timestamp": "2026-01-16T16:39:51.000+08:00",
+        "actorId": "f246f518-252c-45e8-9d07-bae10c0e3618",
+        "actorName": "John Rivera",
+        "source": "driver",
+        "isFlagged": false,
+        "latitude": 14.3896081,
+        "longitude": 121.0443165,
+        "destinationIndex": 0
+      },
+      {
+        "id": "a71a38ed-e8de-400e-bf26-5427555c9700",
+        "status": "start_unloading",
+        "timestamp": "2026-01-16T16:39:54.000+08:00",
+        "actorId": "f246f518-252c-45e8-9d07-bae10c0e3618",
+        "actorName": "John Rivera",
+        "source": "driver",
+        "isFlagged": false,
+        "latitude": 14.3896081,
+        "longitude": 121.0443165,
+        "destinationIndex": 0
+      },
+      {
+        "id": "23f23cf6-1b5f-4a93-8b29-881ab54c00ac",
+        "status": "end_unloading",
+        "timestamp": "2026-01-16T16:39:56.000+08:00",
+        "actorId": "f246f518-252c-45e8-9d07-bae10c0e3618",
+        "actorName": "John Rivera",
+        "source": "driver",
+        "isFlagged": false,
+        "latitude": 14.3896081,
+        "longitude": 121.0443165,
+        "destinationIndex": 0
+      },
+      {
+        "id": "5de4e469-4abc-4efd-b852-d6d82db11b13",
+        "status": "en_route_to_drop_off",
+        "timestamp": "2026-01-16T16:39:58.000+08:00",
+        "actorId": "f246f518-252c-45e8-9d07-bae10c0e3618",
+        "actorName": "John Rivera",
+        "source": "driver",
+        "isFlagged": false,
+        "latitude": 14.3896081,
+        "longitude": 121.0443165,
+        "destinationIndex": 0
+      },
+      {
+        "id": "db680bdd-bacc-41d8-9138-70ff7f95302e",
+        "status": "arrived_at_destination",
+        "timestamp": "2026-01-16T16:40:01.000+08:00",
+        "actorId": "f246f518-252c-45e8-9d07-bae10c0e3618",
+        "actorName": "John Rivera",
+        "source": "driver",
+        "isFlagged": false,
+        "latitude": 14.3896081,
+        "longitude": 121.0443165,
+        "destinationIndex": 1
+      },
+      {
+        "id": "3d36fc06-368d-4635-8e53-d7a0807342fd",
+        "status": "start_unloading",
+        "timestamp": "2026-01-16T16:40:03.000+08:00",
+        "actorId": "f246f518-252c-45e8-9d07-bae10c0e3618",
+        "actorName": "John Rivera",
+        "source": "driver",
+        "isFlagged": false,
+        "latitude": 14.3896081,
+        "longitude": 121.0443165,
+        "destinationIndex": 1
+      },
+      {
+        "id": "c72bca7a-f5bb-4b67-935c-5192b864a5e7",
+        "status": "end_unloading",
+        "timestamp": "2026-01-16T16:40:05.000+08:00",
+        "actorId": "f246f518-252c-45e8-9d07-bae10c0e3618",
+        "actorName": "John Rivera",
+        "source": "driver",
+        "isFlagged": false,
+        "latitude": 14.3896081,
+        "longitude": 121.0443165,
+        "destinationIndex": 1
+      },
+      {
+        "id": "cb0c6dcd-4e81-4686-8eed-0bd66371cb20",
+        "status": "trip_completed",
+        "timestamp": "2026-01-16T16:40:11.000+08:00",
+        "actorId": "f246f518-252c-45e8-9d07-bae10c0e3618",
+        "actorName": "John Rivera",
+        "source": "driver",
+        "isFlagged": false,
+        "latitude": 14.3896081,
+        "longitude": 121.0443165,
+        "destinationIndex": 1
+      }
+    ],
+    "isCompleted": true,
     "origin": "muntinlupa",
     "destinations": [
       "sucat",
       "paranaque"
     ],
     "shipmentType": "multi_drop",
-    "currentDestinationIndex": 0,
+    "currentDestinationIndex": 1,
     "description": "150 Sacks of rice",
     "notes": "50 sacks per location",
-    "expenses": []
+    "expenses": [
+      {
+        "id": "1287e2dc-055e-42ce-89e8-0ea07da2ec94",
+        "type": "Gas",
+        "amount": 350
+      }
+    ]
   },
   {
     "id": "025c3714-b6ae-421f-8da7-6a99357722c3",

@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useTransition, useState, useMemo } from "react";
@@ -41,7 +42,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { acknowledgeCancellationAction, requestCorrectionAction, updateShipmentStatusAction } from "@/lib/actions";
 import type { Shipment, ShipmentStatus, StatusLog, Expense } from "@/lib/types";
 import { PER_DESTINATION_STATUSES, POST_DELIVERY_STATUSES, PRE_DELIVERY_STATUSES, STATUS_DETAILS } from "@/lib/constants";
-import { Loader2, AlertTriangle, History, XCircle, ThumbsUp, MapPin, ListPlus, Flag } from "lucide-react";
+import { Loader2, AlertTriangle, History, XCircle, ThumbsUp, MapPin, ListPlus, Flag, FileText } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { ClientOnly } from "@/components/client-only";
 import { ClientFormattedDate } from "../client-formatted-date";
@@ -324,6 +325,21 @@ export function StatusUpdatePanel({ shipment, driverId }: StatusUpdatePanelProps
              )}
           </CardHeader>
           <CardContent className="space-y-6">
+            {shipment.notes && (
+              <Accordion type="single" collapsible className="w-full text-sm border-b">
+                <AccordionItem value="notes" className="border-b-0">
+                  <AccordionTrigger className="py-2 font-semibold text-base">
+                    <div className="flex items-center gap-2">
+                      <FileText className="h-5 w-5" />
+                      View Admin Notes
+                    </div>
+                  </AccordionTrigger>
+                  <AccordionContent className="pt-2 pb-0">
+                    <p className="text-muted-foreground whitespace-pre-wrap">{shipment.notes}</p>
+                  </AccordionContent>
+                </AccordionItem>
+              </Accordion>
+            )}
             {shipment.shipmentType === 'multi_drop' && !shipment.isCompleted && (
               <div>
                 <p className="text-sm text-muted-foreground">Current Target</p>
