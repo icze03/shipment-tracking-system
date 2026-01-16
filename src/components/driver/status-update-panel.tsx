@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useTransition, useState, useMemo } from "react";
@@ -305,8 +304,11 @@ export function StatusUpdatePanel({ shipment, driverId }: StatusUpdatePanelProps
               Shipment: {shipment.orderCode}
             </CardTitle>
             <CardDescription>
-              {currentLegOrigin} to {currentLegDestination}
+              {shipment.description}
             </CardDescription>
+            <p className="!mt-2 text-sm text-muted-foreground">
+                Current Leg: <span className="font-semibold text-foreground">{currentLegOrigin} to {currentLegDestination}</span>
+            </p>
              {shipment.destinations.length > 1 && (
                 <Accordion type="single" collapsible className="w-full text-sm">
                     <AccordionItem value="destinations">

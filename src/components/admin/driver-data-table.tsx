@@ -51,6 +51,7 @@ function DriverShipmentsSubComponent({ shipments }: { shipments: Shipment[] }) {
                     <TableHeader>
                         <TableRow>
                             <TableHead>Order Code</TableHead>
+                            <TableHead>Description</TableHead>
                             <TableHead>Destination</TableHead>
                             <TableHead>Status</TableHead>
                             <TableHead>Progress</TableHead>
@@ -67,6 +68,7 @@ function DriverShipmentsSubComponent({ shipments }: { shipments: Shipment[] }) {
                                         </Link>
                                     </Button>
                                 </TableCell>
+                                <TableCell>{shipment.description}</TableCell>
                                 <TableCell>{shipment.destinations[shipment.destinations.length - 1]}</TableCell>
                                 <TableCell>
                                      <Badge variant={shipment.isCompleted ? "default" : "secondary"} className="capitalize">
