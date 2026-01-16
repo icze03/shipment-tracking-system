@@ -1,7 +1,7 @@
 "use client";
 
 import type { ColumnDef } from "@tanstack/react-table";
-import { MoreHorizontal, ArrowUpDown } from "lucide-react";
+import { MoreHorizontal, ArrowUpDown, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -11,13 +11,14 @@ import {
   DropdownMenuTrigger,
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
-import type { Driver } from "@/lib/types";
+import type { Driver, Shipment } from "@/lib/types";
 import { Badge } from "@/components/ui/badge";
 import { ClientOnly } from "@/components/client-only";
 import { useTransition } from "react";
 import { removeDriverAction } from "@/lib/actions";
 import { useToast } from "@/hooks/use-toast";
 import Link from "next/link";
+import { cn } from "@/lib/utils";
 
 function ActionsCell({ driver }: { driver: Driver }) {
   const [isPending, startTransition] = useTransition();
@@ -75,6 +76,29 @@ function ActionsCell({ driver }: { driver: Driver }) {
 
 export const columns: ColumnDef<Driver>[] = [
   {
+    id: 'expander',
+    header: () => null,
+    cell: ({ row, table }) => {
+        const driverId = row.original.id;
+        const allShipments = (table.options.meta as { shipments: Shipment[] })?.shipments || [];
+        const driverHasShipments = allShipments.some(s => s.assignedDriverId === driverId);
+
+        if (!driverHasShipments) return <div className="w-8 h-8"></div>;
+
+        return (
+            <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => row.toggleExpanded()}
+                className="h-8 w-8"
+            >
+                <ChevronRight className={cn("h-4 w-4 transition-transform", row.getIsExpanded() && "rotate-90")} />
+                <span className="sr-only">Toggle shipments</span>
+            </Button>
+        );
+    },
+  },
+  {
     accessorKey: "name",
     header: ({ column }) => {
       return (
@@ -87,7 +111,7 @@ export const columns: ColumnDef<Driver>[] = [
         </Button>
       );
     },
-    cell: ({ row }) => <div className="font-medium pl-4">{row.getValue("name")}</div>,
+    cell: ({ row }) => <div className="font-medium">{row.getValue("name")}</div>,
   },
   {
     accessorKey: "email",
