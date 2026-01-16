@@ -1,7 +1,8 @@
 
 "use client";
 
-import { useMemo, useState, useTransition } from "react";
+import { useMemo, useState, useTransition, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import type { Shipment, StatusLog, Expense } from "@/lib/types";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
@@ -34,10 +35,19 @@ type ShipmentDetailClientProps = {
 };
 
 export function ShipmentDetailClient({ shipment }: ShipmentDetailClientProps) {
+  const router = useRouter();
   const { toast } = useToast();
   const [isCancelPending, startCancelTransition] = useTransition();
   const [cancellationReason, setCancellationReason] = useState("");
   const [driverInstructions, setDriverInstructions] = useState("");
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      router.refresh();
+    }, 5000); // Refresh every 5 seconds
+
+    return () => clearInterval(interval);
+  }, [router]);
 
   const handleCancelShipment = () => {
     if (!cancellationReason) {

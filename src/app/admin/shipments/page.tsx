@@ -1,72 +1,8 @@
 
-"use client";
+import { getShipments } from "@/lib/data/shipments";
+import { ShipmentsPageClient } from "@/components/admin/shipments-page-client";
 
-import * as React from "react";
-import { useEffect } from "react";
-import Link from "next/link";
-import { PlusCircle } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { getShipmentsAction } from "@/lib/actions";
-import type { Shipment } from "@/lib/types";
-import { ShipmentDataTable } from "@/components/admin/shipment-data-table";
-import { columns } from "@/components/admin/shipment-columns";
-import { useToast } from "@/hooks/use-toast";
-import { ClearShipmentsDialog } from "@/components/admin/clear-shipments-dialog";
-
-export default function AdminShipmentsPage() {
-  const [shipments, setShipments] = React.useState<Shipment[]>([]);
-  const [isLoading, setIsLoading] = React.useState(true);
-  const { toast } = useToast();
-
-  const fetchShipments = React.useCallback(async () => {
-    setIsLoading(true);
-    try {
-      const data = await getShipmentsAction();
-      setShipments(data);
-    } catch (error) {
-      console.error("Failed to fetch shipments:", error);
-      toast({
-        title: "Error",
-        description: "Failed to load shipment data. Please try again later.",
-        variant: "destructive",
-      });
-    } finally {
-      setIsLoading(false);
-    }
-  }, [toast]);
-  
-  useEffect(() => {
-    fetchShipments();
-  }, [fetchShipments]);
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      fetchShipments();
-    }, 5000); // Refresh every 5 seconds
-
-    return () => clearInterval(interval);
-  }, [fetchShipments]);
-
-  return (
-    <div className="space-y-6">
-      <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-        <div>
-          <h2 className="text-2xl font-bold tracking-tight font-headline">Shipment Overview</h2>
-          <p className="text-muted-foreground">
-            Monitor and manage all ongoing and completed shipments.
-          </p>
-        </div>
-        <div className="flex-shrink-0 flex items-center gap-2">
-          <ClearShipmentsDialog onClear={fetchShipments} />
-          <Button asChild>
-            <Link href="/admin/shipments/create">
-              <PlusCircle className="mr-2 h-4 w-4" />
-              New Shipment
-            </Link>
-          </Button>
-        </div>
-      </div>
-      <ShipmentDataTable columns={columns} data={shipments} />
-    </div>
-  );
+export default async function AdminShipmentsPage() {
+  const shipments = await getShipments();
+  return <ShipmentsPageClient shipments={shipments} />;
 }
