@@ -3,18 +3,36 @@ import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
-TooltipTrigger,
+  TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { SHIPMENT_STATUSES } from "@/lib/constants";
+import { PRE_DELIVERY_STATUSES, PER_DESTINATION_STATUSES, POST_DELIVERY_STATUSES } from "@/lib/constants";
 import type { Shipment } from "@/lib/types";
 
 export function StatusProgress({ shipment }: { shipment: Shipment }) {
-  const completedStatuses = Object.keys(shipment.statusTimestamps).filter(
-    (status) => SHIPMENT_STATUSES.includes(status as any)
-  ).length;
+  const completedStatuses = Object.keys(shipment.statusTimestamps).length;
+  
+  let totalStatuses = 0;
+  if (shipment.currentStatus === 'cancelled') {
+    totalStatuses = completedStatuses; // Or just 1/1
+  } else {
+    const preDeliveryCount = PRE_DELIVERY_STATUSES.filter(s => s !== 'pending').length;
+    const postDeliveryCount = POST_DELIVERY_STATUSES.length;
+    
+    if (shipment.shipmentType === 'single_drop') {
+      totalStatuses = preDeliveryCount + PER_DESTINATION_STATUSES.length + postDeliveryCount;
+    } else {
+      const numDestinations = shipment.destinations.length;
+      if (numDestinations > 0) {
+        const perDestinationCount = numDestinations * PER_DESTINATION_STATUSES.length;
+        const interDestinationCount = numDestinations > 1 ? numDestinations - 1 : 0;
+        totalStatuses = preDeliveryCount + perDestinationCount + interDestinationCount + postDeliveryCount;
+      } else {
+        totalStatuses = preDeliveryCount + postDeliveryCount;
+      }
+    }
+  }
 
-  const totalStatuses = SHIPMENT_STATUSES.length;
-  const progressPercentage = (completedStatuses / totalStatuses) * 100;
+  const progressPercentage = totalStatuses > 0 ? (completedStatuses / totalStatuses) * 100 : (shipment.isCompleted ? 100 : 0);
 
   return (
     <TooltipProvider>

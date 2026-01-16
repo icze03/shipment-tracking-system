@@ -40,7 +40,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { acknowledgeCancellationAction, requestCorrectionAction, updateShipmentStatusAction } from "@/lib/actions";
 import type { Shipment, ShipmentStatus, StatusLog, Expense } from "@/lib/types";
-import { SHIPMENT_STATUSES, STATUS_DETAILS } from "@/lib/constants";
+import { PER_DESTINATION_STATUSES, POST_DELIVERY_STATUSES, PRE_DELIVERY_STATUSES, STATUS_DETAILS } from "@/lib/constants";
 import { Loader2, AlertTriangle, History, XCircle, ThumbsUp, MapPin, ListPlus, Flag } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { ClientOnly } from "@/components/client-only";
@@ -83,25 +83,25 @@ export function StatusUpdatePanel({ shipment, driverId }: StatusUpdatePanelProps
     let nextStatus: ShipmentStatus | null = null;
     
     if (shipment.currentStatus === 'pending') {
-        nextStatus = 'arrived_at_warehouse';
+      nextStatus = 'arrived_at_warehouse';
     } else if (shipment.currentStatus === 'end_unloading') {
-        if (shipment.shipmentType === 'multi_drop' && !isFinalDestination) {
-            nextStatus = 'en_route_to_drop_off';
-        } else {
-            nextStatus = 'trip_completed';
-        }
+      if (shipment.shipmentType === 'multi_drop' && !isFinalDestination) {
+        nextStatus = 'en_route_to_drop_off';
+      } else {
+        nextStatus = 'trip_completed';
+      }
     } else if (shipment.currentStatus === 'en_route_to_drop_off') {
-        nextStatus = 'arrived_at_destination';
+      nextStatus = 'arrived_at_destination';
     } else {
-        const linearIndex = SHIPMENT_STATUSES.indexOf(shipment.currentStatus as any);
-        if (linearIndex > -1 && linearIndex < SHIPMENT_STATUSES.length - 1) {
-            // Special case for multi-drop 'arrived_at_destination'
-            if (shipment.shipmentType === 'multi_drop' && SHIPMENT_STATUSES[linearIndex + 1] === 'start_unloading') {
-                 nextStatus = 'start_unloading';
-            } else if (linearIndex < SHIPMENT_STATUSES.length - 1) {
-                 nextStatus = SHIPMENT_STATUSES[linearIndex + 1];
-            }
-        }
+      const allStatuses = [
+        ...PRE_DELIVERY_STATUSES,
+        ...PER_DESTINATION_STATUSES,
+        ...POST_DELIVERY_STATUSES,
+      ];
+      const linearIndex = allStatuses.indexOf(shipment.currentStatus as any);
+      if (linearIndex > -1 && linearIndex < allStatuses.length - 1) {
+        nextStatus = allStatuses[linearIndex + 1];
+      }
     }
     
     const nextStatusDetails = nextStatus ? STATUS_DETAILS[nextStatus] : null;
@@ -152,6 +152,7 @@ export function StatusUpdatePanel({ shipment, driverId }: StatusUpdatePanelProps
       latitude: location.latitude,
       longitude: location.longitude,
       expenses,
+      currentDestinationIndex: shipment.currentDestinationIndex ?? 0,
     });
     if (result.error) {
       toast({
@@ -243,7 +244,7 @@ export function StatusUpdatePanel({ shipment, driverId }: StatusUpdatePanelProps
 
   // Render cancellation UI if status is cancelled
   if (shipment.currentStatus === 'cancelled') {
-    const wasOnTheWay = shipment.statusTimestamps.departed_warehouse;
+    const wasOnTheWay = !!shipment.statusTimestamps.departed_warehouse;
     const ackButtonText = wasOnTheWay ? "Confirm Product Return" : "Acknowledge & Return to Logistics";
 
     if (shipment.cancellationAcknowledged) {

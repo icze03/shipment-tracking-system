@@ -9,6 +9,7 @@ import { getShipments, saveShipments, getShipmentById } from "./data/shipments";
 import { getMockUser } from "./auth";
 import { correctTimestamp as aiCorrectTimestamp } from "@/ai/flows/admin-assisted-timestamp-correction";
 import { getPhilippineTimeISO } from "./utils";
+import { PER_DESTINATION_STATUSES } from "./constants";
 
 // --- Auth Actions ---
 export async function getMockUserAction(role: UserRole): Promise<UserProfile> {
@@ -203,8 +204,9 @@ export async function updateShipmentStatusAction(data: {
     latitude?: number;
     longitude?: number;
     expenses?: Expense[];
+    currentDestinationIndex?: number;
 }) {
-    const { shipmentId, status, driverId, latitude, longitude, expenses } = data;
+    const { shipmentId, status, driverId, latitude, longitude, expenses, currentDestinationIndex } = data;
     try {
         const [shipment, driver, shipments] = await Promise.all([
             getShipmentById(shipmentId),
@@ -218,7 +220,7 @@ export async function updateShipmentStatusAction(data: {
         
         const now = getPhilippineTimeISO();
         
-        const newLogEntry = {
+        const newLogEntry: StatusLog = {
             id: uuidv4(),
             status: status,
             timestamp: now,
@@ -228,12 +230,21 @@ export async function updateShipmentStatusAction(data: {
             isFlagged: false,
             latitude,
             longitude,
+            destinationIndex: currentDestinationIndex,
         };
         shipment.statusLogs.push(newLogEntry);
 
         shipment.currentStatus = status;
-        shipment.statusTimestamps[status] = now;
         shipment.updatedAt = now;
+
+        const isPerDestinationStatus = PER_DESTINATION_STATUSES.includes(status);
+
+        if (isPerDestinationStatus && currentDestinationIndex !== undefined) {
+            const key = `${status}_${currentDestinationIndex}` as keyof typeof shipment.statusTimestamps;
+            shipment.statusTimestamps[key] = now;
+        } else {
+            shipment.statusTimestamps[status] = now;
+        }
         
         if (status === 'en_route_to_drop_off') {
             shipment.currentDestinationIndex = (shipment.currentDestinationIndex ?? 0) + 1;

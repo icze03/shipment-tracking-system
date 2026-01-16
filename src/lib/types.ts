@@ -47,6 +47,7 @@ export type StatusLog = {
   isFlagged?: boolean; // True if a driver has flagged this entry as incorrect.
   latitude?: number;
   longitude?: number;
+  destinationIndex?: number;
 };
 
 export type Expense = {
@@ -66,7 +67,7 @@ export interface Shipment {
   createdAt: string;
   updatedAt: string;
   currentStatus: ShipmentStatus;
-  statusTimestamps: Partial<Record<ShipmentStatus, string>>;
+  statusTimestamps: Partial<Record<ShipmentStatus | string, string>>;
   statusLogs: StatusLog[];
   isCompleted: boolean;
   shipmentType: 'single_drop' | 'multi_drop';

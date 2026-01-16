@@ -15,22 +15,40 @@ import {
   ChevronsRight,
 } from "lucide-react";
 
-export const SHIPMENT_STATUSES: ShipmentStatus[] = [
-  "arrived_at_warehouse",
-  "start_loading",
-  "end_loading",
-  "departed_warehouse",
-  "arrived_at_destination",
-  "start_unloading",
-  "end_unloading",
-  "trip_completed",
+// The sequence of statuses before any drop-offs
+export const PRE_DELIVERY_STATUSES: ShipmentStatus[] = [
+  'pending',
+  'arrived_at_warehouse',
+  'start_loading',
+  'end_loading',
+  'departed_warehouse',
 ];
 
-export const ALL_STATUSES: ShipmentStatus[] = [
-  "pending",
-  ...SHIPMENT_STATUSES,
-  "en_route_to_drop_off",
-  "cancellation_acknowledged",
+// The sequence of statuses for each drop-off
+export const PER_DESTINATION_STATUSES: ShipmentStatus[] = [
+  'arrived_at_destination',
+  'start_unloading',
+  'end_unloading',
+];
+
+// The status for traveling between drop-offs
+export const INTER_DESTINATION_STATUS: ShipmentStatus = 'en_route_to_drop_off';
+
+// The final statuses after all drop-offs are complete
+export const POST_DELIVERY_STATUSES: ShipmentStatus[] = [
+  'trip_completed',
+];
+
+// All possible statuses for logic, not for linear display
+export const ALL_POSSIBLE_STATUSES: ShipmentStatus[] = [
+  ...new Set([ // Use Set to remove duplicates
+    ...PRE_DELIVERY_STATUSES,
+    ...PER_DESTINATION_STATUSES,
+    INTER_DESTINATION_STATUS,
+    ...POST_DELIVERY_STATUSES,
+    'cancelled',
+    'cancellation_acknowledged'
+  ])
 ];
 
 export const STATUS_DETAILS: Record<
