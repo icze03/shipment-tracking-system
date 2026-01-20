@@ -19,21 +19,21 @@ export default function Home() {
 
   const features = [
     {
-      icon: <TabletSmartphone className="h-8 w-8 text-primary" />,
+      icon: <TabletSmartphone className="h-8 w-8" />,
       title: "For Drivers: One-Tap Updates",
       description:
         "No more typing. A simple, fatigue-safe interface for drivers to record trip progress with a single tap. Works on any mobile device.",
       image: driverFeatureImage
     },
     {
-      icon: <LayoutDashboard className="h-8 w-8 text-primary" />,
+      icon: <LayoutDashboard className="h-8 w-8" />,
       title: "For Admins: Real-Time Control",
       description:
         "A powerful dashboard to monitor all shipments in real-time. Create shipments, manage drivers, and oversee your entire operation.",
       image: adminFeatureImage
     },
     {
-      icon: <Search className="h-8 w-8 text-primary" />,
+      icon: <Search className="h-8 w-8" />,
       title: "For Customers: Transparent Tracking",
       description:
         "Provide your customers with a simple tracking page. No login required. They can see their shipment's progress with just an order code.",
@@ -105,28 +105,26 @@ export default function Home() {
             </div>
             <div className="mx-auto grid max-w-5xl items-start gap-8 sm:grid-cols-2 md:gap-12 lg:max-w-none lg:grid-cols-3 pt-12">
               {features.map((feature, index) => (
-                <Card key={index} className="h-full">
-                  <CardHeader>
-                    <div className="flex items-center gap-4">
+                <Card key={index} className="h-[450px] overflow-hidden relative group flex flex-col justify-end">
+                  {feature.image && (
+                    <Image
+                      src={feature.image.imageUrl}
+                      alt={feature.image.description}
+                      fill
+                      className="object-cover transition-transform duration-500 ease-in-out group-hover:scale-105"
+                      data-ai-hint={feature.image.imageHint}
+                    />
+                  )}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/50 to-transparent" />
+                  <div className="relative z-10 p-6 text-white">
+                      <div className="flex items-center gap-4">
                       {feature.icon}
-                      <CardTitle className="text-xl font-headline">{feature.title}</CardTitle>
-                    </div>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
-                    {feature.image && (
-                      <Image
-                        src={feature.image.imageUrl}
-                        alt={feature.image.description}
-                        width={400}
-                        height={250}
-                        className="rounded-lg object-cover aspect-video w-full"
-                        data-ai-hint={feature.image.imageHint}
-                      />
-                    )}
-                    <p className="text-muted-foreground">
+                      <CardTitle className="text-2xl font-headline">{feature.title}</CardTitle>
+                      </div>
+                      <p className="mt-2 text-neutral-200">
                       {feature.description}
-                    </p>
-                  </CardContent>
+                      </p>
+                  </div>
                 </Card>
               ))}
             </div>
