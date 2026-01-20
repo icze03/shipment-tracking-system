@@ -2,9 +2,9 @@
   "placeholderImages": [
     {
       "id": "hero-image",
-      "description": "A modern truck on the highway, representing logistics and transport.",
-      "imageUrl": "https://images.unsplash.com/photo-1709735133497-bbead76953a9?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw2fHx0cnVjayUyMGhpZ2h3YXl8ZW58MHx8fHwxNzY3MTE2MjE2fDA&ixlib=rb-4.1.0&q=80&w=1080",
-      "imageHint": "truck highway"
+      "description": "A large logistics warehouse with shelves of packages.",
+      "imageUrl": "https://images.unsplash.com/photo-1578574577315-3f16ce7675dd?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxsb2dpc3RpY3N8ZW58MHx8fHwxNjk5ODgwMjY5fDA&ixlib=rb-4.0.3&q=80&w=1080",
+      "imageHint": "logistics warehouse"
     },
     {
       "id": "feature-driver",
