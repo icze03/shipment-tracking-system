@@ -2,9 +2,9 @@
   "placeholderImages": [
     {
       "id": "hero-image",
-      "description": "A large logistics warehouse with shelves of packages.",
-      "imageUrl": "https://images.unsplash.com/photo-1578574577315-3f16ce7675dd?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxsb2dpc3RpY3N8ZW58MHx8fHwxNjk5ODgwMjY5fDA&ixlib=rb-4.0.3&q=80&w=1080",
-      "imageHint": "logistics warehouse"
+      "description": "A logistics truck on the road.",
+      "imageUrl": "/images/logistic.jpeg",
+      "imageHint": "logistics truck"
     },
     {
       "id": "feature-driver",

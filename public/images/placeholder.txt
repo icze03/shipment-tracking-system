@@ -1,0 +1,3 @@
+This file is a placeholder to create the public/images directory.
+Please place your image files, such as 'logistic.jpeg', in this directory.
+You can delete this file after adding your own images.
