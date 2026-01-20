@@ -63,23 +63,15 @@ export function ReportGenerator() {
       const headers = [
         'id', 'orderCode', 'assignedDriverId', 'assignedDriverName', 
         'createdAt', 'updatedAt', 'currentStatus', 'isCompleted', 
-        'origin', 'destination', 'description', 'notes', 
+        'origin', 'destinations', 'description', 'notes', 
         'cancellationReason', 'driverInstructions', 'cancellationAcknowledged',
-        'status_pending',
-        'status_arrived_at_warehouse', 'status_start_loading', 'status_end_loading',
-        'status_departed_warehouse', 'status_arrived_at_destination',
-        'status_start_unloading', 'status_end_unloading', 'status_trip_completed',
-        'status_cancelled', 'status_cancellation_acknowledged',
+        'statusLogs', // Replaced individual status columns with the full log
         ...expenseHeaders,
         'total_expenses'
       ];
       
       const formattedShipments = shipments.map(s => {
-        const flatStatusTimestamps = Object.entries(s.statusTimestamps).reduce((acc, [key, value]) => {
-            acc[`status_${key}`] = formatDate(value);
-            return acc;
-        }, {} as Record<string, string>);
-
+        // Format dates within the status logs for better readability
         const formattedLogs = s.statusLogs.map(log => ({
             ...log,
             timestamp: formatDate(log.timestamp)
@@ -98,8 +90,7 @@ export function ReportGenerator() {
             ...s,
             createdAt: formatDate(s.createdAt),
             updatedAt: formatDate(s.updatedAt),
-            statusLogs: formattedLogs,
-            ...flatStatusTimestamps,
+            statusLogs: formattedLogs, // Pass the entire formatted log array
             ...flatExpenses,
             total_expenses: totalExpenses
         }
