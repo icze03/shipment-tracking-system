@@ -66,32 +66,11 @@ export function ReportGenerator() {
         'createdAt', 'updatedAt', 'currentStatus', 'isCompleted', 
         'origin', 'destinations', 'description', 'notes', 
         'cancellationReason', 'driverInstructions', 'cancellationAcknowledged',
-        'statusLogs', // This will now be a readable string
         ...expenseHeaders,
         'total_expenses'
       ];
       
       const formattedShipments = shipments.map(s => {
-        // Create a human-readable timeline string from status logs
-        const readableTimeline = s.statusLogs
-            .sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime())
-            .map(log => {
-                const statusLabel = STATUS_DETAILS[log.status]?.label || log.status;
-                const formattedTimestamp = formatDate(log.timestamp);
-                let detail = `${statusLabel} at ${formattedTimestamp}`;
-
-                const destinationIndex = log.destinationIndex;
-                if (destinationIndex !== undefined && destinationIndex < s.destinations.length) {
-                    const destination = s.destinations[destinationIndex];
-                    // Only add destination info for per-destination statuses
-                    if (PER_DESTINATION_STATUSES.includes(log.status) || log.status === INTER_DESTINATION_STATUS) {
-                       detail += ` (${destination})`;
-                    }
-                }
-                return detail;
-            })
-            .join(' -> ');
-
         const flatExpenses = expenseTypes.reduce((acc, type) => {
             const expenseKey = `expense_${type.toLowerCase().replace(/\s+/g, '_')}`;
             const totalAmount = s.expenses?.filter(e => e.type === type).reduce((sum, e) => sum + e.amount, 0) || 0;
@@ -106,7 +85,7 @@ export function ReportGenerator() {
             createdAt: formatDate(s.createdAt),
             updatedAt: formatDate(s.updatedAt),
             destinations: s.destinations.join(', '),
-            statusLogs: readableTimeline,
+            currentStatus: STATUS_DETAILS[s.currentStatus]?.label || s.currentStatus,
             ...flatExpenses,
             total_expenses: totalExpenses
         }
