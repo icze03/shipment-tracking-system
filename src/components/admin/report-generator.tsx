@@ -9,6 +9,7 @@ import { getShipmentsAction, getDriversAction } from "@/lib/actions";
 import type { Shipment, Driver, StatusLog, Expense } from "@/lib/types";
 import { useToast } from "@/hooks/use-toast";
 import { formatDate } from "@/lib/utils";
+import { STATUS_DETAILS, PER_DESTINATION_STATUSES, INTER_DESTINATION_STATUS } from "@/lib/constants";
 
 export function ReportGenerator() {
   const [isShipmentsPending, startShipmentsTransition] = useTransition();
@@ -65,17 +66,31 @@ export function ReportGenerator() {
         'createdAt', 'updatedAt', 'currentStatus', 'isCompleted', 
         'origin', 'destinations', 'description', 'notes', 
         'cancellationReason', 'driverInstructions', 'cancellationAcknowledged',
-        'statusLogs', // Replaced individual status columns with the full log
+        'statusLogs', // This will now be a readable string
         ...expenseHeaders,
         'total_expenses'
       ];
       
       const formattedShipments = shipments.map(s => {
-        // Format dates within the status logs for better readability
-        const formattedLogs = s.statusLogs.map(log => ({
-            ...log,
-            timestamp: formatDate(log.timestamp)
-        }));
+        // Create a human-readable timeline string from status logs
+        const readableTimeline = s.statusLogs
+            .sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime())
+            .map(log => {
+                const statusLabel = STATUS_DETAILS[log.status]?.label || log.status;
+                const formattedTimestamp = formatDate(log.timestamp);
+                let detail = `${statusLabel} at ${formattedTimestamp}`;
+
+                const destinationIndex = log.destinationIndex;
+                if (destinationIndex !== undefined && destinationIndex < s.destinations.length) {
+                    const destination = s.destinations[destinationIndex];
+                    // Only add destination info for per-destination statuses
+                    if (PER_DESTINATION_STATUSES.includes(log.status) || log.status === INTER_DESTINATION_STATUS) {
+                       detail += ` (${destination})`;
+                    }
+                }
+                return detail;
+            })
+            .join(' -> ');
 
         const flatExpenses = expenseTypes.reduce((acc, type) => {
             const expenseKey = `expense_${type.toLowerCase().replace(/\s+/g, '_')}`;
@@ -90,7 +105,8 @@ export function ReportGenerator() {
             ...s,
             createdAt: formatDate(s.createdAt),
             updatedAt: formatDate(s.updatedAt),
-            statusLogs: formattedLogs, // Pass the entire formatted log array
+            destinations: s.destinations.join(', '),
+            statusLogs: readableTimeline,
             ...flatExpenses,
             total_expenses: totalExpenses
         }
