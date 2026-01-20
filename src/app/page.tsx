@@ -2,9 +2,8 @@ import Image from "next/image";
 import Link from "next/link";
 import {
   ArrowRight,
-  TabletSmartphone,
-  LayoutDashboard,
-  Search,
+  Eye,
+  Target,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -13,33 +12,6 @@ import { placeholderImages } from "@/lib/placeholder-images";
 
 export default function Home() {
   const heroImage = placeholderImages.find((img) => img.id === "hero-image");
-  const driverFeatureImage = placeholderImages.find((img) => img.id === "feature-driver");
-  const adminFeatureImage = placeholderImages.find((img) => img.id === "feature-admin");
-  const customerFeatureImage = placeholderImages.find((img) => img.id === "feature-customer");
-
-  const features = [
-    {
-      icon: <TabletSmartphone className="h-8 w-8" />,
-      title: "For Drivers: One-Tap Updates",
-      description:
-        "No more typing. A simple, fatigue-safe interface for drivers to record trip progress with a single tap. Works on any mobile device.",
-      image: driverFeatureImage
-    },
-    {
-      icon: <LayoutDashboard className="h-8 w-8" />,
-      title: "For Admins: Real-Time Control",
-      description:
-        "A powerful dashboard to monitor all shipments in real-time. Create shipments, manage drivers, and oversee your entire operation.",
-      image: adminFeatureImage
-    },
-    {
-      icon: <Search className="h-8 w-8" />,
-      title: "For Customers: Transparent Tracking",
-      description:
-        "Provide your customers with a simple tracking page. No login required. They can see their shipment's progress with just an order code.",
-      image: customerFeatureImage
-    },
-  ];
 
   return (
     <div className="flex min-h-screen flex-col">
@@ -87,46 +59,47 @@ export default function Home() {
           </div>
         </section>
 
-        <section id="features" className="w-full py-12 md:py-24 lg:py-32 bg-card">
+        <section id="mission-vision" className="w-full py-12 md:py-24 lg:py-32 bg-secondary/50">
           <div className="container px-4 md:px-6">
             <div className="flex flex-col items-center justify-center space-y-4 text-center">
               <div className="space-y-2">
-                <div className="inline-block rounded-lg bg-secondary px-3 py-1 text-sm">
-                  Key Features
+                <div className="inline-block rounded-lg bg-background px-3 py-1 text-sm">
+                  Our Commitment
                 </div>
                 <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl font-headline">
-                  A Workflow for Everyone
+                  Mission & Vision
                 </h2>
                 <p className="max-w-[900px] text-muted-foreground md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
-                  Greenlane Transporters is designed to meet the specific needs of every
-                  user in your logistics chain.
+                  Driving our success and yours with a clear purpose and a forward-thinking approach.
                 </p>
               </div>
             </div>
-            <div className="mx-auto grid max-w-5xl items-start gap-8 sm:grid-cols-2 md:gap-12 lg:max-w-none lg:grid-cols-3 pt-12">
-              {features.map((feature, index) => (
-                <Card key={index} className="h-[450px] overflow-hidden relative group flex flex-col justify-end">
-                  {feature.image && (
-                    <Image
-                      src={feature.image.imageUrl}
-                      alt={feature.image.description}
-                      fill
-                      className="object-cover transition-transform duration-500 ease-in-out group-hover:scale-105"
-                      data-ai-hint={feature.image.imageHint}
-                    />
-                  )}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/50 to-transparent" />
-                  <div className="relative z-10 p-6 text-white">
-                      <div className="flex items-center gap-4">
-                      {feature.icon}
-                      <CardTitle className="text-2xl font-headline">{feature.title}</CardTitle>
-                      </div>
-                      <p className="mt-2 text-neutral-200">
-                      {feature.description}
-                      </p>
+            <div className="mx-auto grid max-w-5xl items-start gap-12 pt-12 md:grid-cols-2">
+              {/* Vision Card */}
+              <div className="flex flex-col gap-4 text-center items-center md:text-left md:items-start">
+                <div className="flex items-center gap-4">
+                  <div className="bg-primary text-primary-foreground p-3 rounded-full flex items-center justify-center">
+                    <Eye className="h-6 w-6" />
                   </div>
-                </Card>
-              ))}
+                  <h3 className="text-2xl font-bold font-headline">Our Vision</h3>
+                </div>
+                <p className="text-muted-foreground">
+                  To be the top trucking company in our region. We aim to achieve this by consistently providing outstanding services that go beyond our customers' highest expectations.
+                </p>
+              </div>
+
+              {/* Mission Card */}
+              <div className="flex flex-col gap-4 text-center items-center md:text-left md:items-start">
+                 <div className="flex items-center gap-4">
+                  <div className="bg-primary text-primary-foreground p-3 rounded-full flex items-center justify-center">
+                    <Target className="h-6 w-6" />
+                  </div>
+                  <h3 className="text-2xl font-bold font-headline">Our Mission</h3>
+                </div>
+                <p className="text-muted-foreground">
+                  To offer exceptional transportation services, while unwaveringly upholding the highest standards of safety, reliability, and professionalism. We aim to build long-lasting client relationships through cost-effective solutions and on-time deliveries, contributing to our clients' ongoing success.
+                </p>
+              </div>
             </div>
           </div>
         </section>
