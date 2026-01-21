@@ -3,7 +3,7 @@
 
 import { revalidatePath } from "next/cache";
 import { v4 as uuidv4 } from "uuid";
-import type { Driver, Expense, Shipment, ShipmentStatus, UserProfile, UserRole } from "./types";
+import type { Driver, Expense, Shipment, ShipmentStatus, StatusLog, UserProfile, UserRole } from "./types";
 import { getDrivers, saveDrivers, getDriverById, updateDriver } from "./data/drivers";
 import { getShipments, saveShipments, getShipmentById } from "./data/shipments";
 import { getMockUser } from "./auth";
