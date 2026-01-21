@@ -1,3 +1,4 @@
+export const dynamic = "force-dynamic";
 import { getDrivers } from "@/lib/data/drivers";
 import { getShipments } from "@/lib/data/shipments";
 import { ApprovalsPageClient } from "@/components/admin/approvals-page-client";
