@@ -5,13 +5,14 @@
     "assignedDriverId": "e3872a61-acb0-484e-8706-40fe9b8f6d9d",
     "assignedDriverName": "klein imperio",
     "createdAt": "2026-02-11T20:25:07.000+08:00",
-    "updatedAt": "2026-02-11T20:53:17.000+08:00",
-    "currentStatus": "departed_warehouse",
+    "updatedAt": "2026-02-11T21:00:48.000+08:00",
+    "currentStatus": "arrived_at_destination",
     "statusTimestamps": {
       "arrived_at_warehouse": "2026-02-11T20:52:54.000+08:00",
       "start_loading": "2026-02-11T20:52:56.000+08:00",
       "end_loading": "2026-02-11T20:52:59.000+08:00",
-      "departed_warehouse": "2026-02-11T20:53:17.000+08:00"
+      "departed_warehouse": "2026-02-11T20:53:17.000+08:00",
+      "arrived_at_destination_0": "2026-02-11T21:00:48.000+08:00"
     },
     "statusLogs": [
       {
@@ -72,6 +73,18 @@
         "isFlagged": false,
         "latitude": 14.389641066246181,
         "longitude": 121.04458739377834,
+        "destinationIndex": 0
+      },
+      {
+        "id": "f91d4711-1b6f-4838-abd0-94383ef1bde1",
+        "status": "arrived_at_destination",
+        "timestamp": "2026-02-11T21:00:48.000+08:00",
+        "actorId": "67252c89-10d0-4349-9530-447ccb4d7010",
+        "actorName": "Kenneth Roy Gamayao",
+        "source": "driver",
+        "isFlagged": false,
+        "latitude": 14.389640375,
+        "longitude": 121.044588,
         "destinationIndex": 0
       }
     ],

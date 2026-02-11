@@ -232,7 +232,7 @@ export async function updateShipmentStatusAction(data: {
     try {
         const [shipment, driver, shipments] = await Promise.all([
             getShipmentById(shipmentId),
-            getMockUser("driver"), // Using mock user as we know this action is by a driver
+            getDriverById(driverId),
             getShipments(),
         ]);
 
