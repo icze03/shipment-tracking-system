@@ -9,6 +9,24 @@
     "passwordHash": "driber02"
   },
   {
+    "id": "e3872a61-acb0-484e-8706-40fe9b8f6d9d",
+    "status": "active",
+    "name": "klein imperio",
+    "email": "klein03@gmail.com",
+    "phone": "09123456789",
+    "licenseNumber": "d109567123",
+    "passwordHash": "kleinimperio"
+  },
+  {
+    "id": "78ce24e4-017c-40cc-8714-05f5dd75b520",
+    "status": "active",
+    "name": "Mikhaela acel Esporlas",
+    "email": "esporlasmikhaelaacel@gmail.com",
+    "phone": "09956405671",
+    "licenseNumber": "tr234k123",
+    "passwordHash": "kleinimperio"
+  },
+  {
     "id": "405644e4-2903-494f-b7c0-1407ae55b74c",
     "status": "active",
     "name": "VICTOR D. MAGTIBAY",

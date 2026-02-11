@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useTransition, useState, useMemo } from "react";
@@ -52,9 +53,10 @@ import { v4 as uuidv4 } from "uuid";
 type StatusUpdatePanelProps = {
   shipment: Shipment;
   driverId: string;
+  onShipmentUpdate: (updatedShipment: Shipment) => void;
 };
 
-export function StatusUpdatePanel({ shipment, driverId }: StatusUpdatePanelProps) {
+export function StatusUpdatePanel({ shipment, driverId, onShipmentUpdate }: StatusUpdatePanelProps) {
   const [isUpdatePending, startUpdateTransition] = useTransition();
   const [isCorrectionPending, startCorrectionTransition] = useTransition();
   const [isAckPending, startAckTransition] = useTransition();
@@ -160,11 +162,12 @@ export function StatusUpdatePanel({ shipment, driverId }: StatusUpdatePanelProps
         description: result.error,
         variant: "destructive",
       });
-    } else {
+    } else if (result.success && result.shipment) {
       toast({
         title: "Status Updated!",
         description: `Shipment is now: ${STATUS_DETAILS[status]?.label}`,
       });
+      onShipmentUpdate(result.shipment);
     }
     setStatusToConfirm(null); // Close the modal
     setIsExpenseModalOpen(false); // Close expense modal if it was open
@@ -195,8 +198,9 @@ export function StatusUpdatePanel({ shipment, driverId }: StatusUpdatePanelProps
 
         if (result.error) {
             toast({ title: "Correction Failed", description: result.error, variant: "destructive" });
-        } else {
+        } else if (result.success && result.shipment) {
             toast({ title: "Correction Request Submitted", description: "An admin will review your request shortly." });
+            onShipmentUpdate(result.shipment);
             setCorrectionModalState({ isOpen: false, logEntry: null, reason: "" });
         }
     });
@@ -207,8 +211,9 @@ export function StatusUpdatePanel({ shipment, driverId }: StatusUpdatePanelProps
         const result = await acknowledgeCancellationAction(shipment.id, driverId);
          if (result.error) {
             toast({ title: "Acknowledgement Failed", description: result.error, variant: "destructive" });
-        } else {
+        } else if (result.success && result.shipment) {
             toast({ title: "Cancellation Acknowledged", description: "Your confirmation has been logged." });
+            onShipmentUpdate(result.shipment);
         }
     });
   }

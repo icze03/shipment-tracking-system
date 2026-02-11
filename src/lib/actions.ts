@@ -252,8 +252,12 @@ export async function updateShipmentStatusAction(data: {
             isFlagged: false,
             latitude,
             longitude,
-            destinationIndex: currentDestinationIndex ?? undefined,
         };
+
+        if (currentDestinationIndex !== undefined) {
+          newLogEntry.destinationIndex = currentDestinationIndex;
+        }
+
         shipment.statusLogs.push(newLogEntry);
 
         shipment.currentStatus = status;
@@ -325,11 +329,11 @@ export async function correctTimestampAction(data: {
         
         const correctedTimestamp = getPhilippineTimeISO(); // Use the current time for the correction.
         
-        // Update the main timestamp record for the timeline view
         const isPerDestinationStatus = PER_DESTINATION_STATUSES.includes(statusType);
         const timestampKey = (isPerDestinationStatus && originalLog.destinationIndex !== undefined)
             ? `${statusType}_${originalLog.destinationIndex}`
             : statusType;
+
         shipment.statusTimestamps[timestampKey as keyof typeof shipment.statusTimestamps] = correctedTimestamp;
 
         shipment.updatedAt = correctedTimestamp;
@@ -349,8 +353,12 @@ export async function correctTimestampAction(data: {
             source: 'admin' as const,
             isCorrection: true,
             notes: `Admin applied correction. ${notes || ''}`.trim(),
-            destinationIndex: originalLog.destinationIndex, // Preserve original destination index
         };
+
+        if (originalLog.destinationIndex !== undefined) {
+            correctionLogEntry.destinationIndex = originalLog.destinationIndex;
+        }
+
         shipment.statusLogs.push(correctionLogEntry);
         
         // Re-sort logs and determine the new current status based on the latest valid timestamp
@@ -429,7 +437,7 @@ export async function requestCorrectionAction(data: {
         revalidatePath(`/track?orderCode=${shipment.orderCode}`, 'layout');
         revalidatePath('/admin/approvals');
 
-        return { success: true };
+        return { success: true, shipment };
     } catch (e: any) {
         return { error: `Failed to submit correction request: ${e.message}` };
     }
@@ -535,7 +543,7 @@ export async function acknowledgeCancellationAction(shipmentId: string, driverId
         revalidatePath('/driver/dashboard');
         revalidatePath(`/admin/shipments/${shipmentId}`);
         
-        return { success: true };
+        return { success: true, shipment };
     } catch (e: any) {
         return { error: `Failed to acknowledge cancellation: ${e.message}` };
     }

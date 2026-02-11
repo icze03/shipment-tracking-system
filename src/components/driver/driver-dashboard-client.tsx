@@ -30,6 +30,7 @@ export function DriverDashboardClient() {
     fetchShipments();
   }, [driver, isAuthLoading]);
 
+  // This polling is a fallback, but the UI will update instantly via the onShipmentUpdate callback.
   useEffect(() => {
     if (!driver) return;
 
@@ -40,6 +41,25 @@ export function DriverDashboardClient() {
 
     return () => clearInterval(interval);
   }, [driver]);
+  
+  const handleShipmentUpdate = (updatedShipment: Shipment) => {
+    setShipments(prevShipments => {
+      // If the updated shipment is completed or acknowledged, remove it from the active list.
+      if (updatedShipment.isCompleted && (updatedShipment.currentStatus !== 'cancelled' || updatedShipment.cancellationAcknowledged)) {
+        return prevShipments.filter(s => s.id !== updatedShipment.id);
+      }
+
+      const index = prevShipments.findIndex(s => s.id === updatedShipment.id);
+      if (index > -1) {
+          const newShipments = [...prevShipments];
+          newShipments[index] = updatedShipment;
+          return newShipments;
+      }
+      // If for some reason it wasn't in the list, just return the previous state.
+      // The poller will eventually correct it.
+      return prevShipments;
+    });
+  };
 
   if (isAuthLoading || (isLoadingShipments && driver)) {
     return (
@@ -86,7 +106,11 @@ export function DriverDashboardClient() {
         <h1 className="text-2xl font-bold tracking-tight font-headline">Current Task</h1>
         <p className="text-muted-foreground">This is your highest priority shipment.</p>
       </div>
-      <StatusUpdatePanel shipment={activeShipment} driverId={driver.id} />
+      <StatusUpdatePanel 
+        shipment={activeShipment} 
+        driverId={driver.id} 
+        onShipmentUpdate={handleShipmentUpdate}
+      />
 
       {queuedShipments.length > 0 && (
         <div className="space-y-4">
