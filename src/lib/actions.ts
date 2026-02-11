@@ -5,13 +5,31 @@ import { revalidatePath } from "next/cache";
 import { v4 as uuidv4 } from "uuid";
 import type { Driver, Expense, Shipment, ShipmentStatus, StatusLog, UserProfile, UserRole } from "./types";
 import { getDrivers, saveDrivers, getDriverById, updateDriver } from "./data/drivers";
-import { getShipments, saveShipments, getShipmentById } from "./data/shipments";
+import { getShipments, saveShipments, getShipmentById, getDriverShipments as getDriverShipmentsData } from "./data/shipments";
 import { getMockUser } from "./auth";
 import { correctTimestamp as aiCorrectTimestamp } from "@/ai/flows/admin-assisted-timestamp-correction";
 import { getPhilippineTimeISO } from "./utils";
 import { PER_DESTINATION_STATUSES } from "./constants";
 
 // --- Auth Actions ---
+export async function getUserProfileAction(role: UserRole, userId: string | null): Promise<UserProfile | null> {
+    if (role === 'admin' && userId === 'admin01') {
+        return getMockUser('admin');
+    }
+    if (role === 'driver' && userId) {
+        const driver = await getDriverById(userId);
+        if (driver) {
+            return {
+                id: driver.id,
+                name: driver.name,
+                email: driver.email,
+                role: 'driver'
+            };
+        }
+    }
+    return null;
+}
+
 export async function getMockUserAction(role: UserRole): Promise<UserProfile> {
     return getMockUser(role);
 }
@@ -141,6 +159,10 @@ export async function removeDriverAction(driverId: string) {
 }
 
 // --- Shipment Actions ---
+export async function getDriverShipmentsAction(driverId: string) {
+    return getDriverShipmentsData(driverId);
+}
+
 export async function getShipmentsAction() {
     return getShipments();
 }
@@ -180,7 +202,7 @@ export async function createShipmentAction(data: {
       shipmentType: data.shipmentType,
       currentDestinationIndex: 0,
       description: data.description,
-      notes: data.notes,
+      notes: data.notes || "",
       expenses: [],
     };
     
@@ -230,7 +252,7 @@ export async function updateShipmentStatusAction(data: {
             isFlagged: false,
             latitude,
             longitude,
-            destinationIndex: currentDestinationIndex,
+            destinationIndex: currentDestinationIndex ?? undefined,
         };
         shipment.statusLogs.push(newLogEntry);
 
@@ -299,11 +321,17 @@ export async function correctTimestampAction(data: {
         if (logToCorrectIndex === -1) {
             return { error: "Original log entry to correct not found." };
         }
+        const originalLog = shipment.statusLogs[logToCorrectIndex];
         
         const correctedTimestamp = getPhilippineTimeISO(); // Use the current time for the correction.
         
         // Update the main timestamp record for the timeline view
-        shipment.statusTimestamps[statusType] = correctedTimestamp;
+        const isPerDestinationStatus = PER_DESTINATION_STATUSES.includes(statusType);
+        const timestampKey = (isPerDestinationStatus && originalLog.destinationIndex !== undefined)
+            ? `${statusType}_${originalLog.destinationIndex}`
+            : statusType;
+        shipment.statusTimestamps[timestampKey as keyof typeof shipment.statusTimestamps] = correctedTimestamp;
+
         shipment.updatedAt = correctedTimestamp;
 
         // Unflag the original log entry
@@ -312,7 +340,7 @@ export async function correctTimestampAction(data: {
         const adminUser = await getMockUser("admin");
         
         // Create a new log entry for this administrative action
-        const correctionLogEntry = {
+        const correctionLogEntry: StatusLog = {
             id: uuidv4(),
             status: statusType,
             timestamp: correctedTimestamp, // Log the correction at the time it happened.
@@ -321,6 +349,7 @@ export async function correctTimestampAction(data: {
             source: 'admin' as const,
             isCorrection: true,
             notes: `Admin applied correction. ${notes || ''}`.trim(),
+            destinationIndex: originalLog.destinationIndex, // Preserve original destination index
         };
         shipment.statusLogs.push(correctionLogEntry);
         
@@ -329,7 +358,7 @@ export async function correctTimestampAction(data: {
         const latestStatus = Object.entries(shipment.statusTimestamps)
                                   .sort(([, a], [, b]) => new Date(b!).getTime() - new Date(a!).getTime())[0];
         if (latestStatus) {
-            shipment.currentStatus = latestStatus[0] as ShipmentStatus;
+            shipment.currentStatus = latestStatus[0].split('_')[0] as ShipmentStatus;
         }
         
         shipments[shipmentIndex] = shipment;
@@ -431,8 +460,8 @@ export async function cancelShipmentAction(
         shipment.currentStatus = 'cancelled';
         shipment.isCompleted = true; // Treat cancelled as a form of completion
         shipment.updatedAt = now;
-        shipment.cancellationReason = cancellationReason;
-        shipment.driverInstructions = driverInstructions;
+        shipment.cancellationReason = cancellationReason || "";
+        shipment.driverInstructions = driverInstructions || "";
 
         const cancelLog: typeof shipment.statusLogs[0] = {
             id: uuidv4(),

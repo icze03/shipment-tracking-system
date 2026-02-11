@@ -1,12 +1,11 @@
 
-import { getDriverShipments } from "@/lib/data/shipments";
-import { getMockUserAction } from "@/lib/actions";
 import { DriverDashboardClient } from "@/components/driver/driver-dashboard-client";
+import { ClientOnly } from "@/components/client-only";
 
 export default async function DriverDashboardPage() {
-  // Fetch initial data on the server
-  const driver = await getMockUserAction("driver");
-  const shipments = driver ? await getDriverShipments(driver.id) : [];
-
-  return <DriverDashboardClient driver={driver} shipments={shipments} />;
+  return (
+    <ClientOnly>
+      <DriverDashboardClient />
+    </ClientOnly>
+  );
 }
