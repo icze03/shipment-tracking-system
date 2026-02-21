@@ -1,18 +1,851 @@
 [
   {
+    "id": "a0334f4d-1f8d-4bcd-91a8-10852935fb3a",
+    "orderCode": "GLT-BG6EHF",
+    "assignedDriverId": "405644e4-2903-494f-b7c0-1407ae55b74c",
+    "assignedDriverName": "VICTOR D. MAGTIBAY",
+    "createdAt": "2026-02-16T08:18:35.000+08:00",
+    "updatedAt": "2026-02-17T05:12:40.000+08:00",
+    "currentStatus": "trip_completed",
+    "statusTimestamps": {
+      "arrived_at_warehouse": "2026-02-16T09:15:20.000+08:00",
+      "start_loading": "2026-02-16T09:15:25.000+08:00",
+      "end_loading": "2026-02-16T09:15:29.000+08:00",
+      "departed_warehouse": "2026-02-16T09:15:46.000+08:00",
+      "arrived_at_destination_0": "2026-02-16T09:15:57.000+08:00",
+      "start_unloading_0": "2026-02-16T14:30:33.000+08:00",
+      "end_unloading_0": "2026-02-16T15:04:40.000+08:00",
+      "trip_completed": "2026-02-17T05:12:40.000+08:00"
+    },
+    "statusLogs": [
+      {
+        "id": "0638d835-9965-49e9-bbca-8bccdd390030",
+        "status": "arrived_at_warehouse",
+        "timestamp": "2026-02-16T09:15:20.000+08:00",
+        "actorId": "405644e4-2903-494f-b7c0-1407ae55b74c",
+        "actorName": "VICTOR D. MAGTIBAY",
+        "source": "driver",
+        "isFlagged": false,
+        "latitude": 14.1273464,
+        "longitude": 122.9373121,
+        "destinationIndex": 0
+      },
+      {
+        "id": "88ada255-a8b9-4abc-a1e8-ed707b224576",
+        "status": "start_loading",
+        "timestamp": "2026-02-16T09:15:25.000+08:00",
+        "actorId": "405644e4-2903-494f-b7c0-1407ae55b74c",
+        "actorName": "VICTOR D. MAGTIBAY",
+        "source": "driver",
+        "isFlagged": false,
+        "latitude": 14.1273755,
+        "longitude": 122.9372127,
+        "destinationIndex": 0
+      },
+      {
+        "id": "29fc13ea-2e47-4139-b484-31fa135d3898",
+        "status": "end_loading",
+        "timestamp": "2026-02-16T09:15:29.000+08:00",
+        "actorId": "405644e4-2903-494f-b7c0-1407ae55b74c",
+        "actorName": "VICTOR D. MAGTIBAY",
+        "source": "driver",
+        "isFlagged": false,
+        "latitude": 14.1273505,
+        "longitude": 122.9372452,
+        "destinationIndex": 0
+      },
+      {
+        "id": "fa2b4202-39de-477f-bad5-a613dd9e8c60",
+        "status": "departed_warehouse",
+        "timestamp": "2026-02-16T09:15:46.000+08:00",
+        "actorId": "405644e4-2903-494f-b7c0-1407ae55b74c",
+        "actorName": "VICTOR D. MAGTIBAY",
+        "source": "driver",
+        "isFlagged": false,
+        "latitude": 14.1273333,
+        "longitude": 122.9372683,
+        "destinationIndex": 0
+      },
+      {
+        "id": "48d19059-0b8e-4302-a4c6-e898ac6cbb5e",
+        "status": "arrived_at_destination",
+        "timestamp": "2026-02-16T09:15:57.000+08:00",
+        "actorId": "405644e4-2903-494f-b7c0-1407ae55b74c",
+        "actorName": "VICTOR D. MAGTIBAY",
+        "source": "driver",
+        "isFlagged": false,
+        "latitude": 14.1273712,
+        "longitude": 122.9372488,
+        "destinationIndex": 0
+      },
+      {
+        "id": "c9be3825-565e-451b-98f3-7b6e37e376fd",
+        "status": "start_unloading",
+        "timestamp": "2026-02-16T14:30:33.000+08:00",
+        "actorId": "405644e4-2903-494f-b7c0-1407ae55b74c",
+        "actorName": "VICTOR D. MAGTIBAY",
+        "source": "driver",
+        "isFlagged": false,
+        "latitude": 14.1267478,
+        "longitude": 122.9376601,
+        "destinationIndex": 0
+      },
+      {
+        "id": "b5bfe9ed-ac09-4766-b24e-36dfd5e9f8f9",
+        "status": "end_unloading",
+        "timestamp": "2026-02-16T15:04:40.000+08:00",
+        "actorId": "405644e4-2903-494f-b7c0-1407ae55b74c",
+        "actorName": "VICTOR D. MAGTIBAY",
+        "source": "driver",
+        "isFlagged": false,
+        "latitude": 14.1265114,
+        "longitude": 122.9368204,
+        "destinationIndex": 0
+      },
+      {
+        "id": "603e733a-46e7-4961-88b6-63c19e356084",
+        "status": "trip_completed",
+        "timestamp": "2026-02-17T05:12:40.000+08:00",
+        "actorId": "405644e4-2903-494f-b7c0-1407ae55b74c",
+        "actorName": "VICTOR D. MAGTIBAY",
+        "source": "driver",
+        "isFlagged": false,
+        "latitude": 14.3559532,
+        "longitude": 121.0532906,
+        "destinationIndex": 0
+      }
+    ],
+    "isCompleted": true,
+    "origin": "cabuyao warehouse",
+    "destinations": [
+      "new staple daet camarines norte"
+    ],
+    "shipmentType": "single_drop",
+    "currentDestinationIndex": 0,
+    "description": "jphnson products",
+    "notes": "",
+    "expenses": [
+      {
+        "id": "9b656880-51d4-439e-8be4-ee8c7830a7ee",
+        "type": "Gas",
+        "amount": 2000
+      },
+      {
+        "id": "092b7459-852a-4ae3-982f-aa0823e07fae",
+        "type": "Food",
+        "amount": 600
+      },
+      {
+        "id": "c9bda513-d234-45d6-bad2-6bb7fc0b396a",
+        "type": "Other",
+        "amount": 300
+      },
+      {
+        "id": "aeb2fdd3-1fb9-46c9-b6bf-688e0552ccf4",
+        "type": "Other",
+        "amount": 100
+      }
+    ]
+  },
+  {
+    "id": "4eb99741-c2a9-4ce6-bcc4-978a9d4c8bf2",
+    "orderCode": "GLT-KLGHR9",
+    "assignedDriverId": "405644e4-2903-494f-b7c0-1407ae55b74c",
+    "assignedDriverName": "VICTOR D. MAGTIBAY",
+    "createdAt": "2026-02-13T20:10:41.000+08:00",
+    "updatedAt": "2026-02-16T09:15:10.000+08:00",
+    "currentStatus": "trip_completed",
+    "statusTimestamps": {
+      "arrived_at_warehouse": "2026-02-16T09:13:09.000+08:00",
+      "start_loading": "2026-02-16T09:13:17.000+08:00",
+      "end_loading": "2026-02-16T09:13:25.000+08:00",
+      "departed_warehouse": "2026-02-16T09:13:32.000+08:00",
+      "arrived_at_destination_0": "2026-02-16T09:13:38.000+08:00",
+      "start_unloading_0": "2026-02-16T09:14:44.000+08:00",
+      "end_unloading_0": "2026-02-16T09:14:48.000+08:00",
+      "trip_completed": "2026-02-16T09:15:10.000+08:00"
+    },
+    "statusLogs": [
+      {
+        "id": "2b09eeaa-d92b-4f20-bcde-d7d84805c19b",
+        "status": "arrived_at_warehouse",
+        "timestamp": "2026-02-16T09:13:09.000+08:00",
+        "actorId": "405644e4-2903-494f-b7c0-1407ae55b74c",
+        "actorName": "VICTOR D. MAGTIBAY",
+        "source": "driver",
+        "isFlagged": false,
+        "latitude": 14.1274551,
+        "longitude": 122.9368355,
+        "destinationIndex": 0
+      },
+      {
+        "id": "88417284-d9d1-42d3-a5aa-17cad410fa81",
+        "status": "start_loading",
+        "timestamp": "2026-02-16T09:13:17.000+08:00",
+        "actorId": "405644e4-2903-494f-b7c0-1407ae55b74c",
+        "actorName": "VICTOR D. MAGTIBAY",
+        "source": "driver",
+        "isFlagged": false,
+        "latitude": 14.1274357,
+        "longitude": 122.9368563,
+        "destinationIndex": 0
+      },
+      {
+        "id": "b7faa4fb-0b3a-4993-9baf-2348f4422037",
+        "status": "end_loading",
+        "timestamp": "2026-02-16T09:13:25.000+08:00",
+        "actorId": "405644e4-2903-494f-b7c0-1407ae55b74c",
+        "actorName": "VICTOR D. MAGTIBAY",
+        "source": "driver",
+        "isFlagged": false,
+        "latitude": 14.1275008,
+        "longitude": 122.9368794,
+        "destinationIndex": 0
+      },
+      {
+        "id": "329c2ba7-36c6-4b11-af2a-71d3ed3f79ef",
+        "status": "departed_warehouse",
+        "timestamp": "2026-02-16T09:13:32.000+08:00",
+        "actorId": "405644e4-2903-494f-b7c0-1407ae55b74c",
+        "actorName": "VICTOR D. MAGTIBAY",
+        "source": "driver",
+        "isFlagged": false,
+        "latitude": 14.1275135,
+        "longitude": 122.9368827,
+        "destinationIndex": 0
+      },
+      {
+        "id": "5778e4ca-77fc-4020-ad5e-89cce43f04ad",
+        "status": "arrived_at_destination",
+        "timestamp": "2026-02-16T09:13:38.000+08:00",
+        "actorId": "405644e4-2903-494f-b7c0-1407ae55b74c",
+        "actorName": "VICTOR D. MAGTIBAY",
+        "source": "driver",
+        "isFlagged": false,
+        "latitude": 14.1274809,
+        "longitude": 122.9369172,
+        "destinationIndex": 0
+      },
+      {
+        "id": "b8cfdd67-380e-4ed1-b790-af8f470630cc",
+        "status": "start_unloading",
+        "timestamp": "2026-02-16T09:14:44.000+08:00",
+        "actorId": "405644e4-2903-494f-b7c0-1407ae55b74c",
+        "actorName": "VICTOR D. MAGTIBAY",
+        "source": "driver",
+        "isFlagged": false,
+        "latitude": 14.127487,
+        "longitude": 122.9369239,
+        "destinationIndex": 0
+      },
+      {
+        "id": "a2af676c-cd0c-4f6f-8ad4-2938749f99b6",
+        "status": "end_unloading",
+        "timestamp": "2026-02-16T09:14:48.000+08:00",
+        "actorId": "405644e4-2903-494f-b7c0-1407ae55b74c",
+        "actorName": "VICTOR D. MAGTIBAY",
+        "source": "driver",
+        "isFlagged": false,
+        "latitude": 14.1274425,
+        "longitude": 122.9369837,
+        "destinationIndex": 0
+      },
+      {
+        "id": "27d9557c-d48b-4faf-b584-5c9a3c6d2f5f",
+        "status": "trip_completed",
+        "timestamp": "2026-02-16T09:15:10.000+08:00",
+        "actorId": "405644e4-2903-494f-b7c0-1407ae55b74c",
+        "actorName": "VICTOR D. MAGTIBAY",
+        "source": "driver",
+        "isFlagged": false,
+        "latitude": 14.1273437,
+        "longitude": 122.9373278,
+        "destinationIndex": 0
+      }
+    ],
+    "isCompleted": true,
+    "origin": "mfm cabuyao",
+    "destinations": [
+      "soc 5"
+    ],
+    "shipmentType": "single_drop",
+    "currentDestinationIndex": 0,
+    "description": "shoppee parcels",
+    "notes": "",
+    "expenses": [
+      {
+        "id": "f9853b52-2017-4f09-a35f-22ed67ec4ec5",
+        "type": "Food",
+        "amount": 200
+      }
+    ]
+  },
+  {
+    "id": "cd15faad-7318-4e3a-a64e-86a38b71369b",
+    "orderCode": "GLT-9R6408",
+    "assignedDriverId": "6f4e5a62-da45-4224-910b-c1d10aecd37f",
+    "assignedDriverName": "Kenneth Roy Gamayao",
+    "createdAt": "2026-02-13T20:46:34.000+08:00",
+    "updatedAt": "2026-02-13T20:46:34.000+08:00",
+    "currentStatus": "pending",
+    "statusTimestamps": {},
+    "statusLogs": [],
+    "isCompleted": false,
+    "origin": "CABUYAO WAREHOUSE",
+    "destinations": [
+      "AIRSPEED PARANAQUE"
+    ],
+    "shipmentType": "single_drop",
+    "currentDestinationIndex": 0,
+    "description": "JOHNSON PRODUCTS",
+    "notes": "",
+    "expenses": []
+  },
+  {
+    "id": "9fada231-7cb9-49a0-9efb-2368b46742ec",
+    "orderCode": "GLT-N3IA89",
+    "assignedDriverId": "6f4e5a62-da45-4224-910b-c1d10aecd37f",
+    "assignedDriverName": "Kenneth Roy Gamayao",
+    "createdAt": "2026-02-12T22:15:40.000+08:00",
+    "updatedAt": "2026-02-13T20:13:50.000+08:00",
+    "currentStatus": "trip_completed",
+    "statusTimestamps": {
+      "arrived_at_warehouse": "2026-02-13T20:12:58.000+08:00",
+      "start_loading": "2026-02-13T20:13:21.000+08:00",
+      "end_loading": "2026-02-13T20:13:24.000+08:00",
+      "departed_warehouse": "2026-02-13T20:13:27.000+08:00",
+      "arrived_at_destination_0": "2026-02-13T20:13:30.000+08:00",
+      "start_unloading_0": "2026-02-13T20:13:33.000+08:00",
+      "end_unloading_0": "2026-02-13T20:13:37.000+08:00",
+      "trip_completed": "2026-02-13T20:13:50.000+08:00"
+    },
+    "statusLogs": [
+      {
+        "id": "f935cf0d-a04f-47db-b7cc-2c0c69e99b7f",
+        "status": "arrived_at_warehouse",
+        "timestamp": "2026-02-13T20:12:58.000+08:00",
+        "actorId": "6f4e5a62-da45-4224-910b-c1d10aecd37f",
+        "actorName": "Kenneth Roy Gamayao",
+        "source": "driver",
+        "isFlagged": false,
+        "latitude": 14.2156,
+        "longitude": 121.1633,
+        "destinationIndex": 0
+      },
+      {
+        "id": "35ee20ff-e866-4afd-bd98-20b4b785bfb1",
+        "status": "start_loading",
+        "timestamp": "2026-02-13T20:13:21.000+08:00",
+        "actorId": "6f4e5a62-da45-4224-910b-c1d10aecd37f",
+        "actorName": "Kenneth Roy Gamayao",
+        "source": "driver",
+        "isFlagged": false,
+        "latitude": 14.2156,
+        "longitude": 121.1633,
+        "destinationIndex": 0
+      },
+      {
+        "id": "7c4baed7-1136-4fcc-b580-8b819fde6081",
+        "status": "end_loading",
+        "timestamp": "2026-02-13T20:13:24.000+08:00",
+        "actorId": "6f4e5a62-da45-4224-910b-c1d10aecd37f",
+        "actorName": "Kenneth Roy Gamayao",
+        "source": "driver",
+        "isFlagged": false,
+        "latitude": 14.2156,
+        "longitude": 121.1633,
+        "destinationIndex": 0
+      },
+      {
+        "id": "906e4a54-5210-4b20-bd86-6bc14cbc0322",
+        "status": "departed_warehouse",
+        "timestamp": "2026-02-13T20:13:27.000+08:00",
+        "actorId": "6f4e5a62-da45-4224-910b-c1d10aecd37f",
+        "actorName": "Kenneth Roy Gamayao",
+        "source": "driver",
+        "isFlagged": false,
+        "latitude": 14.2156,
+        "longitude": 121.1633,
+        "destinationIndex": 0
+      },
+      {
+        "id": "9be74615-beba-4c40-b297-b11d4e936c46",
+        "status": "arrived_at_destination",
+        "timestamp": "2026-02-13T20:13:30.000+08:00",
+        "actorId": "6f4e5a62-da45-4224-910b-c1d10aecd37f",
+        "actorName": "Kenneth Roy Gamayao",
+        "source": "driver",
+        "isFlagged": false,
+        "latitude": 14.2156,
+        "longitude": 121.1633,
+        "destinationIndex": 0
+      },
+      {
+        "id": "ffd5739a-507f-4336-bfb9-b752871288b2",
+        "status": "start_unloading",
+        "timestamp": "2026-02-13T20:13:33.000+08:00",
+        "actorId": "6f4e5a62-da45-4224-910b-c1d10aecd37f",
+        "actorName": "Kenneth Roy Gamayao",
+        "source": "driver",
+        "isFlagged": false,
+        "latitude": 14.2156,
+        "longitude": 121.1633,
+        "destinationIndex": 0
+      },
+      {
+        "id": "0ca13af6-5102-45a2-943a-d8e5e69e494a",
+        "status": "end_unloading",
+        "timestamp": "2026-02-13T20:13:37.000+08:00",
+        "actorId": "6f4e5a62-da45-4224-910b-c1d10aecd37f",
+        "actorName": "Kenneth Roy Gamayao",
+        "source": "driver",
+        "isFlagged": false,
+        "latitude": 14.2156,
+        "longitude": 121.1633,
+        "destinationIndex": 0
+      },
+      {
+        "id": "97c4bd2c-50d6-4745-a765-cf552caa27b9",
+        "status": "trip_completed",
+        "timestamp": "2026-02-13T20:13:50.000+08:00",
+        "actorId": "6f4e5a62-da45-4224-910b-c1d10aecd37f",
+        "actorName": "Kenneth Roy Gamayao",
+        "source": "driver",
+        "isFlagged": false,
+        "latitude": 14.2156,
+        "longitude": 121.1633,
+        "destinationIndex": 0
+      }
+    ],
+    "isCompleted": true,
+    "origin": "TURBINA",
+    "destinations": [
+      "GENERGY KKAWIT CAVITE"
+    ],
+    "shipmentType": "single_drop",
+    "currentDestinationIndex": 0,
+    "description": "AIR CONDITIONING UNITS",
+    "notes": "",
+    "expenses": [
+      {
+        "id": "baf07ae9-7591-4f02-bf84-4a1158c9d2b0",
+        "type": "Food",
+        "amount": 200
+      }
+    ]
+  },
+  {
+    "id": "3281b77a-031e-4d7d-80a4-c4a1533ed0fb",
+    "orderCode": "GLT-GFKV1Z",
+    "assignedDriverId": "405644e4-2903-494f-b7c0-1407ae55b74c",
+    "assignedDriverName": "VICTOR D. MAGTIBAY",
+    "createdAt": "2026-02-12T22:10:06.000+08:00",
+    "updatedAt": "2026-02-13T09:46:20.000+08:00",
+    "currentStatus": "trip_completed",
+    "statusTimestamps": {
+      "arrived_at_warehouse": "2026-02-13T09:35:33.000+08:00",
+      "start_loading": "2026-02-13T09:35:39.000+08:00",
+      "end_loading": "2026-02-13T09:35:44.000+08:00",
+      "departed_warehouse": "2026-02-13T09:35:49.000+08:00",
+      "arrived_at_destination_0": "2026-02-13T09:36:02.000+08:00",
+      "start_unloading_0": "2026-02-13T09:36:08.000+08:00",
+      "end_unloading_0": "2026-02-13T09:36:11.000+08:00",
+      "trip_completed": "2026-02-13T09:46:20.000+08:00"
+    },
+    "statusLogs": [
+      {
+        "id": "b10c9d5a-183f-4829-8c50-d64afff3aa17",
+        "status": "arrived_at_warehouse",
+        "timestamp": "2026-02-13T09:35:33.000+08:00",
+        "actorId": "405644e4-2903-494f-b7c0-1407ae55b74c",
+        "actorName": "VICTOR D. MAGTIBAY",
+        "source": "driver",
+        "isFlagged": false,
+        "latitude": 14.368082,
+        "longitude": 121.0503173,
+        "destinationIndex": 0
+      },
+      {
+        "id": "22e23083-8c58-4cdd-ba67-4ee7a975821b",
+        "status": "start_loading",
+        "timestamp": "2026-02-13T09:35:39.000+08:00",
+        "actorId": "405644e4-2903-494f-b7c0-1407ae55b74c",
+        "actorName": "VICTOR D. MAGTIBAY",
+        "source": "driver",
+        "isFlagged": false,
+        "latitude": 14.3680252,
+        "longitude": 121.0503671,
+        "destinationIndex": 0
+      },
+      {
+        "id": "255cc9e7-4656-47eb-889c-3f80d9da3bf2",
+        "status": "end_loading",
+        "timestamp": "2026-02-13T09:35:44.000+08:00",
+        "actorId": "405644e4-2903-494f-b7c0-1407ae55b74c",
+        "actorName": "VICTOR D. MAGTIBAY",
+        "source": "driver",
+        "isFlagged": false,
+        "latitude": 14.368365,
+        "longitude": 121.0505567,
+        "destinationIndex": 0
+      },
+      {
+        "id": "3035bc8b-dd55-4c57-ab49-d6cdc634b4b8",
+        "status": "departed_warehouse",
+        "timestamp": "2026-02-13T09:35:49.000+08:00",
+        "actorId": "405644e4-2903-494f-b7c0-1407ae55b74c",
+        "actorName": "VICTOR D. MAGTIBAY",
+        "source": "driver",
+        "isFlagged": false,
+        "latitude": 14.3683167,
+        "longitude": 121.0506183,
+        "destinationIndex": 0
+      },
+      {
+        "id": "23f78f36-cd1d-4398-8521-e8693f447e06",
+        "status": "arrived_at_destination",
+        "timestamp": "2026-02-13T09:36:02.000+08:00",
+        "actorId": "405644e4-2903-494f-b7c0-1407ae55b74c",
+        "actorName": "VICTOR D. MAGTIBAY",
+        "source": "driver",
+        "isFlagged": false,
+        "latitude": 14.3681604,
+        "longitude": 121.0505005,
+        "destinationIndex": 0
+      },
+      {
+        "id": "edcc6389-f19e-47c0-89fa-3992103d15b5",
+        "status": "start_unloading",
+        "timestamp": "2026-02-13T09:36:08.000+08:00",
+        "actorId": "405644e4-2903-494f-b7c0-1407ae55b74c",
+        "actorName": "VICTOR D. MAGTIBAY",
+        "source": "driver",
+        "isFlagged": false,
+        "latitude": 14.3681967,
+        "longitude": 121.0505667,
+        "destinationIndex": 0
+      },
+      {
+        "id": "3f7e9f40-5483-475a-b810-c7d2e6974422",
+        "status": "end_unloading",
+        "timestamp": "2026-02-13T09:36:11.000+08:00",
+        "actorId": "405644e4-2903-494f-b7c0-1407ae55b74c",
+        "actorName": "VICTOR D. MAGTIBAY",
+        "source": "driver",
+        "isFlagged": false,
+        "latitude": 14.3682033,
+        "longitude": 121.0505767,
+        "destinationIndex": 0
+      },
+      {
+        "id": "94de9abf-6364-497b-89e0-e2aa53c18333",
+        "status": "trip_completed",
+        "timestamp": "2026-02-13T09:46:20.000+08:00",
+        "actorId": "405644e4-2903-494f-b7c0-1407ae55b74c",
+        "actorName": "VICTOR D. MAGTIBAY",
+        "source": "driver",
+        "isFlagged": false,
+        "latitude": 14.3557562,
+        "longitude": 121.0532972,
+        "destinationIndex": 0
+      }
+    ],
+    "isCompleted": true,
+    "origin": "CABUYAO WAREHOUSE",
+    "destinations": [
+      "SUYSING PARANAQUE"
+    ],
+    "shipmentType": "single_drop",
+    "currentDestinationIndex": 0,
+    "description": "JOHNSON PRODUCTS",
+    "notes": "",
+    "expenses": [
+      {
+        "id": "494638a5-0426-4a0c-93b4-d8c68bbef531",
+        "type": "Food",
+        "amount": 300
+      }
+    ]
+  },
+  {
+    "id": "7e47cb45-8756-4593-909b-9ecc9aaef2fb",
+    "orderCode": "GLT-HNV98E",
+    "assignedDriverId": "2922c920-a942-4437-b832-9951faf13ada",
+    "assignedDriverName": "astraea millares",
+    "createdAt": "2026-02-11T22:31:15.000+08:00",
+    "updatedAt": "2026-02-12T11:26:03.000+08:00",
+    "currentStatus": "cancelled",
+    "statusTimestamps": {
+      "arrived_at_warehouse": "2026-02-11T22:32:09.000+08:00"
+    },
+    "statusLogs": [
+      {
+        "id": "ff1d98f1-ef64-402d-92e2-cbe1a2f2d64d",
+        "status": "arrived_at_warehouse",
+        "timestamp": "2026-02-11T22:32:09.000+08:00",
+        "actorId": "2922c920-a942-4437-b832-9951faf13ada",
+        "actorName": "astraea millares",
+        "source": "driver",
+        "isFlagged": false,
+        "latitude": 14.378377227481623,
+        "longitude": 121.04835770057058,
+        "destinationIndex": 0
+      },
+      {
+        "id": "28910e02-dc93-473f-9155-dc5b8c9f9e56",
+        "status": "cancelled",
+        "timestamp": "2026-02-12T11:26:03.000+08:00",
+        "actorId": "admin01",
+        "actorName": "Astraea Millares",
+        "source": "admin",
+        "notes": "Cancelled by admin from dashboard."
+      }
+    ],
+    "isCompleted": true,
+    "origin": "TIOSEJO",
+    "destinations": [
+      "FESTIVAL"
+    ],
+    "shipmentType": "single_drop",
+    "currentDestinationIndex": 0,
+    "description": "TRIAL LOCATION",
+    "notes": "",
+    "expenses": [],
+    "cancellationReason": "Cancelled by admin from dashboard.",
+    "driverInstructions": ""
+  },
+  {
+    "id": "bb78fa6a-d146-4f82-9d13-fd7787b6ec25",
+    "orderCode": "GLT-D9DPT2",
+    "assignedDriverId": "405644e4-2903-494f-b7c0-1407ae55b74c",
+    "assignedDriverName": "VICTOR D. MAGTIBAY",
+    "createdAt": "2026-02-11T22:10:05.000+08:00",
+    "updatedAt": "2026-02-12T06:50:28.000+08:00",
+    "currentStatus": "trip_completed",
+    "statusTimestamps": {
+      "arrived_at_warehouse": "2026-02-11T22:32:21.000+08:00",
+      "start_loading": "2026-02-11T22:32:37.000+08:00",
+      "end_loading": "2026-02-11T22:32:48.000+08:00",
+      "departed_warehouse": "2026-02-11T22:32:57.000+08:00",
+      "arrived_at_destination_0": "2026-02-11T22:36:44.000+08:00",
+      "start_unloading_0": "2026-02-12T02:26:12.000+08:00",
+      "end_unloading_0": "2026-02-12T06:49:59.000+08:00",
+      "trip_completed": "2026-02-12T06:50:28.000+08:00"
+    },
+    "statusLogs": [
+      {
+        "id": "1d803b49-bd65-4e38-80ca-9611c2fb4121",
+        "status": "arrived_at_warehouse",
+        "timestamp": "2026-02-11T22:32:21.000+08:00",
+        "actorId": "405644e4-2903-494f-b7c0-1407ae55b74c",
+        "actorName": "VICTOR D. MAGTIBAY",
+        "source": "driver",
+        "isFlagged": false,
+        "latitude": 14.2740025,
+        "longitude": 121.0063064,
+        "destinationIndex": 0
+      },
+      {
+        "id": "3a2d82e5-c471-48ec-90cb-6ab666102fac",
+        "status": "start_loading",
+        "timestamp": "2026-02-11T22:32:37.000+08:00",
+        "actorId": "405644e4-2903-494f-b7c0-1407ae55b74c",
+        "actorName": "VICTOR D. MAGTIBAY",
+        "source": "driver",
+        "isFlagged": false,
+        "latitude": 14.2726254,
+        "longitude": 121.0063697,
+        "destinationIndex": 0
+      },
+      {
+        "id": "324c1c49-e99b-40b0-9cc6-7a3d723b0123",
+        "status": "end_loading",
+        "timestamp": "2026-02-11T22:32:48.000+08:00",
+        "actorId": "405644e4-2903-494f-b7c0-1407ae55b74c",
+        "actorName": "VICTOR D. MAGTIBAY",
+        "source": "driver",
+        "isFlagged": false,
+        "latitude": 14.2716112,
+        "longitude": 121.0064473,
+        "destinationIndex": 0
+      },
+      {
+        "id": "6423f08f-16ae-4d6a-80c5-c51af5932fb2",
+        "status": "departed_warehouse",
+        "timestamp": "2026-02-11T22:32:57.000+08:00",
+        "actorId": "405644e4-2903-494f-b7c0-1407ae55b74c",
+        "actorName": "VICTOR D. MAGTIBAY",
+        "source": "driver",
+        "isFlagged": false,
+        "latitude": 14.2707885,
+        "longitude": 121.0064224,
+        "destinationIndex": 0
+      },
+      {
+        "id": "76020290-60b3-4631-83a4-ede344216569",
+        "status": "arrived_at_destination",
+        "timestamp": "2026-02-11T22:36:44.000+08:00",
+        "actorId": "405644e4-2903-494f-b7c0-1407ae55b74c",
+        "actorName": "VICTOR D. MAGTIBAY",
+        "source": "driver",
+        "isFlagged": false,
+        "latitude": 14.267268,
+        "longitude": 121.0045808,
+        "destinationIndex": 0
+      },
+      {
+        "id": "c0e03144-ee89-4fa9-8c5f-b37a6f811a6f",
+        "status": "start_unloading",
+        "timestamp": "2026-02-12T02:26:12.000+08:00",
+        "actorId": "405644e4-2903-494f-b7c0-1407ae55b74c",
+        "actorName": "VICTOR D. MAGTIBAY",
+        "source": "driver",
+        "isFlagged": false,
+        "latitude": 14.2676641,
+        "longitude": 121.0047038,
+        "destinationIndex": 0
+      },
+      {
+        "id": "55af4b16-0401-462e-9414-26fd2b6d4a38",
+        "status": "end_unloading",
+        "timestamp": "2026-02-12T06:49:59.000+08:00",
+        "actorId": "405644e4-2903-494f-b7c0-1407ae55b74c",
+        "actorName": "VICTOR D. MAGTIBAY",
+        "source": "driver",
+        "isFlagged": false,
+        "latitude": 14.3568038,
+        "longitude": 121.0534849,
+        "destinationIndex": 0
+      },
+      {
+        "id": "a488493f-c41c-49ab-915c-e7bcf64bae20",
+        "status": "trip_completed",
+        "timestamp": "2026-02-12T06:50:28.000+08:00",
+        "actorId": "405644e4-2903-494f-b7c0-1407ae55b74c",
+        "actorName": "VICTOR D. MAGTIBAY",
+        "source": "driver",
+        "isFlagged": false,
+        "latitude": 14.3568042,
+        "longitude": 121.0534858,
+        "destinationIndex": 0
+      }
+    ],
+    "isCompleted": true,
+    "origin": "CABUYAO WAREHOUSE",
+    "destinations": [
+      "ALFAMART SILANG"
+    ],
+    "shipmentType": "single_drop",
+    "currentDestinationIndex": 0,
+    "description": "JOHNSON PRODUCTS",
+    "notes": "",
+    "expenses": [
+      {
+        "id": "007b9e3d-ada3-43b9-a315-ed65c9c35f50",
+        "type": "Food",
+        "amount": 200
+      }
+    ]
+  },
+  {
+    "id": "438676a1-6850-4cbd-a50e-6060048f9c2d",
+    "orderCode": "GLT-AGEB82",
+    "assignedDriverId": "67252c89-10d0-4349-9530-447ccb4d7010",
+    "assignedDriverName": "Kenneth Roy Gamayao",
+    "createdAt": "2026-02-11T21:51:57.000+08:00",
+    "updatedAt": "2026-02-11T22:11:43.000+08:00",
+    "currentStatus": "cancelled",
+    "statusTimestamps": {},
+    "statusLogs": [
+      {
+        "id": "2f83c8dd-1636-4778-bd86-2e16ccde08b7",
+        "status": "cancelled",
+        "timestamp": "2026-02-11T22:11:43.000+08:00",
+        "actorId": "admin01",
+        "actorName": "Astraea Millares",
+        "source": "admin",
+        "notes": "Cancelled by admin from dashboard."
+      }
+    ],
+    "isCompleted": true,
+    "origin": "CABUYAO WAREHOUSE",
+    "destinations": [
+      "ALFAMART SILANG"
+    ],
+    "shipmentType": "single_drop",
+    "currentDestinationIndex": 0,
+    "description": "JOHNSON PRODUCTS",
+    "notes": "",
+    "expenses": [],
+    "cancellationReason": "Cancelled by admin from dashboard.",
+    "driverInstructions": ""
+  },
+  {
+    "id": "cbe43ca5-230a-4698-be30-f0830d67d84d",
+    "orderCode": "GLT-4ODWFT",
+    "assignedDriverId": "67252c89-10d0-4349-9530-447ccb4d7010",
+    "assignedDriverName": "Kenneth Roy Gamayao",
+    "createdAt": "2026-02-10T23:53:49.000+08:00",
+    "updatedAt": "2026-02-11T21:53:14.000+08:00",
+    "currentStatus": "cancelled",
+    "statusTimestamps": {},
+    "statusLogs": [
+      {
+        "id": "81ff3dc8-f7b0-4274-8511-a54e2b5aaa8c",
+        "status": "cancelled",
+        "timestamp": "2026-02-11T24:01:38.000+08:00",
+        "actorId": "admin01",
+        "actorName": "Astraea Millares",
+        "source": "admin",
+        "notes": "Cancelled by admin from dashboard."
+      },
+      {
+        "id": "b2a57914-4e45-41ce-83a9-76b086fb3d6d",
+        "status": "cancellation_acknowledged",
+        "timestamp": "2026-02-11T21:53:14.000+08:00",
+        "actorId": "67252c89-10d0-4349-9530-447ccb4d7010",
+        "actorName": "Kenneth Roy Gamayao",
+        "source": "driver",
+        "notes": "Driver acknowledged cancellation and instructions."
+      }
+    ],
+    "isCompleted": true,
+    "origin": "Trial",
+    "destinations": [
+      "Trial"
+    ],
+    "shipmentType": "single_drop",
+    "currentDestinationIndex": 0,
+    "description": "Trial Only",
+    "notes": "",
+    "expenses": [],
+    "cancellationReason": "Cancelled by admin from dashboard.",
+    "cancellationAcknowledged": true
+  },
+  {
     "id": "ed25da48-0c13-4d4e-a42c-a56d0bb8bda6",
     "orderCode": "GLT-FLC83R",
     "assignedDriverId": "e3872a61-acb0-484e-8706-40fe9b8f6d9d",
     "assignedDriverName": "klein imperio",
     "createdAt": "2026-02-11T20:25:07.000+08:00",
-    "updatedAt": "2026-02-11T21:00:48.000+08:00",
-    "currentStatus": "arrived_at_destination",
+    "updatedAt": "2026-02-11T21:04:56.000+08:00",
+    "currentStatus": "trip_completed",
     "statusTimestamps": {
       "arrived_at_warehouse": "2026-02-11T20:52:54.000+08:00",
       "start_loading": "2026-02-11T20:52:56.000+08:00",
       "end_loading": "2026-02-11T20:52:59.000+08:00",
       "departed_warehouse": "2026-02-11T20:53:17.000+08:00",
-      "arrived_at_destination_0": "2026-02-11T21:00:48.000+08:00"
+      "arrived_at_destination_0": "2026-02-11T21:00:48.000+08:00",
+      "start_unloading_0": "2026-02-11T21:04:19.000+08:00",
+      "end_unloading_0": "2026-02-11T21:04:24.000+08:00",
+      "en_route_to_drop_off": "2026-02-11T21:04:41.000+08:00",
+      "arrived_at_destination_1": "2026-02-11T21:04:34.000+08:00",
+      "start_unloading_1": "2026-02-11T21:04:37.000+08:00",
+      "end_unloading_1": "2026-02-11T21:04:39.000+08:00",
+      "arrived_at_destination_2": "2026-02-11T21:04:45.000+08:00",
+      "start_unloading_2": "2026-02-11T21:04:48.000+08:00",
+      "end_unloading_2": "2026-02-11T21:04:53.000+08:00",
+      "trip_completed": "2026-02-11T21:04:56.000+08:00"
     },
     "statusLogs": [
       {
@@ -86,9 +919,141 @@
         "latitude": 14.389640375,
         "longitude": 121.044588,
         "destinationIndex": 0
+      },
+      {
+        "id": "e2ca59c5-0dee-47b6-8191-49c2e4b37f4e",
+        "status": "start_unloading",
+        "timestamp": "2026-02-11T21:04:19.000+08:00",
+        "actorId": "e3872a61-acb0-484e-8706-40fe9b8f6d9d",
+        "actorName": "klein imperio",
+        "source": "driver",
+        "isFlagged": false,
+        "latitude": 14.389641066246181,
+        "longitude": 121.04458739377834,
+        "destinationIndex": 0
+      },
+      {
+        "id": "1f0a07f3-8ab2-45ec-98b3-017008973605",
+        "status": "end_unloading",
+        "timestamp": "2026-02-11T21:04:24.000+08:00",
+        "actorId": "e3872a61-acb0-484e-8706-40fe9b8f6d9d",
+        "actorName": "klein imperio",
+        "source": "driver",
+        "isFlagged": false,
+        "latitude": 14.389641066246181,
+        "longitude": 121.04458739377834,
+        "destinationIndex": 0
+      },
+      {
+        "id": "b2d00145-a2dc-4269-87bd-761b3f8016ad",
+        "status": "en_route_to_drop_off",
+        "timestamp": "2026-02-11T21:04:28.000+08:00",
+        "actorId": "e3872a61-acb0-484e-8706-40fe9b8f6d9d",
+        "actorName": "klein imperio",
+        "source": "driver",
+        "isFlagged": false,
+        "latitude": 14.389641066246181,
+        "longitude": 121.04458739377834,
+        "destinationIndex": 0
+      },
+      {
+        "id": "4b528a0e-4890-4a55-9bb7-99fbc50e2e01",
+        "status": "arrived_at_destination",
+        "timestamp": "2026-02-11T21:04:34.000+08:00",
+        "actorId": "e3872a61-acb0-484e-8706-40fe9b8f6d9d",
+        "actorName": "klein imperio",
+        "source": "driver",
+        "isFlagged": false,
+        "latitude": 14.389641066246181,
+        "longitude": 121.04458739377834,
+        "destinationIndex": 1
+      },
+      {
+        "id": "5ecfbee2-f9ea-4198-8323-fe6e6a2c9aed",
+        "status": "start_unloading",
+        "timestamp": "2026-02-11T21:04:37.000+08:00",
+        "actorId": "e3872a61-acb0-484e-8706-40fe9b8f6d9d",
+        "actorName": "klein imperio",
+        "source": "driver",
+        "isFlagged": false,
+        "latitude": 14.389641066246181,
+        "longitude": 121.04458739377834,
+        "destinationIndex": 1
+      },
+      {
+        "id": "dc126c9f-3300-4269-8402-62d547018521",
+        "status": "end_unloading",
+        "timestamp": "2026-02-11T21:04:39.000+08:00",
+        "actorId": "e3872a61-acb0-484e-8706-40fe9b8f6d9d",
+        "actorName": "klein imperio",
+        "source": "driver",
+        "isFlagged": false,
+        "latitude": 14.389641066246181,
+        "longitude": 121.04458739377834,
+        "destinationIndex": 1
+      },
+      {
+        "id": "47ca6c91-5001-4821-a03a-9fe35e554e61",
+        "status": "en_route_to_drop_off",
+        "timestamp": "2026-02-11T21:04:41.000+08:00",
+        "actorId": "e3872a61-acb0-484e-8706-40fe9b8f6d9d",
+        "actorName": "klein imperio",
+        "source": "driver",
+        "isFlagged": false,
+        "latitude": 14.389641066246181,
+        "longitude": 121.04458739377834,
+        "destinationIndex": 1
+      },
+      {
+        "id": "4ec91a43-aa00-41db-9cca-3b98aa94b131",
+        "status": "arrived_at_destination",
+        "timestamp": "2026-02-11T21:04:45.000+08:00",
+        "actorId": "e3872a61-acb0-484e-8706-40fe9b8f6d9d",
+        "actorName": "klein imperio",
+        "source": "driver",
+        "isFlagged": false,
+        "latitude": 14.389641066246181,
+        "longitude": 121.04458739377834,
+        "destinationIndex": 2
+      },
+      {
+        "id": "bdb33639-92e2-4f50-8703-5d0b68a5459d",
+        "status": "start_unloading",
+        "timestamp": "2026-02-11T21:04:48.000+08:00",
+        "actorId": "e3872a61-acb0-484e-8706-40fe9b8f6d9d",
+        "actorName": "klein imperio",
+        "source": "driver",
+        "isFlagged": false,
+        "latitude": 14.389641066246181,
+        "longitude": 121.04458739377834,
+        "destinationIndex": 2
+      },
+      {
+        "id": "43312e53-e4c2-49f7-88f8-d2672a7b7f47",
+        "status": "end_unloading",
+        "timestamp": "2026-02-11T21:04:53.000+08:00",
+        "actorId": "e3872a61-acb0-484e-8706-40fe9b8f6d9d",
+        "actorName": "klein imperio",
+        "source": "driver",
+        "isFlagged": false,
+        "latitude": 14.389641066246181,
+        "longitude": 121.04458739377834,
+        "destinationIndex": 2
+      },
+      {
+        "id": "d4f650e4-0844-42b1-8730-8406977307fe",
+        "status": "trip_completed",
+        "timestamp": "2026-02-11T21:04:56.000+08:00",
+        "actorId": "e3872a61-acb0-484e-8706-40fe9b8f6d9d",
+        "actorName": "klein imperio",
+        "source": "driver",
+        "isFlagged": false,
+        "latitude": 14.389641066246181,
+        "longitude": 121.04458739377834,
+        "destinationIndex": 2
       }
     ],
-    "isCompleted": false,
+    "isCompleted": true,
     "origin": "muntinlupa",
     "destinations": [
       "sucat",
@@ -96,7 +1061,7 @@
       "pasay"
     ],
     "shipmentType": "multi_drop",
-    "currentDestinationIndex": 0,
+    "currentDestinationIndex": 2,
     "description": "150 Sacks of rice",
     "notes": "be careful",
     "expenses": []
@@ -123,38 +1088,6 @@
     "description": "150 Sacks of rice",
     "notes": "BECAREFUL FRAGILE",
     "expenses": []
-  },
-  {
-    "id": "cbe43ca5-230a-4698-be30-f0830d67d84d",
-    "orderCode": "GLT-4ODWFT",
-    "assignedDriverId": "67252c89-10d0-4349-9530-447ccb4d7010",
-    "assignedDriverName": "Kenneth Roy Gamayao",
-    "createdAt": "2026-02-10T23:53:49.000+08:00",
-    "updatedAt": "2026-02-11T24:01:38.000+08:00",
-    "currentStatus": "cancelled",
-    "statusTimestamps": {},
-    "statusLogs": [
-      {
-        "id": "81ff3dc8-f7b0-4274-8511-a54e2b5aaa8c",
-        "status": "cancelled",
-        "timestamp": "2026-02-11T24:01:38.000+08:00",
-        "actorId": "admin01",
-        "actorName": "Astraea Millares",
-        "source": "admin",
-        "notes": "Cancelled by admin from dashboard."
-      }
-    ],
-    "isCompleted": true,
-    "origin": "Trial",
-    "destinations": [
-      "Trial"
-    ],
-    "shipmentType": "single_drop",
-    "currentDestinationIndex": 0,
-    "description": "Trial Only",
-    "notes": "",
-    "expenses": [],
-    "cancellationReason": "Cancelled by admin from dashboard."
   },
   {
     "id": "050abc41-3292-45ba-af64-296cbb133b7b",

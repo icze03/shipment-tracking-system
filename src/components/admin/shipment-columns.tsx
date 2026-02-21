@@ -3,7 +3,7 @@
 
 import type { ColumnDef } from "@tanstack/react-table";
 import Link from "next/link";
-import { MoreHorizontal, ArrowUpDown, AlertTriangle, XCircle } from "lucide-react";
+import { MoreHorizontal, ArrowUpDown, AlertTriangle, XCircle, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -22,7 +22,7 @@ import { ClientOnly } from "@/components/client-only";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { useTransition } from "react";
 import { useToast } from "@/hooks/use-toast";
-import { cancelShipmentAction } from "@/lib/actions";
+import { cancelShipmentAction, deleteShipmentAction } from "@/lib/actions";
 
 function ActionsCell({ shipment }: { shipment: Shipment }) {
   const [isPending, startTransition] = useTransition();
@@ -38,6 +38,20 @@ function ActionsCell({ shipment }: { shipment: Shipment }) {
         toast({ title: "Error", description: result.error, variant: "destructive" });
       } else {
         toast({ title: "Success", description: "Shipment has been cancelled." });
+      }
+    });
+  };
+
+  const handleDelete = () => {
+    if (!confirm(`Are you sure you want to permanently delete shipment ${shipment.orderCode}? This action cannot be undone.`)) {
+      return;
+    }
+    startTransition(async () => {
+      const result = await deleteShipmentAction(shipment.id);
+      if (result.error) {
+        toast({ title: "Error", description: result.error, variant: "destructive" });
+      } else {
+        toast({ title: "Success", description: "Shipment has been deleted." });
       }
     });
   };
@@ -72,6 +86,14 @@ function ActionsCell({ shipment }: { shipment: Shipment }) {
             >
               <XCircle className="mr-2 h-4 w-4" />
               Cancel Shipment
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={handleDelete}
+              disabled={isPending || !shipment.isCompleted}
+              className="text-destructive focus:bg-destructive/10 focus:text-destructive"
+            >
+              <Trash2 className="mr-2 h-4 w-4" />
+              Delete Shipment
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

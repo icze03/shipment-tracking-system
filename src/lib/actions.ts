@@ -5,7 +5,7 @@ import { revalidatePath } from "next/cache";
 import { v4 as uuidv4 } from "uuid";
 import type { Driver, Expense, Shipment, ShipmentStatus, StatusLog, UserProfile, UserRole } from "./types";
 import { getDrivers, saveDrivers, getDriverById, updateDriver } from "./data/drivers";
-import { getShipments, saveShipments, getShipmentById, getDriverShipments as getDriverShipmentsData } from "./data/shipments";
+import { getShipments, saveShipments, getShipmentById, getDriverShipments as getDriverShipmentsData, deleteShipmentById } from "./data/shipments";
 import { getMockUser } from "./auth";
 import { correctTimestamp as aiCorrectTimestamp } from "@/ai/flows/admin-assisted-timestamp-correction";
 import { getPhilippineTimeISO } from "./utils";
@@ -246,7 +246,7 @@ export async function updateShipmentStatusAction(data: {
             id: uuidv4(),
             status: status,
             timestamp: now,
-            actorId: driver.id,
+            actorId: driverId,
             actorName: driver.name,
             source: 'driver' as const,
             isFlagged: false,
@@ -569,4 +569,16 @@ export async function clearAllShipmentsAction() {
   } catch (e: any) {
     return { error: `Failed to clear shipments: ${e.message}` };
   }
+}
+
+export async function deleteShipmentAction(shipmentId: string) {
+    try {
+        await deleteShipmentById(shipmentId);
+        revalidatePath('/admin/shipments');
+        revalidatePath('/admin/dashboard');
+        revalidatePath("/admin/reports");
+        return { success: true };
+    } catch (e: any) {
+        return { error: `Failed to delete shipment: ${e.message}` };
+    }
 }

@@ -68,3 +68,9 @@ export async function getDriverShipment(driverId: string, includeCancelled: bool
 export async function saveShipments(shipments: Shipment[]): Promise<void> {
     await writeData(shipments);
 }
+
+export async function deleteShipmentById(id: string): Promise<void> {
+    const shipments = await readData();
+    const updatedShipments = shipments.filter(s => s.id !== id);
+    await writeData(updatedShipments);
+}
