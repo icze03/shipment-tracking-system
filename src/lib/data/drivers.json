@@ -1,21 +1,11 @@
 [
   {
-    "id": "6f4e5a62-da45-4224-910b-c1d10aecd37f",
+    "id": "e7f6e0f3-8091-4b54-b32a-988f9571f216",
     "status": "active",
-    "name": "Kenneth Roy Gamayao",
-    "email": "Kenneth.Gamayao@gmail.com",
-    "phone": "09677957937",
-    "licenseNumber": "N26-20-17585",
-    "passwordHash": "Kenneth",
-    "password": "Kenneth"
-  },
-  {
-    "id": "405644e4-2903-494f-b7c0-1407ae55b74c",
-    "status": "active",
-    "name": "VICTOR D. MAGTIBAY",
-    "email": "malabanan.vilma25@gmail.com",
-    "phone": "09086217430",
-    "licenseNumber": "N03-01-314255",
-    "passwordHash": "driver01"
+    "name": "Jose Cruz",
+    "email": "jose.cruz@gmail.com",
+    "phone": "0999123456",
+    "licenseNumber": "D1234567",
+    "passwordHash": "jose123"
   }
 ]
